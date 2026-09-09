@@ -1,0 +1,231 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9180670746641461799
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: CH0221_EyeMouth
+  m_Shader: {fileID: 4800000, guid: 2fc88291de16e5044b46632ece1dc908, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _USEADDITIONALLIGHTSPECULAR_ON
+  - _USEOUTLINE_ON
+  - _USESPECULAR_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Albedo:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Eye:
+        m_Texture: {fileID: 2800000, guid: 8ec6baabb587b1a4d9ca1ca58d2e46ad, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EyeMask:
+        m_Texture: {fileID: 2800000, guid: 7dc2edf887cb0f348bb2cf25e3ac51ed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EyeMouthMask:
+        m_Texture: {fileID: 2800000, guid: 7dc2edf887cb0f348bb2cf25e3ac51ed, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EyeTexture:
+        m_Texture: {fileID: 2800000, guid: 8ec6baabb587b1a4d9ca1ca58d2e46ad, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mouth:
+        m_Texture: {fileID: 2800000, guid: 8021a6883c5464e4097a67a6b7fb8d42, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MouthTexture:
+        m_Texture: {fileID: 2800000, guid: 8021a6883c5464e4097a67a6b7fb8d42, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecularMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AdaptiveWidth: 0.3
+    - _AdditionalLightsScale: 1
+    - _AdditionalSpecularFaloff: 1
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _AmbientScale: 1
+    - _Blend: 0
+    - _BlendDst: 0
+    - _BlendModePreserveSpecular: 1
+    - _BlendSrc: 1
+    - _BumpScale: 1
+    - _ClearCoatMask: 0
+    - _ClearCoatSmoothness: 0
+    - _Cull: 2
+    - _Cutoff: 0.4
+    - _DebugEyeLight: 0
+    - _DebugParallax: 0
+    - _DetailAlbedoMapScale: 1
+    - _DetailNormalMapScale: 1
+    - _DiffuseSmooth: 0.2
+    - _DiffuseSteps: 2
+    - _DiffuseWrap: 0
+    - _DstBlend: 0
+    - _DstBlendAlpha: 0
+    - _EnvReflectionStrength: 0.5
+    - _EnvironmentReflections: 1
+    - _EyeBrightness: 1
+    - _EyeLightMax: 5
+    - _EyeLightScale: 1
+    - _GlossMapScale: 0
+    - _Glossiness: 0
+    - _GlossyReflections: 0
+    - _HighlightBoost: 1
+    - _HighlightRingInner: 0.036
+    - _HighlightRingOuter: 0.156
+    - _HighlightThreshold: 0.999
+    - _IndirectlightScale: 0.4
+    - _MainLightDiffuseScale: 1
+    - _MaskInvert: 0
+    - _Metallic: 0
+    - _MouthIndex: 40
+    - _MouthTypeIndex: 40
+    - _NormalMapScale: 1
+    - _OcclusionMapScale: 1
+    - _OcclusionStrength: 1
+    - _OutlineWidth: 0.005
+    - _Parallax: 0.005
+    - _ParallaxMaskEdge: 0.285
+    - _ParallaxMaskEdgeOffset: 0.1
+    - _ParallaxScale: 0.05
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
+    - _RimMax: 1
+    - _RimMin: 0.8
+    - _Smoothness: 0.5
+    - _SmoothnessTextureChannel: 0
+    - _SpecularFaloff: 0
+    - _SpecularHighlights: 1
+    - _SpecularPosterizeSteps: 5
+    - _SpecularScale: 0.5
+    - _SpecularSize: 0.5
+    - _SrcBlend: 1
+    - _SrcBlendAlpha: 1
+    - _StencilCompare: 0
+    - _StencilForwardComp: 8
+    - _StencilForwardOp: 0
+    - _StencilMode: 0
+    - _StencilRef: 10
+    - _Surface: 0
+    - _Transparency: 1
+    - _UseAdditionalLightsDiffuse: 0
+    - _UseAdditionalLightsSpecular: 1
+    - _UseEnvironmentReflection: 0
+    - _UseOutline: 1
+    - _UseRimLight: 0
+    - _UseSpecular: 1
+    - _WorkflowMode: 1
+    - _ZWrite: 1
+    m_Colors:
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HighlightCenter: {r: 0.96, g: 0.62, b: 0, a: 0}
+    - _MouthFlipSize: {r: 8, g: 8, b: 0, a: 0}
+    - _MouthSize: {r: 8, g: 8, b: 4, a: 4}
+    - _MouthTiling: {r: 4, g: 4, b: 0, a: 0}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ParallaxCenter: {r: 0.61, g: 0.48, b: 0, a: 0}
+    - _ParallaxEllipse: {r: 1.05, g: 1.1, b: 0, a: 0}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColorMask: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
