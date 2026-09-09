@@ -1,0 +1,210 @@
+{
+  "main": {
+    "id": "cebc38c4cff162a9",
+    "type": "split",
+    "children": [
+      {
+        "id": "d15de285ba9fbb64",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "80153437ac57fb17",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "design/05-原型技术映射.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "05-原型技术映射"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a7b3f35cc34d37d0",
+    "type": "split",
+    "children": [
+      {
+        "id": "f93a5acf95ab74bf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "df82a6f270a60996",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "6325e531899431d5",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "4e59688e4e69e4f3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "7491d7fccb428dd5",
+    "type": "split",
+    "children": [
+      {
+        "id": "c268a4b2c259281e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6bfddf77ddaa55ff",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "design/05-原型技术映射.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "930c424ce72fa2b5",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "design/05-原型技术映射.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "f0fa6d69d7267a83",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "f2d6819b5e7eb87e",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "49ca843feb0eb781",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "design/05-原型技术映射.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "df82a6f270a60996",
+  "lastOpenFiles": [
+    "design/04-外围系统预留.md",
+    "design/02-干员与养成.md",
+    "design/01-核心战斗系统.md",
+    "design/00-策划案总览.md",
+    "_conventions/接手与开发约定.md",
+    "design/06-原型验收标准.md",
+    "design/05-原型技术映射.md",
+    "design/03-关卡与敌人.md",
+    "design",
+    "templates/新建 Ability 模板.md",
+    "templates/BehaviorEditor 轨道模板.md",
+    "templates/BetterHSM 状态图模板.md",
+    "HOME.md",
+    "运行流程.md",
+    "架构总览.md",
+    "journal/2026-09-09.md"
+  ]
+}
