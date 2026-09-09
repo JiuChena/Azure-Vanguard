@@ -26,10 +26,15 @@ public class pg_SceneMeshRender : MonoBehaviour
 
 	void OnRenderObject()
 	{
+		Camera currentCamera = Camera.current;
+
+		if(currentCamera == null || currentCamera.gameObject == null)
+			return;
+
 		// instead of relying on 'SceneCamera' string comparison, check if the hideflags match.
 		// this could probably even just check for one bit match, since chances are that any 
 		// game view camera isn't going to have hideflags set.
-		if( (Camera.current.gameObject.hideFlags & SceneCameraHideFlags) != SceneCameraHideFlags || Camera.current.name != "SceneCamera" )
+		if( (currentCamera.gameObject.hideFlags & SceneCameraHideFlags) != SceneCameraHideFlags || currentCamera.name != "SceneCamera" )
 			return;
 
 		if(material == null || mesh == null)
