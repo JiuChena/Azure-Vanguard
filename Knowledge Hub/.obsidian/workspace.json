@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "design/00-策划案总览.md",
+                "file": "design/04-外围系统预留.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "00-策划案总览"
+              "title": "04-外围系统预留"
             }
           }
         ]
@@ -41,7 +41,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -97,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "design/05-原型技术映射.md",
+                "file": "design/04-外围系统预留.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "design/05-原型技术映射.md",
+                "file": "design/04-外围系统预留.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -159,7 +161,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "design/05-原型技术映射.md",
+                "file": "design/04-外围系统预留.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -188,15 +190,20 @@
   },
   "active": "80153437ac57fb17",
   "lastOpenFiles": [
-    "journal/2026-09-10.md",
-    "design/05-原型技术映射.md",
-    "design/04-外围系统预留.md",
+    "journal/2026-09-10.md.tmp.34376.a0203b2b2c19",
+    "design/04-外围系统预留.md.tmp.34376.a2814c6a6aee",
+    "design/04-外围系统预留.md.tmp.34376.4f14374f8f32",
+    "journal/2026-09-10.md.tmp.34376.fcd0217562f3",
+    "design/04-外围系统预留.md.tmp.34376.dcbe86314f77",
+    "design/03-关卡与敌人.md",
     "design/02-干员与养成.md",
     "design/01-核心战斗系统.md",
     "design/00-策划案总览.md",
+    "design/05-原型技术映射.md",
+    "journal/2026-09-10.md",
+    "design/04-外围系统预留.md",
     "_conventions/接手与开发约定.md",
     "design/06-原型验收标准.md",
-    "design/03-关卡与敌人.md",
     "design",
     "templates/新建 Ability 模板.md",
     "templates/BehaviorEditor 轨道模板.md",
