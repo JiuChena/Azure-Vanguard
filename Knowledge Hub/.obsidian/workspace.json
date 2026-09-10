@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "design/05-原型技术映射.md",
+                "file": "design/00-策划案总览.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "05-原型技术映射"
+              "title": "00-策划案总览"
             }
           }
         ]
@@ -41,9 +41,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false,
-                "showSearch": false,
-                "searchQuery": ""
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -188,15 +186,16 @@
       "bases:新建数据库": false
     }
   },
-  "active": "df82a6f270a60996",
+  "active": "80153437ac57fb17",
   "lastOpenFiles": [
+    "journal/2026-09-10.md",
+    "design/05-原型技术映射.md",
     "design/04-外围系统预留.md",
     "design/02-干员与养成.md",
     "design/01-核心战斗系统.md",
     "design/00-策划案总览.md",
     "_conventions/接手与开发约定.md",
     "design/06-原型验收标准.md",
-    "design/05-原型技术映射.md",
     "design/03-关卡与敌人.md",
     "design",
     "templates/新建 Ability 模板.md",
