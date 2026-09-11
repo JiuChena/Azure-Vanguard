@@ -60,6 +60,8 @@ public class GeneralToonyShadeEditor : ShaderGUI
     MaterialProperty diffuseSmooth = null;
     MaterialProperty mainLightDiffuseScale = null;
     MaterialProperty diffuseWrap = null;
+    MaterialProperty lambertNLWeight = null;
+    MaterialProperty lambertVLWeight = null;
     MaterialProperty highlightColor = null;
     MaterialProperty shadowColor = null;
     MaterialProperty useShadowBaseMix = null;
@@ -169,6 +171,8 @@ public class GeneralToonyShadeEditor : ShaderGUI
         diffuseSmooth = FindProperty("_DiffuseSmooth", props);
         mainLightDiffuseScale = FindProperty("_MainLightDiffuseScale", props);
         diffuseWrap = FindProperty("_DiffuseWrap", props);
+        lambertNLWeight = FindProperty("_LambertNLWeight", props);
+        lambertVLWeight = FindProperty("_LambertVLWeight", props);
         highlightColor = FindProperty("_HColor", props);
         shadowColor = FindProperty("_ShadowColor", props);
         useShadowBaseMix = FindProperty("_UseShadowBaseMix", props);
@@ -455,6 +459,9 @@ public class GeneralToonyShadeEditor : ShaderGUI
         DrawProperty(diffuseSteps);
         DrawProperty(diffuseSmooth);
         DrawProperty(diffuseWrap);
+        //BA 式视角项堆叠：lit = 插值后NL × NL权重 + VL × VL权重
+        DrawProperty(lambertNLWeight);
+        DrawProperty(lambertVLWeight);
         DrawProperty(mainLightDiffuseScale);
         DrawProperty(highlightColor);
         DrawProperty(shadowColor);

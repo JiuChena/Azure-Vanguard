@@ -13,6 +13,9 @@ Shader "GTS/General Toony Shader"
 
         _MainLightDiffuseScale("主光漫反射强度", Range(0, 5)) = 1
         _DiffuseWrap("漫反射包裹", Range(0, 1)) = 0
+        //BA 式视角项堆叠：lit = 插值后NL × NL权重 + VL × VL权重（VL 面朝相机托底提亮，明暗分界推向轮廓侧）
+        _LambertNLWeight("LambertNL权重", Float) = 1
+        _LambertVLWeight("LambertVL权重", Float) = 1
         _DiffuseSteps("漫反射色阶化处理", Range(2, 50)) = 3
         _DiffuseSmooth("漫反射柔化", Range(0, 1)) = 0.2
         _HColor("亮面色", Color) = (1,1,1,1)
@@ -234,6 +237,8 @@ Shader "GTS/General Toony Shader"
             half _DiffuseSmooth;
             float _MainLightDiffuseScale;
             half _DiffuseWrap;
+            float _LambertNLWeight;
+            float _LambertVLWeight;
             float4 _HColor;
             float4 _ShadowColor;
             float _ShadowBaseMix;
@@ -361,6 +366,9 @@ Shader "GTS/General Toony Shader"
                 half3x3 TBN = half3x3(o.worldTangent, o.worldBitangent, o.worldNormal);
                 half3 worldNormal = SafeNormalize(TransformTangentToWorld(tangentNormal, TBN));
                 
+                //视角向量提前计算（漫反射的 BA 式 VL 堆叠与高光共用）
+                float3 worldViewDir = SafeNormalize(_WorldSpaceCameraPos.xyz - o.worldPosition);
+
                 //漫反射主光、色阶化处理
                 half NL = dot(worldNormal, _MainLightPosition.xyz);
                 
@@ -384,6 +392,10 @@ Shader "GTS/General Toony Shader"
 
                 //Lambert -> HalfLambert漫反射插值（遮蔽区扣减亮度进阴影档，随漫反射一起接受色阶化量化）
                 half wrapNL = lerp(max(0, NL), (NL + 1) * 0.5, _DiffuseWrap);
+                //BA 式视角项堆叠（插值逻辑不变，之后叠加）：lit = 插值后NL × NL权重 + VL × VL权重
+                //VL 面朝相机托底提亮，明暗分界推向轮廓侧；遮蔽扣减作用在堆叠后的总值上
+                half lambertNdv = saturate(dot(worldNormal, worldViewDir));
+                wrapNL = wrapNL * _LambertNLWeight + lambertNdv * _LambertVLWeight;
                 wrapNL = max(0.0, wrapNL - occShadow);
 
                 //先柔化再色阶化：过渡带对称覆盖档位边界，过渡上限为档间中点（不抬到全亮），
@@ -454,8 +466,7 @@ Shader "GTS/General Toony Shader"
                 //漫反射最终组装（Step / Floor 双模式统一）
                 half3 finalDiffuse = (mainDiffuse + additionalDiffuse) * mainTexture.rgb + finalAmbientColor.rgb;
                 
-                //视角向量计算，高光贴图采样，贴图采样过滤、缩放
-                float3 worldViewDir = SafeNormalize(_WorldSpaceCameraPos.xyz - o.worldPosition);
+                //高光贴图采样，贴图采样过滤、缩放（视角向量已在漫反射段提前计算）
                 half4 specularMapSample = tex2D(_SpecularMap, uv);
                 half smoothness = (ChannelSelect(specularMapSample, _SpecularSmoothnessChannel) - 0.2) * _SpecularScale;
                 

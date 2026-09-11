@@ -184,6 +184,8 @@ Material:
     - _HairSpecTopMultiplier: 3
     - _IndirectLightStrength: 0.6
     - _IndirectlightScale: 0.4
+    - _LambertNLWeight: 1
+    - _LambertVLWeight: 0
     - _LightRampOffset: 0
     - _MainLightDiffuseScale: 1.2
     - _MainLightIntesity: 1

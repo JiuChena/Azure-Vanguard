@@ -27,7 +27,6 @@ Material:
   m_ValidKeywords:
   - _USEHAIRDIRECTIONHIGHLIGHT_ON
   - _USEOUTLINE_ON
-  - _USERIMLIGHT_ON
   - _USESHADOWBASEMIX_ON
   m_InvalidKeywords:
   - _DIFFUSEMODE_STEP
@@ -203,6 +202,8 @@ Material:
     - _JiggleFalloff: 1
     - _JiggleFrequency: 10
     - _JiggleSpeed: 0.83
+    - _LambertNLWeight: 1
+    - _LambertVLWeight: 0
     - _LightRampOffset: 0
     - _MainLightDiffuseScale: 1.2
     - _MainLightIntesity: 1
@@ -278,7 +279,7 @@ Material:
     - _UseMetal: 0
     - _UseOutline: 1
     - _UseOutlineNormalMap: 1
-    - _UseRimLight: 1
+    - _UseRimLight: 0
     - _UseSeeThrough: 0
     - _UseShadowBaseMix: 1
     - _UseSpecular: 0
