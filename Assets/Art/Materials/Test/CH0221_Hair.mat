@@ -88,6 +88,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 35a6e23315d7337459e3dce0f0159616, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: d88629c631a99054b99946fe46c56a9b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -153,6 +157,7 @@ Material:
     - _BlendDst: 0
     - _BlendModePreserveSpecular: 1
     - _BlendSrc: 1
+    - _BrightnessMapStrength: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -176,16 +181,22 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.3
     - _GlossyReflections: 1
+    - _GlowStrength: 0
+    - _GlowTransSharpness: 2
     - _HairDirectionHighlightAlphaPower: 2
     - _HairDirectionHighlightAlphaWeight: 1
     - _HairDirectionHighlightAnisotropy: 2
     - _HairDirectionHighlightBrightnessThreshold: 0
     - _HairDirectionHighlightChannel: 3
-    - _HairDirectionHighlightIntensity: 0.15
-    - _HairDirectionHighlightLobeOffset: 0
-    - _HairDirectionHighlightSoftness: 0.2
+    - _HairDirectionHighlightIntensity: 0.5
+    - _HairDirectionHighlightLobeOffset: -0.01
+    - _HairDirectionHighlightSoftness: 0.1
     - _HairDirectionHighlightTangentBlend: 1
     - _HairDirectionHighlightThreshold: 0.8
+    - _HairSpecBotArea: 0.3
+    - _HairSpecBotMultiplier: 10
+    - _HairSpecTopLeveler: 2
+    - _HairSpecTopMultiplier: 3
     - _IndirectLightStrength: 0.6
     - _IndirectlightScale: 0.4
     - _JiggleAmplitude: 0.012
@@ -195,6 +206,8 @@ Material:
     - _LightRampOffset: 0
     - _MainLightDiffuseScale: 1.2
     - _MainLightIntesity: 1
+    - _MaskTexChannel: 1
+    - _MaskTexThreshold: 0.75
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -205,11 +218,13 @@ Material:
     - _OcclusionThreshold: 0.5
     - _OcclusionTransparency: 1
     - _OutlineMaxScale: 10
-    - _OutlineMode: 1
+    - _OutlineMode: 0
     - _OutlinePosBlend: 0
+    - _OutlineScreenWidth: 0.01
     - _OutlineTextureStrength: 0.6
     - _OutlineType: 0
     - _OutlineWidth: 0.3
+    - _OutlineZCorrection: 0.000101
     - _OutlineZOffset: 0
     - _Parallax: 0.02
     - _QueueOffset: 0
@@ -278,6 +293,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlowTint: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.6886792, g: 0.51266426, b: 0.4970185, a: 0}
     - _OutlineWidthParams: {r: 0, g: 20, b: 0.8, a: 1.2}

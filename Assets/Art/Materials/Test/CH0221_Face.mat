@@ -74,6 +74,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: b48333ef661b4494dbc3deafb2938ed4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -136,6 +140,7 @@ Material:
     - _BlendDst: 0
     - _BlendModePreserveSpecular: 1
     - _BlendSrc: 1
+    - _BrightnessMapStrength: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -159,6 +164,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossyReflections: 1
+    - _GlowStrength: 0
+    - _GlowTransSharpness: 2
     - _HairDirectionHighlightAlphaCutoff: 0.35
     - _HairDirectionHighlightAlphaPower: 0.25
     - _HairDirectionHighlightAlphaWeight: 0
@@ -171,11 +178,17 @@ Material:
     - _HairDirectionHighlightSoftness: 0.001
     - _HairDirectionHighlightTangentBlend: 0
     - _HairDirectionHighlightThreshold: -1
+    - _HairSpecBotArea: 0.3
+    - _HairSpecBotMultiplier: 11
+    - _HairSpecTopLeveler: 2
+    - _HairSpecTopMultiplier: 3
     - _IndirectLightStrength: 0.6
     - _IndirectlightScale: 0.4
     - _LightRampOffset: 0
     - _MainLightDiffuseScale: 1
     - _MainLightIntesity: 1
+    - _MaskTexChannel: 1
+    - _MaskTexThreshold: 0.75
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 0
@@ -186,11 +199,13 @@ Material:
     - _OcclusionThreshold: 0.5
     - _OcclusionTransparency: 1
     - _OutlineMaxScale: 10
-    - _OutlineMode: 1
+    - _OutlineMode: 0
     - _OutlinePosBlend: 0
+    - _OutlineScreenWidth: 0.01
     - _OutlineTextureStrength: 0.6
     - _OutlineType: 0
     - _OutlineWidth: 0.2
+    - _OutlineZCorrection: 0.000101
     - _OutlineZOffset: 0
     - _Parallax: 0.02
     - _QueueOffset: 0
@@ -236,7 +251,7 @@ Material:
     - _StencilCompare: 0
     - _StencilForwardComp: 8
     - _StencilForwardOp: 0
-    - _StencilMode: 0
+    - _StencilMode: 2
     - _StencilRef: 0
     - _StepOffset: 0
     - _Strength: 0
@@ -273,6 +288,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlowTint: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.80392164, g: 0.65882355, b: 0.63529414, a: 0}
     - _OutlineWidthParams: {r: 0, g: 20, b: 0.8, a: 1.2}

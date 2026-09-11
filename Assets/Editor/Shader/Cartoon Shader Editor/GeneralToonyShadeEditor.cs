@@ -48,9 +48,8 @@ public class GeneralToonyShadeEditor : ShaderGUI
     //主纹理区
     MaterialProperty albedoMap = null;
     MaterialProperty albedoColor = null;
-    MaterialProperty occlusionMap = null;
-    MaterialProperty occlusionMapScale = null;
-    MaterialProperty occlusionMapChannel = null;
+    MaterialProperty maskTex = null;
+    MaterialProperty maskTexThreshold = null;
     MaterialProperty normalMap = null;
     MaterialProperty normalMapScale = null;
     MaterialProperty indirectLightScale = null;
@@ -73,14 +72,14 @@ public class GeneralToonyShadeEditor : ShaderGUI
     //高光区
     MaterialProperty specularMap = null;
     MaterialProperty useHairDirectionHighlight = null;
-    MaterialProperty hairDirectionHighlightThreshold = null;
-    MaterialProperty hairDirectionHighlightSoftness = null;
-    MaterialProperty hairDirectionHighlightIntensity = null;
-    MaterialProperty hairDirectionHighlightAnisotropy = null;
-    MaterialProperty hairDirectionHighlightTangentBlend = null;
     MaterialProperty hairDirectionHighlightLobeOffset = null;
-    MaterialProperty hairDirectionHighlightAlphaWeight = null;
-    MaterialProperty hairDirectionHighlightAlphaPower = null;
+    MaterialProperty hairSpecTopMultiplier = null;
+    MaterialProperty hairSpecTopLeveler = null;
+    MaterialProperty hairSpecBotArea = null;
+    MaterialProperty hairSpecBotMultiplier = null;
+    MaterialProperty hairDirectionHighlightIntensity = null;
+    MaterialProperty hairDirectionHighlightSoftness = null;
+    MaterialProperty hairDirectionHighlightTangentBlend = null;
     MaterialProperty hairDirectionHighlightChannel = null;
     MaterialProperty specularColor = null;
     MaterialProperty specularScale = null;
@@ -100,6 +99,11 @@ public class GeneralToonyShadeEditor : ShaderGUI
     MaterialProperty emissionColor = null;
     MaterialProperty emissionMap = null;
     MaterialProperty emissionIntensity = null;
+    //MaskTex 通道分工区（MX）：B=透光（背光响应），A=亮度遮罩
+    MaterialProperty glowTint = null;
+    MaterialProperty glowStrength = null;
+    MaterialProperty glowTransSharpness = null;
+    MaterialProperty brightnessMapStrength = null;
 
     //对比度区
     MaterialProperty contrast = null;
@@ -122,10 +126,13 @@ public class GeneralToonyShadeEditor : ShaderGUI
 
     //描边区
     MaterialProperty useOutline = null;
+        MaterialProperty outlineMode = null;
         MaterialProperty outlineColor = null;
         MaterialProperty outlineWidth = null;
         MaterialProperty adaptiveWidth = null;
         MaterialProperty outlineMaxScale = null;
+        MaterialProperty outlineScreenWidth = null;
+        MaterialProperty outlineZCorrection = null;
 
     //半透明区
     MaterialProperty blendSrc = null;
@@ -151,9 +158,8 @@ public class GeneralToonyShadeEditor : ShaderGUI
     {
         albedoMap = FindProperty("_Albedo", props);
         albedoColor = FindProperty("_Color", props);
-        occlusionMap = FindProperty("_OcclusionMap", props);
-        occlusionMapScale = FindProperty("_OcclusionMapScale", props);
-        occlusionMapChannel = FindProperty("_OcclusionMapChannel", props);
+        maskTex = FindProperty("_MaskTex", props);
+        maskTexThreshold = FindProperty("_MaskTexThreshold", props);
         normalMap = FindProperty("_NormalMap", props);
         normalMapScale = FindProperty("_NormalMapScale", props);
         indirectLightScale = FindProperty("_IndirectlightScale", props);
@@ -173,14 +179,14 @@ public class GeneralToonyShadeEditor : ShaderGUI
 
         specularMap = FindProperty("_SpecularMap", props);
         useHairDirectionHighlight = FindProperty("_UseHairDirectionHighlight", props);
-        hairDirectionHighlightThreshold = FindProperty("_HairDirectionHighlightThreshold", props);
-        hairDirectionHighlightSoftness = FindProperty("_HairDirectionHighlightSoftness", props);
-        hairDirectionHighlightIntensity = FindProperty("_HairDirectionHighlightIntensity", props);
-        hairDirectionHighlightAnisotropy = FindProperty("_HairDirectionHighlightAnisotropy", props);
-        hairDirectionHighlightTangentBlend = FindProperty("_HairDirectionHighlightTangentBlend", props);
         hairDirectionHighlightLobeOffset = FindProperty("_HairDirectionHighlightLobeOffset", props);
-        hairDirectionHighlightAlphaWeight = FindProperty("_HairDirectionHighlightAlphaWeight", props);
-        hairDirectionHighlightAlphaPower = FindProperty("_HairDirectionHighlightAlphaPower", props);
+        hairSpecTopMultiplier = FindProperty("_HairSpecTopMultiplier", props);
+        hairSpecTopLeveler = FindProperty("_HairSpecTopLeveler", props);
+        hairSpecBotArea = FindProperty("_HairSpecBotArea", props);
+        hairSpecBotMultiplier = FindProperty("_HairSpecBotMultiplier", props);
+        hairDirectionHighlightIntensity = FindProperty("_HairDirectionHighlightIntensity", props);
+        hairDirectionHighlightSoftness = FindProperty("_HairDirectionHighlightSoftness", props);
+        hairDirectionHighlightTangentBlend = FindProperty("_HairDirectionHighlightTangentBlend", props);
         hairDirectionHighlightChannel = FindProperty("_HairDirectionHighlightChannel", props);
         specularColor = FindProperty("_SpecularColor", props);
         specularScale = FindProperty("_SpecularScale", props);
@@ -199,6 +205,10 @@ public class GeneralToonyShadeEditor : ShaderGUI
         emissionColor = FindProperty("_EmissionColor", props);
         emissionMap = FindProperty("_EmissionMap", props);
         emissionIntensity = FindProperty("_EmissionIntensity", props);
+        glowTint = FindProperty("_GlowTint", props);
+        glowStrength = FindProperty("_GlowStrength", props);
+        glowTransSharpness = FindProperty("_GlowTransSharpness", props);
+        brightnessMapStrength = FindProperty("_BrightnessMapStrength", props);
 
         contrast = FindProperty("_Contrast", props);
 
@@ -217,10 +227,13 @@ public class GeneralToonyShadeEditor : ShaderGUI
         useRimLight = FindProperty("_UseRimLight", props);
 
         useOutline = FindProperty("_UseOutline", props);
+        outlineMode = FindProperty("_OutlineMode", props);
         outlineColor = FindProperty("_OutlineColor", props);
         outlineWidth = FindProperty("_OutlineWidth", props);
         adaptiveWidth = FindProperty("_AdaptiveWidth", props);
         outlineMaxScale = FindProperty("_OutlineMaxScale", props);
+        outlineScreenWidth = FindProperty("_OutlineScreenWidth", props);
+        outlineZCorrection = FindProperty("_OutlineZCorrection", props);
 
         blendSrc = FindProperty("_BlendSrc", props);
         blendDst = FindProperty("_BlendDst", props);
@@ -402,12 +415,18 @@ public class GeneralToonyShadeEditor : ShaderGUI
 
         m_MaterialEditor.TexturePropertySingleLine(new GUIContent("Albedo"), albedoMap, albedoColor);
         m_MaterialEditor.TexturePropertySingleLine(new GUIContent("Normal Map"), normalMap, normalMapScale);
-        m_MaterialEditor.TexturePropertySingleLine(new GUIContent("Occlusion Map"), occlusionMap, occlusionMapScale);
-        DrawChannelPopup(occlusionMapChannel, "遮蔽通道");
+        m_MaterialEditor.TexturePropertySingleLine(new GUIContent("Mask Tex"), maskTex, maskTexThreshold);
+
+        // MaskTex 通道分工（MX，固定）：G=遮蔽，B=透光（背光响应：光穿透毛发朝相机时增强），A=亮度遮罩，强度 0=关闭
+        DrawProperty(glowTint);
+        DrawProperty(glowStrength);
+        DrawProperty(glowTransSharpness);
+        DrawProperty(brightnessMapStrength);
+
         DrawProperty(indirectLightScale);
         DrawProperty(ambientScale);
 
-        m_MaterialEditor.TextureScaleOffsetProperty(occlusionMap);
+        m_MaterialEditor.TextureScaleOffsetProperty(maskTex);
 
         EditorGUILayout.Space(2);
         EditorGUILayout.EndVertical();
@@ -511,10 +530,10 @@ public class GeneralToonyShadeEditor : ShaderGUI
         DrawToggleBoxScope(useHairDirectionHighlight,
             new List<MaterialProperty>
             {
-                hairDirectionHighlightThreshold, hairDirectionHighlightSoftness,
-                hairDirectionHighlightIntensity, hairDirectionHighlightAnisotropy,
-                hairDirectionHighlightTangentBlend, hairDirectionHighlightLobeOffset,
-                hairDirectionHighlightAlphaWeight, hairDirectionHighlightAlphaPower
+                hairDirectionHighlightLobeOffset, hairSpecTopMultiplier,
+                hairSpecTopLeveler, hairSpecBotArea, hairSpecBotMultiplier,
+                hairDirectionHighlightIntensity, hairDirectionHighlightSoftness,
+                hairDirectionHighlightTangentBlend
             }, "Anisotropic Sampling");
         DrawChannelPopup(hairDirectionHighlightChannel, "各向异性响应通道");
 
@@ -535,7 +554,7 @@ public class GeneralToonyShadeEditor : ShaderGUI
     }
 
     /// <summary>
-    /// 绘制描边组：描边开关、颜色宽度、世界空间自适应参数与尖端收边。
+    /// 绘制描边组：描边开关、模式选择（下拉框）与各自模式所需的参数。
     /// </summary>
     private void OutlineEditor()
     {
@@ -549,15 +568,27 @@ public class GeneralToonyShadeEditor : ShaderGUI
             EditorGUILayout.BeginVertical(BoxScopeStyle);
             EditorGUILayout.Space(2);
 
-            // 描边颜色
-            DrawProperty(outlineColor);
-            // 基础宽度
-            DrawProperty(outlineWidth);
+            // 模式下拉框
+            int mode = Mathf.RoundToInt(outlineMode.floatValue);
+            var newMode = (OutlineMode)EditorGUILayout.EnumPopup("描边模式", (OutlineMode)mode);
+            outlineMode.floatValue = (float)newMode;
 
-            EditorGUILayout.Space(4);
-            // 世界空间模式：纯顶点外拓 + 距离自适应
-            DrawProperty(adaptiveWidth);
-            DrawProperty(outlineMaxScale);
+            // 描边颜色（两种模式共用）
+            DrawProperty(outlineColor);
+
+            if (newMode == OutlineMode.WorldNormal)
+            {
+                // 世界空间法线外推：宽度 + 距离自适应
+                DrawProperty(outlineWidth);
+                DrawProperty(adaptiveWidth);
+                DrawProperty(outlineMaxScale);
+            }
+            else
+            {
+                // 屏幕空间切线：屏幕像素宽度 + 深度修正
+                DrawProperty(outlineScreenWidth);
+                DrawProperty(outlineZCorrection);
+            }
 
             EditorGUILayout.Space(2);
             EditorGUILayout.EndVertical();
@@ -633,6 +664,11 @@ public class GeneralToonyShadeEditor : ShaderGUI
     /// 模板测试模式枚举（与 shader 属性值对应：0=关闭 1=写入 2=读取）。
     /// </summary>
     private enum StencilTestMode { Off = 0, Write = 1, Read = 2 }
+
+    /// <summary>
+    /// 描边模式枚举（与 shader 属性值对应：0=世界空间法线外推 1=屏幕空间切线膨胀）。
+    /// </summary>
+    private enum OutlineMode { WorldNormal = 0, ScreenTangent = 1 }
 
     /// <summary>
     /// 贴图通道枚举（与 shader 属性值对应：0=R 1=G 2=B 3=A）。

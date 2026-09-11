@@ -4,9 +4,9 @@ Shader "GTS/General Toony Shader"
     {
         _Albedo("主纹理图", 2D) = "white" {}
         _Color("主色", Color) = (1,1,1,1)
-        _OcclusionMap("遮蔽贴图", 2D) = "black" {}
-        _OcclusionMapScale("遮蔽过滤值(高于滤值为阴影)", Range(0, 1)) = 0.5
-        [Enum(R,0,G,1,B,2,A,3)] _OcclusionMapChannel("遮蔽通道", Float) = 1
+        //MaskTex 通道分工（MX，固定）：G=遮蔽，B=自发光，A=亮度
+        _MaskTex("遮罩贴图", 2D) = "black" {}
+        _MaskTexThreshold("遮蔽过滤值(高于滤值为阴影)", Range(0, 1)) = 0.5
 
         _NormalMap("法线贴图", 2D) = "bump" {}
         _NormalMapScale("法线强度", Range(0, 1)) = 1
@@ -26,16 +26,17 @@ Shader "GTS/General Toony Shader"
         _AdditionalLightsScale("附加光强度", Range(0, 1)) = 1
 
         _SpecularMap("高光贴图", 2D) = "white" {}
-        [Toggle(_USEHAIRDIRECTIONHIGHLIGHT_ON)] _UseHairDirectionHighlight("头发各向异性高光(切线场试验)", Float) = 0
-        _HairDirectionHighlightThreshold("头发方向匹配阈值", Range(-1, 1)) = 0.82
-        _HairDirectionHighlightSoftness("头发方向高光柔化", Range(0.001, 0.25)) = 0.08
-        _HairDirectionHighlightIntensity("头发方向高光强度", Range(0, 5)) = 1
-        _HairDirectionHighlightAnisotropy("头发高光各向异性指数", Range(1, 64)) = 16
-        _HairDirectionHighlightTangentBlend("贴图切线混合", Range(0, 1)) = 1
+        [Toggle(_USEHAIRDIRECTIONHIGHLIGHT_ON)] _UseHairDirectionHighlight("头发各向异性高光(MX切线场)", Float) = 0
+        //MX 方案：shift=dot(T,H)-偏移，按符号分流顶/底非对称双 lobe；(1-通道值) 作减法阈值；整体乘明暗软坡
         _HairDirectionHighlightLobeOffset("高光带方向偏移", Range(-0.5, 0.5)) = 0
-        _HairDirectionHighlightAlphaWeight("Alpha响应权重", Range(0, 1)) = 0.5
-        _HairDirectionHighlightAlphaPower("Alpha响应曲线", Range(0.25, 4)) = 1
-        [Enum(R,0,G,1,B,2,A,3)] _HairDirectionHighlightChannel("各向异性响应通道", Float) = 3
+        _HairSpecTopMultiplier("顶部高光强度", Range(1, 20)) = 3
+        _HairSpecTopLeveler("顶部高光基底偏移", Float) = 2
+        _HairSpecBotArea("底部高光区域", Range(0, 1)) = 0.3
+        _HairSpecBotMultiplier("底部高光强度", Float) = 11
+        _HairDirectionHighlightIntensity("头发高光总强度", Range(0, 10)) = 1
+        _HairDirectionHighlightSoftness("高光带边缘柔化", Range(0.001, 0.25)) = 0.08
+        _HairDirectionHighlightTangentBlend("贴图切线混合", Range(0, 1)) = 1
+        [Enum(R,0,G,1,B,2,A,3)] _HairDirectionHighlightChannel("高光准入通道(MX用A)", Float) = 3
         _SpecularColor("高光颜色", Color) = (1,1,1,1)
         _SpecularScale("高光强度", Range(0, 1)) = 0.5
         [Enum(R,0,G,1,B,2,A,3)] _SpecularSmoothnessChannel("光滑度通道", Float) = 3
@@ -53,6 +54,14 @@ Shader "GTS/General Toony Shader"
         _EmissionMap("自发光贴图", 2D) = "white" {}
         _EmissionIntensity("自发光强度", Range(0, 5)) = 1
 
+        [Space(8)]
+        //MaskTex 通道分工（MX）：B=透光（背光响应版：光穿透毛发朝相机时增强，正面受光为 0），A=亮度遮罩
+        //强度为 0 时功能关闭，默认不影响现有材质
+        _GlowTint("透光颜色(B)", Color) = (0,0,0,1)
+        _GlowStrength("透光强度(B)", Range(0, 5)) = 0
+        _GlowTransSharpness("透光背光锐度", Range(0.25, 8)) = 2
+        _BrightnessMapStrength("亮度遮罩强度(A)", Range(0, 5)) = 0
+
         _Contrast("对比度", Range(0, 2)) = 1
 
         [Enum(Off, Write, Read)] _StencilMode("模板测试模式", Float) = 0
@@ -69,12 +78,16 @@ Shader "GTS/General Toony Shader"
         [Toggle(_USERIMLIGHT_ON)] _UseRimLight("边缘光", Float) = 0
 
         [Toggle(_USEOUTLINE_ON)] _UseOutline("描边", Float) = 1
+        //描边模式：0=世界空间法线外推（距离自适应），1=屏幕空间切线膨胀（屏幕像素宽度恒定，顶点色.a 控局部粗细）
+        [Enum(WorldNormal,0,ScreenTangent,1)] _OutlineMode("描边模式", Float) = 0
         _OutlineColor("描边颜色", Color) = (0,0,0,1)
+        //模式0（世界空间法线外推）参数
         _OutlineWidth("描边宽度", Range(0, 1)) = 1
-        [Space(8)]
-        //世界空间描边参数（纯顶点外拓 + 距离自适应）
         _AdaptiveWidth("自适应描边宽度", Range(0, 1)) = 0.3
         _OutlineMaxScale("描边自适应最大宽度", Range(1, 100)) = 20
+        //模式1（屏幕空间切线膨胀）参数
+        _OutlineScreenWidth("描边宽度(屏幕空间系数)", Range(0, 0.02)) = 0.002
+        _OutlineZCorrection("描边深度修正", Range(-0.0005, 0.0005)) = 0
 
         [Space(8)]
         //半透明（头发等）：混合源/混合目标下拉框 + 最终前向Alpha
@@ -109,32 +122,60 @@ Shader "GTS/General Toony Shader"
             
             CBUFFER_START(UnityPerMaterial)
             half4 _OutlineColor;
+            float _OutlineMode;
             float _OutlineWidth;
             float _AdaptiveWidth;
             float _OutlineMaxScale;
+            float _OutlineScreenWidth;
+            float _OutlineZCorrection;
             float _Transparency;
             CBUFFER_END
-            
+
             struct VertexInput
             {
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
+                float4 tangent : TANGENT;
+                float4 color : COLOR0;
             };
 
             struct VertexOutput
             {
                 float4 pos : SV_POSITION;
             };
-            
+
             VertexOutput vert(VertexInput v)
             {
                 VertexOutput o;
-                float3 normalWS = TransformObjectToWorldNormal(v.normal);
 #ifdef _USEOUTLINE_ON
-                float3 worldPos = TransformObjectToWorld(v.vertex.xyz);
-                float lerpResult = clamp(lerp(1.0, distance(_WorldSpaceCameraPos, worldPos), _AdaptiveWidth), 1.0, _OutlineMaxScale);
-                worldPos += normalWS * (0.01 * _OutlineWidth * lerpResult);
-                o.pos = TransformWorldToHClip(worldPos);
+                float4 clipPosition;
+                if (_OutlineMode < 0.5)
+                {
+                    //模式0：世界空间法线外推 + 距离自适应（宽度随相机距离变化）
+                    float3 normalWS = TransformObjectToWorldNormal(v.normal);
+                    float3 worldPos = TransformObjectToWorld(v.vertex.xyz);
+                    float lerpResult = clamp(lerp(1.0, distance(_WorldSpaceCameraPos, worldPos), _AdaptiveWidth), 1.0, _OutlineMaxScale);
+                    worldPos += normalWS * (0.01 * _OutlineWidth * lerpResult);
+                    clipPosition = TransformWorldToHClip(worldPos);
+                }
+                else
+                {
+                    //模式1：屏幕空间切线膨胀（复刻 BA 原版描边，屏幕像素宽度恒定）
+                    float4 baseClip = TransformObjectToHClip(v.vertex.xyz);
+                    //视空间切线乘投影 x/y 缩放 → 切线在屏幕上的方向
+                    float3 tangentVS = mul((float3x3)UNITY_MATRIX_MV, v.tangent.xyz);
+                    float2 dir = float2(tangentVS.x * UNITY_MATRIX_P[0][0], tangentVS.y * UNITY_MATRIX_P[1][1]);
+                    //安全归一化（带最小长度保护，与原版一致的 6.1e-5）
+                    float len2 = max(dot(dir, dir), 6.10351563e-05);
+                    dir *= rsqrt(len2);
+                    //宽度 = clipW × 顶点色.a × 屏幕空间系数（顶点色.a 可在 DCC 里逐顶点控粗细，无顶点色时恒为 1）
+                    float2 offset = dir * (baseClip.w * v.color.a * _OutlineScreenWidth);
+                    offset.y *= _ScreenParams.x / _ScreenParams.y;   //宽高比修正
+                    clipPosition = baseClip;
+                    clipPosition.xy += offset;
+                    clipPosition.z -= _OutlineZCorrection * 2.0;     //深度修正防穿模
+                }
+                o.pos = clipPosition;
 #else
                 o.pos = float4(0, 0, 0, 1);
 #endif
@@ -182,10 +223,9 @@ Shader "GTS/General Toony Shader"
             CBUFFER_START(UnityPerMaterial)
             //主纹理
             half4 _Albedo_ST;
-            half4 _OcclusionMap_ST;
+            half4 _MaskTex_ST;
             float4 _Color;
-            float _OcclusionMapScale;
-            float _OcclusionMapChannel;
+            float _MaskTexThreshold;
             //法线
             half4 _NormalMap_ST;
             float _NormalMapScale;
@@ -204,14 +244,14 @@ Shader "GTS/General Toony Shader"
             //高光
             half4 _SpecularMap_ST;
             half4 _SpecularColor;
-            float _HairDirectionHighlightThreshold;
-            float _HairDirectionHighlightSoftness;
-            float _HairDirectionHighlightIntensity;
-            float _HairDirectionHighlightAnisotropy;
-            float _HairDirectionHighlightTangentBlend;
             float _HairDirectionHighlightLobeOffset;
-            float _HairDirectionHighlightAlphaWeight;
-            float _HairDirectionHighlightAlphaPower;
+            float _HairSpecTopMultiplier;
+            float _HairSpecTopLeveler;
+            float _HairSpecBotArea;
+            float _HairSpecBotMultiplier;
+            float _HairDirectionHighlightIntensity;
+            float _HairDirectionHighlightSoftness;
+            float _HairDirectionHighlightTangentBlend;
             float _SpecularScale;
             float _SpecularSmoothnessChannel;
             float _HairDirectionHighlightChannel;
@@ -224,6 +264,11 @@ Shader "GTS/General Toony Shader"
             half4 _EmissionColor;
             float _EmissionIntensity;
             half4 _EmissionMap_ST;
+            //MaskTex 通道分工（MX）：B=透光，A=亮度遮罩
+            half4 _GlowTint;
+            float _GlowStrength;
+            float _GlowTransSharpness;
+            float _BrightnessMapStrength;
             //对比度
             float _Contrast;
             //边缘光
@@ -238,7 +283,7 @@ Shader "GTS/General Toony Shader"
             CBUFFER_END
 
             sampler2D _Albedo;
-            sampler2D _OcclusionMap;
+            sampler2D _MaskTex;
             sampler2D _NormalMap;
             sampler2D _SpecularMap;
             sampler2D _EmissionMap;
@@ -310,7 +355,7 @@ Shader "GTS/General Toony Shader"
             half4 frag(VertexOutput o) : SV_Target
             {
                 //uv处理、切线空间TBN矩阵计算、世界法线转换
-                half2 uv = o.uv.xy * _OcclusionMap_ST.xy + _OcclusionMap_ST.zw;
+                half2 uv = o.uv.xy * _MaskTex_ST.xy + _MaskTex_ST.zw;
                 
                 half3 tangentNormal = lerp(half3(0,0,1), UnpackNormalScale(tex2D(_NormalMap, uv), 1.0), _NormalMapScale);
                 half3x3 TBN = half3x3(o.worldTangent, o.worldBitangent, o.worldNormal);
@@ -332,9 +377,10 @@ Shader "GTS/General Toony Shader"
                     #endif
                 }
                 
-                //遮蔽遮罩并入阴影计算：过滤值二值判定——遮蔽值高于过滤值视为阴影，低于过滤值不作为阴影
-                half occValue = ChannelSelect(tex2D(_OcclusionMap, uv), _OcclusionMapChannel);
-                half occShadow = step(_OcclusionMapScale, occValue); // 值 >= 过滤值 → 阴影(1)，否则(0)
+                //遮蔽并入阴影计算：G 通道过滤值二值判定——遮蔽值高于过滤值视为阴影，低于过滤值不作为阴影
+                //采样提升为 half4 复用：G=遮蔽，B 通道=遮罩自发光，A 通道=亮度遮罩（MX 分工），不增加采样次数
+                half4 maskSample = tex2D(_MaskTex, uv);
+                half occShadow = step(_MaskTexThreshold, maskSample.g); // 值 >= 过滤值 → 阴影(1)，否则(0)
 
                 //Lambert -> HalfLambert漫反射插值（遮蔽区扣减亮度进阴影档，随漫反射一起接受色阶化量化）
                 half wrapNL = lerp(max(0, NL), (NL + 1) * 0.5, _DiffuseWrap);
@@ -457,7 +503,9 @@ Shader "GTS/General Toony Shader"
                 half3 envReflection = 0;
                 #endif
                 
-                // 头发各向异性高光：把贴图方向投影到表面切平面，得到每个发簇的高光切线。
+                // 头发各向异性高光（MX 方案）：贴图切线场 + Kajiya-Kay dot(T,H)，
+                // shift 按符号分流顶/底非对称双 lobe；(1-通道值) 作减法阈值；整体乘明暗软坡（暗部无高光）。
+                // 保留 GTS 改进：切平面投影 + lobe 归零点 smoothstep 柔化（不压幅度）。
                 #ifdef _USEHAIRDIRECTIONHIGHLIGHT_ON
                 half3 hairDirectionOS = SafeNormalize(specularMapSample.rgb * 2.0 - 1.0);
                 half3 hairDirectionWS = SafeNormalize(TransformObjectToWorldDir(hairDirectionOS));
@@ -469,13 +517,21 @@ Shader "GTS/General Toony Shader"
                 half tangentBlend = saturate(_HairDirectionHighlightTangentBlend) * projectionValid;
                 half3 hairTangentWS = SafeNormalize(lerp(fallbackTangent, projectedTangent, tangentBlend));
                 half3 mainHalfLV = SafeNormalize(mainLight.direction + worldViewDir);
-                half tangentDistance = abs(dot(hairTangentWS, mainHalfLV) - _HairDirectionHighlightLobeOffset);
-                half tangentMatch = saturate(1.0 - tangentDistance);
-                half anisotropicLobe = pow(tangentMatch, _HairDirectionHighlightAnisotropy);
-                half directionHighlight = smoothstep(_HairDirectionHighlightThreshold, _HairDirectionHighlightThreshold + _HairDirectionHighlightSoftness, anisotropicLobe);
-                half alphaMask = pow(saturate(ChannelSelect(specularMapSample, _HairDirectionHighlightChannel) * 2.0), _HairDirectionHighlightAlphaPower);
-                half alphaResponse = lerp(1.0, alphaMask, _HairDirectionHighlightAlphaWeight);
-                half3 hairDirectionHighlight = directionHighlight * alphaResponse * _HairDirectionHighlightIntensity * mainLight.color * lightShadowAttenuation; // 高光颜色在组装末尾统一乘一次
+                //shift：峰值在 dot(T,H)=LobeOffset 处（MX 的 shift 加法移到减号一侧，语义不变）
+                half shift = dot(hairTangentWS, mainHalfLV) - _HairDirectionHighlightLobeOffset;
+                //顶/底非对称双 lobe：shift>=0 顶部线性衰减（窄），shift<0 底部平方衰减（宽）
+                half botLobe = max(shift, -_HairSpecBotArea) + _HairSpecBotArea;
+                botLobe = botLobe * botLobe * _HairSpecBotMultiplier;
+                half topLobe = (1.0 - shift) * _HairSpecTopMultiplier - _HairSpecTopLeveler;
+                half hairLobe = (shift >= 0.0) ? topLobe : botLobe;
+                //MX：(1-通道值) 减法阈值——通道值低的区域高光整体压死（不是乘法调暗）
+                half specMask = saturate(ChannelSelect(specularMapSample, _HairDirectionHighlightChannel));
+                hairLobe = max(hairLobe - (1.0 - specMask), 0.0);
+                //GTS 保留：归零点 smoothstep 柔化（lobe 高于过渡带后乘 1，幅度不变）
+                hairLobe *= smoothstep(0.0, _HairDirectionHighlightSoftness, saturate(hairLobe));
+                //MX：高光 × 明暗软坡（斜率5，取自色阶化前的漫反射量）——暗部无高光、明暗交界渐隐；再乘实时阴影衰减
+                half hairLitRamp = saturate(wrapNL * 5.0 - 0.5);
+                half3 hairDirectionHighlight = hairLobe * _HairDirectionHighlightIntensity * mainLight.color * lightShadowAttenuation * hairLitRamp; // 高光颜色在组装末尾统一乘一次
                 #else
                 half3 hairDirectionHighlight = 0;
                 #endif
@@ -503,13 +559,21 @@ Shader "GTS/General Toony Shader"
                 #endif
 
                 //最终输出
+                //亮度遮罩（MaskTex.a）：[0,1] 重映射 [-1,1] 后按强度缩放为亮度乘数（1=不变，>1 提亮，<1 压暗）
+                half brightnessMask = saturate(maskSample.a * 2.0 - 1.0) * _BrightnessMapStrength + 1.0;
                 //透明度：透明度贴图通道值 × 透明度参数（贴图默认white → 退化为纯参数控制）
-                half4 litColorFinal = half4(finalDiffuse + specularColor + rimFinal,
+                half4 litColorFinal = half4((finalDiffuse + specularColor + rimFinal) * brightnessMask,
                                             ChannelSelect(tex2D(_TransparencyMap, uv), _TransparencyChannel) * _Transparency);
                 //自发光：贴图 × 颜色(HDR) × 强度
                 #ifdef _USEEMISSION_ON
                 litColorFinal.rgb += tex2D(_EmissionMap, uv).rgb * _EmissionColor.rgb * _EmissionIntensity;
                 #endif
+                //头发透光（MX Glow 的背光响应版，MaskTex.b 区域）：
+                //背光系数 = [视线与光穿透方向(V·-L)对齐度]^锐度 × 光在表面背面程度(-N·L)，正面受光时为 0
+                //再乘实时阴影衰减——被挡住的光不透光
+                half transView = pow(saturate(dot(worldViewDir, -mainLight.direction)), _GlowTransSharpness);
+                half transBehind = saturate(-dot(worldNormal, mainLight.direction));
+                litColorFinal.rgb += maskSample.b * _GlowTint.rgb * _GlowStrength * transView * transBehind * lightShadowAttenuation;
 
                 //总对比度：作用于最终片元结果，以0.5灰为轴拉伸（1=不变，>1增强，<1减弱）
                 litColorFinal.rgb = lerp(half3(0.5, 0.5, 0.5), litColorFinal.rgb, _Contrast);
