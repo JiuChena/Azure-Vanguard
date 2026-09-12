@@ -1,1 +1,2 @@
+Assets/Allsky/Anime/Anime[[:space:]]Night/*.png filter=lfs diff=lfs merge=lfs -text
 Assets/Allsky/Anime/Anime[[:space:]]Night/Anime[[:space:]]Night[[:space:]]Equirect.png filter=lfs diff=lfs merge=lfs -text
