@@ -12,7 +12,6 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _USEENVIRONMENTREFLETION_ON
   - _USEMETAL_ON
   - _USEOUTLINE_ON
   - _USESHADOWBASEMIX_ON
@@ -157,7 +156,7 @@ Material:
     - _DiffusePosterizeSteps: 3.19
     - _DiffuseSmooth: 0.1
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.3
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1
@@ -262,7 +261,7 @@ Material:
     - _UseAdditionalLightsDiffuse: 0
     - _UseAdditionalLightsSpecular: 0
     - _UseEmission: 0
-    - _UseEnvironmentReflection: 1
+    - _UseEnvironmentReflection: 0
     - _UseEnvironmentRefletion: 0
     - _UseHairDirectionHighlight: 0
     - _UseLightRamp: 0

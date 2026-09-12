@@ -155,7 +155,7 @@ Material:
     - _DiffusePosterizeSteps: 3.19
     - _DiffuseSmooth: 0.1
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.3
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1

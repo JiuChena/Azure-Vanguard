@@ -140,7 +140,7 @@ Material:
     - _BlendDst: 0
     - _BlendModePreserveSpecular: 1
     - _BlendSrc: 1
-    - _BrightnessMapStrength: 0
+    - _BrightnessMapStrength: 0.2
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -155,7 +155,7 @@ Material:
     - _DiffusePosterizeSteps: 3.19
     - _DiffuseSmooth: 0.1
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.3
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1

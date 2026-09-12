@@ -155,7 +155,7 @@ Material:
     - _DiffusePosterizeSteps: 3.19
     - _DiffuseSmooth: 0.1
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.3
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1
@@ -190,7 +190,7 @@ Material:
     - _MainLightDiffuseScale: 1
     - _MainLightIntesity: 1
     - _MaskTexChannel: 1
-    - _MaskTexThreshold: 0.75
+    - _MaskTexThreshold: 1
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 0
@@ -229,7 +229,7 @@ Material:
     - _RingOffset: 0
     - _RingPower: 15
     - _SeeThroughAlpha: 0.4
-    - _ShadowBaseMix: 0.6
+    - _ShadowBaseMix: 0
     - _Smoothness: 0.4472136
     - _SmoothnessMultiplier: 1
     - _SmoothnessTextureChannel: 0

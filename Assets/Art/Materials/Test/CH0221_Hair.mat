@@ -171,7 +171,7 @@ Material:
     - _DiffusePosterizeSteps: 3.19
     - _DiffuseSmooth: 0
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.4
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1
@@ -208,7 +208,7 @@ Material:
     - _MainLightDiffuseScale: 1.2
     - _MainLightIntesity: 1
     - _MaskTexChannel: 1
-    - _MaskTexThreshold: 0.75
+    - _MaskTexThreshold: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -301,7 +301,7 @@ Material:
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimColorMask: {r: 1, g: 0, b: 0, a: 1}
     - _RimShadowColor: {r: 1, g: 1, b: 1, a: 0}
-    - _ShadowColor: {r: 0.92549026, g: 0.7490196, b: 0.69411767, a: 1}
+    - _ShadowColor: {r: 0.735849, g: 0.63380206, b: 0.6143645, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 0.9960785, g: 0.8745099, b: 0.8745099, a: 1}
     - _StencilOverlayColor: {r: 0, g: 0, b: 0, a: 0}
