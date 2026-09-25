@@ -1,3 +1,6 @@
+using System;
+using System.Text;
+
 namespace Framework.Gameplay.Abilities.Input
 {
     /// <summary>定义输入黑板可保存的通用按钮标识。</summary>

@@ -5,8 +5,8 @@ public static class CorePathDependencies
 {
     #region UISystem
 
-    //Addressable
-    public static readonly string Addressable_UISystem_Canvas = "UI-Basic-Canvas";
+    //Addressable（地址以 AddressableAssetsData 中 UI-Basic 组的实际配置为准）
+    public static readonly string Addressable_UISystem_Canvas = "Canvas";
 
     //Canvas 预制下各 UI 层挂点名称
     public static readonly string UISystem_Canvas_LayerBot = "Bot";
