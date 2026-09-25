@@ -768,6 +768,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Common_32
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 1867
+        width: 91
+        height: 60
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 70, y: 14, z: 13, w: 41}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d49286c8132d574f84a1e17d0ad5c2a
+      internalID: -1577060101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -805,6 +826,7 @@ TextureImporter:
       Common_3: -1062721960
       Common_30: -571725213
       Common_31: 741808894
+      Common_32: -1577060101
       Common_4: -1783610166
       Common_5: -924742564
       Common_6: 841206999
