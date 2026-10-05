@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: ConfigTables
+  m_EditorClassIdentifier: 
+  m_GroupName: ConfigTables
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 15600ce99b012e847b85af5c0c259b8e
+  m_SerializeEntries:
+  - m_GUID: 1e503a241ab413f4ca90b6ccbf911bc5
+    m_Address: ConfigTables/SkillEffectTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bf923f8dc22b594f8b805706b113457
+    m_Address: ConfigTables/BreakthroughTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5fe637c219abaa44f813053c448fffb7
+    m_Address: ConfigTables/CharacterTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afb67818dd2fec441926b9f43077e531
+    m_Address: ConfigTables/SkillTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0fba601722a07b4296d0d19417285cc
+    m_Address: ConfigTables/LevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6785269ff06d774fab650fa7017a20d
+    m_Address: ConfigTables/UnlockNodeTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ebc7332c685737c49af31463d7165fed
+    m_Address: ConfigTables/ItemTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: f93523976a2dd6c45b0e0c6aee5f88f8, type: 2}
+    - {fileID: 11400000, guid: b7650db13bcc63d4ea78cb9910816ad8, type: 2}

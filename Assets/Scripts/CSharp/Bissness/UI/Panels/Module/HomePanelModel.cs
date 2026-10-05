@@ -1,3 +1,5 @@
+using Framework.Gameplay.Inventory;
+using Framework.Gameplay.Item;
 using Framework.Gameplay.Player;
 
 /// <summary>
@@ -18,19 +20,19 @@ public class HomePanelModel
     #region 状态栏（TODO 待接入数据源）
 
     /// <summary>
-    /// TODO 体力：接入体力系统后由其管理器提供（含上限与恢复倒计时）。
+    /// TODO 体力：接入体力系统后由其管理器提供（含上限与恢复倒计时）。体力是玩家字段，不走背包。
     /// </summary>
     public int Stamina => 0;
 
     /// <summary>
-    /// TODO 信用点（金钱）：接入货币系统后改为 InventoryManager.Instance.GetCount(货币ItemId)。
+    /// 金钱（基础流通货币）：货币是物品，余额 = 背包持有量。
     /// </summary>
-    public long Money => 0;
+    public long Money => InventoryManager.Instance.GetCount(CurrencyIds.Gold);
 
     /// <summary>
-    /// TODO 星光石（付费货币）：接入货币系统后改为 InventoryManager.Instance.GetCount(货币ItemId)。
+    /// 星光石（付费货币）：余额 = 背包持有量。
     /// </summary>
-    public long StarlightStone => 0;
+    public long StarlightStone => InventoryManager.Instance.GetCount(CurrencyIds.StarlightStone);
 
     /// <summary>
     /// TODO 顶部时间文本：接入本地/服务器时间后格式化（如 MM/dd HH:mm）。

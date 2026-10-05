@@ -54,6 +54,16 @@ namespace Core.Gear
         }
 
         /// <summary>
+        /// 删除 Data/ 下的指定子目录及其全部内容（调试用；目录不存在时静默返回）。
+        /// </summary>
+        /// <param name="path">子目录路径（相对于 Data/）</param>
+        public void WipeFolder(string path)
+        {
+            string directoryPath = GetDirectoryPath(path);
+            if (Directory.Exists(directoryPath)) Directory.Delete(directoryPath, true);
+        }
+
+        /// <summary>
         /// 检查 Data/ 根目录下指定文件是否存在。
         /// </summary>
         /// <param name="fileName">文件名（不含扩展名）</param>
@@ -72,6 +82,16 @@ namespace Core.Gear
         public bool FileExists(string path, string fileName)
         {
             return File.Exists(GetFilePath(path, fileName));
+        }
+
+        /// <summary>
+        /// 检查 Data/ 下的指定子目录是否存在。
+        /// </summary>
+        /// <param name="path">子目录路径（相对于 Data/）</param>
+        /// <returns>目录存在时返回 true。</returns>
+        public bool FolderExists(string path)
+        {
+            return Directory.Exists(GetDirectoryPath(path));
         }
 
         /// <summary>

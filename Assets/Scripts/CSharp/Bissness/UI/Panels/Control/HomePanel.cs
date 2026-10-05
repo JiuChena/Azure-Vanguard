@@ -39,6 +39,9 @@ public class HomePanel : PanelBase
 
     protected override void EventInit()
     {
+        //背包变更 → 状态栏货币文本跟随刷新
+        EventCenter.Instance.Register(EventNames.BagUpdated, OnBagUpdated);
+
         //TODO 菜单栏：menuBar.studentsButton/cultivatedButton/storeButton/gachaButton → 打开对应功能面板
         //TODO 菜单栏：menuBar.taskButton → 打开任务面板
         //TODO 状态栏：status.staminaAddButton/moneyAddButton/starlightStoneAddButton → 跳转对应获取途径
@@ -59,10 +62,40 @@ public class HomePanel : PanelBase
             animator.SetBool("Display", true);
         });
         RefreshPlayerDisplay();
+        RefreshStatus();
 
-        //TODO RefreshStatus()：体力/信用点/星光石文本，模型数据源接入后启用
         //TODO RefreshMenuTime()：顶部时间文本（menuBar.timeText，节点就绪后启用）
         //TODO 背景：bg.bgVideoPlayer 播放主城背景视频（循环/静音/淡入策略待定）
+    }
+
+    /// <summary>
+    /// 面板销毁时撤销事件监听，防止向已销毁的文本组件写入。
+    /// </summary>
+    protected override void OnDestroy()
+    {
+        EventCenter.Instance.Unregister(EventNames.BagUpdated, OnBagUpdated);
+        base.OnDestroy();
+    }
+
+    /// <summary>
+    /// 背包变更回调：刷新状态栏货币文本。
+    /// </summary>
+    private void OnBagUpdated()
+    {
+        RefreshStatus();
+    }
+
+    /// <summary>
+    /// 刷新右上状态栏：体力/金钱/星光石文本，数据一律从 Model 读。
+    /// </summary>
+    private void RefreshStatus()
+    {
+        if (status == null) return;
+
+        //TODO 体力：体力系统接入后展示真实值（含上限）
+        if (status.staminaText != null) status.staminaText.text = model.Stamina.ToString();
+        if (status.moneyText != null) status.moneyText.text = model.Money.ToString();
+        if (status.starlightStoneText != null) status.starlightStoneText.text = model.StarlightStone.ToString();
     }
 
     protected override void OnUpdate()

@@ -26,6 +26,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _USEOUTLINE_ON
+  - _USERIMLIGHT_ON
   - _USESHADOWBASEMIX_ON
   m_InvalidKeywords:
   - _DIFFUSEMODE_STEP
@@ -80,7 +81,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 151b4bcfd77ad9a4b821629abd57bb90, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -146,7 +147,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DiffuseSmooth: 0
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0
+    - _DiffuseWrap: 0.8
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1
@@ -174,7 +175,7 @@ Material:
     - _LambertNLWeight: 1
     - _LambertVLWeight: 0
     - _MainLightDiffuseScale: 1.2
-    - _MaskTexThreshold: 0.5
+    - _MaskTexThreshold: 0.75
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 0
@@ -212,7 +213,7 @@ Material:
     - _StencilRef: 0
     - _Surface: 0
     - _Transparency: 1
-    - _TransparencyChannel: 2
+    - _TransparencyChannel: 3
     - _UVSec: 0
     - _UseAdditionalLightsDiffuse: 0
     - _UseAdditionalLightsSpecular: 0
@@ -221,7 +222,7 @@ Material:
     - _UseHairDirectionHighlight: 0
     - _UseMetal: 0
     - _UseOutline: 1
-    - _UseRimLight: 0
+    - _UseRimLight: 1
     - _UseShadowBaseMix: 1
     - _UseSpecular: 0
     - _WorkflowMode: 1
@@ -234,7 +235,7 @@ Material:
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.8867924, g: 0.79206014, b: 0.74038804, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShadowColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+    - _ShadowColor: {r: 0.8392157, g: 0.7647059, b: 0.6627451, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 0.64779866, g: 0.64779866, b: 0.64779866, a: 1}
   m_BuildTextureStacks: []

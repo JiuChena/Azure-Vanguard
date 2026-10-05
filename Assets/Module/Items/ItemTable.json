@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "tableName": "ItemTable",
+  "rows": [
+    {
+      "id": 1001,
+      "name": "示例文本1",
+      "icon": "示例文本1",
+      "type": 1,
+      "quality": 1,
+      "maxStack": 1,
+      "price": 1,
+      "sellPrice": 1,
+      "desc": "示例文本1",
+      "tags": "usable,sell"
+    },
+    {
+      "id": 1002,
+      "name": "示例文本2",
+      "icon": "示例文本2",
+      "type": 2,
+      "quality": 2,
+      "maxStack": 2,
+      "price": 2,
+      "sellPrice": 2,
+      "desc": "示例文本2",
+      "tags": ""
+    },
+    {
+      "id": 1003,
+      "name": "示例文本3",
+      "icon": "示例文本3",
+      "type": 3,
+      "quality": 3,
+      "maxStack": 3,
+      "price": 3,
+      "sellPrice": 3,
+      "desc": "示例文本3",
+      "tags": "usable,sell,batch"
+    }
+  ]
+}

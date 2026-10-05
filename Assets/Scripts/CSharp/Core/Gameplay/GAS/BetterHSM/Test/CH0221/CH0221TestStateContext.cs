@@ -43,5 +43,36 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Test
 
             return inputRuntimeData.Move.sqrMagnitude > 0.0001f;
         }
+
+        /// <summary>
+        /// 按叶子状态键播放当前实体的 BE 行为；BE 行为能力未挂载时忽略本次请求。
+        /// </summary>
+        /// <param name="behaviorKey">叶子状态类中声明的 BehaviorKey 常量。</param>
+        public void PlayBehavior(string behaviorKey)
+        {
+            // 状态图不直接依赖 BE 能力：未挂载行为能力时视为表现层缺失，仅提示不中断逻辑。
+            if (!_ownerContext.TryGet(
+                    AbilityRuntimeDataType.Behavior,
+                    out BehaviorAbilityRuntimeData behaviorData))
+            {
+                Debug.LogWarning($"[BetterHSM Test][CH0221] 未挂载 BE 行为能力，忽略播放请求 '{behaviorKey}'", _ownerContext.Owner);
+                return;
+            }
+
+            behaviorData.Play(behaviorKey);
+        }
+
+        /// <summary>
+        /// 停止当前实体的 BE 行为播放；BE 行为能力未挂载时忽略。
+        /// </summary>
+        public void StopBehavior()
+        {
+            if (_ownerContext.TryGet(
+                    AbilityRuntimeDataType.Behavior,
+                    out BehaviorAbilityRuntimeData behaviorData))
+            {
+                behaviorData.Stop();
+            }
+        }
     }
 }

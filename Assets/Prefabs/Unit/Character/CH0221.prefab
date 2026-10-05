@@ -2333,6 +2333,7 @@ GameObject:
   - component: {fileID: 8939978163199727206}
   - component: {fileID: 3921715997026682319}
   - component: {fileID: 2678654537069259582}
+  - component: {fileID: 4250285084576335868}
   m_Layer: 0
   m_Name: CH0221
   m_TagString: Untagged
@@ -2439,6 +2440,23 @@ MonoBehaviour:
           m_CallState: 2
     - m_PersistentCalls:
         m_Calls: []
+--- !u!114 &4250285084576335868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648672586839896834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48f9489f68957154d99d87bd33daefeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _abilityDefinitions:
+  - {fileID: 11400000, guid: 7c1f5a9e3d4b46a8b0e2c7f15d9364ab, type: 2}
+  - {fileID: 11400000, guid: 28ba32ef5d9863041ab17b6e325959d8, type: 2}
+  - {fileID: 11400000, guid: c78463f1eba35d0428c1970f8aca0cef, type: 2}
+  _unitConfig: {fileID: 11400000, guid: 0df7e2b8edf002a4b932ee66f219bb6f, type: 2}
 --- !u!1 &3670455594979531706
 GameObject:
   m_ObjectHideFlags: 0

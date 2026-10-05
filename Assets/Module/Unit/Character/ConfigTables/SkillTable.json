@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "tableName": "SkillTable",
+  "rows": [
+    {
+      "skillId": 22101,
+      "name": "音波弹",
+      "type": "normal",
+      "maxLevel": 10,
+      "cooldown": 0,
+      "cost": 0,
+      "effectIds": "2210101",
+      "desc": "对目标敌人造成一次音波伤害"
+    },
+    {
+      "skillId": 22102,
+      "name": "和弦扩散",
+      "type": "e",
+      "maxLevel": 10,
+      "cooldown": 8,
+      "cost": 2,
+      "effectIds": "2210201,2210202",
+      "desc": "以自身为中心扩散音浪，伤害并减速范围内敌人"
+    },
+    {
+      "skillId": 22103,
+      "name": "终乐章",
+      "type": "burst",
+      "maxLevel": 10,
+      "cooldown": 25,
+      "cost": 6,
+      "effectIds": "2210301,2210302",
+      "desc": "奏响终乐章，对大范围敌人造成重伤并治愈全队"
+    }
+  ]
+}

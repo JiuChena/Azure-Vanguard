@@ -17,6 +17,20 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 4827fdc1b18e2204088817225cf6dcf5
   m_SerializeEntries:
+  - m_GUID: 54832f51d67986e44a0b81e8b0e651b3
+    m_Address: CharacterCultivatePanel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Panels
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1b2eb60752218549ace0836b7ba3fbd
+    m_Address: CharacterListPanel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Panels
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b5f137a3057660e4093dfeae01517540
     m_Address: HomePanel
     m_ReadOnly: 0

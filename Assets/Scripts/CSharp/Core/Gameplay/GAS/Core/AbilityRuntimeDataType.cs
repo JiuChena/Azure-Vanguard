@@ -10,6 +10,7 @@ namespace Framework.Gameplay.Abilities
         Jump,
         Sprint,
         BetterHSM,
+        Behavior,
         // </auto-generated>
     }
 }

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "tableName": "CharacterTable",
+  "rows": [
+    {
+      "id": 221,
+      "name": "柚鸟夏【乐队】",
+      "rarity": 4,
+      "profession": "support",
+      "camp": "student",
+      "cost": 10,
+      "hp": 900,
+      "atk": 110,
+      "def": 42,
+      "atkInterval": 1.1,
+      "range": 5.5,
+      "moveSpeed": 3.2,
+      "normalAtkId": 22101,
+      "skillEId": 22102,
+      "skillQId": 22103,
+      "talentIds": "22111,22112",
+      "bonusIds": "22121,22122,22123,22124"
+    }
+  ]
+}

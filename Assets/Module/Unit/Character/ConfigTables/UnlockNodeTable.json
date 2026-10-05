@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "tableName": "UnlockNodeTable",
+  "rows": [
+    {
+      "nodeId": 22111,
+      "type": "talent",
+      "effectKey": "ch0221_reverb_echo",
+      "effectValue": 0.3,
+      "cost": "1:5000,1001:2",
+      "desc": "余音：普攻命中后30%概率附加一次额外音波伤害（effectValue=附加倍率）"
+    },
+    {
+      "nodeId": 22112,
+      "type": "talent",
+      "effectKey": "ch0221_stage_spirit",
+      "effectValue": 0.03,
+      "cost": "1:8000,1001:3",
+      "desc": "舞台精神：编队内全员攻击力提升（effectValue=提升比例）"
+    },
+    {
+      "nodeId": 22121,
+      "type": "bonus",
+      "effectKey": "atk_pct",
+      "effectValue": 0.04,
+      "cost": "",
+      "desc": "突破2解锁：攻击力+4%"
+    },
+    {
+      "nodeId": 22122,
+      "type": "bonus",
+      "effectKey": "hp_pct",
+      "effectValue": 0.05,
+      "cost": "",
+      "desc": "突破3解锁：生命+5%"
+    },
+    {
+      "nodeId": 22123,
+      "type": "bonus",
+      "effectKey": "crit_rate",
+      "effectValue": 0.05,
+      "cost": "",
+      "desc": "突破4解锁：暴击率+5%"
+    },
+    {
+      "nodeId": 22124,
+      "type": "bonus",
+      "effectKey": "crit_dmg",
+      "effectValue": 0.1,
+      "cost": "",
+      "desc": "突破5解锁：暴击伤害+10%"
+    }
+  ]
+}

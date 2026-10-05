@@ -31,6 +31,10 @@ namespace Core.Gear
         public const string BurstCDChanged = nameof(BurstCDChanged);
         // 背包数据更新。
         public const string BagUpdated = nameof(BagUpdated);
+        // 获得新角色（详情经角色仓库查询）。
+        public const string CharacterAcquired = nameof(CharacterAcquired);
+        // 角色养成数据更新（等级/经验/突破/技能等级/节点解锁，详情经角色仓库查询）。
+        public const string CharacterDataUpdated = nameof(CharacterDataUpdated);
         // 商店购买完成。
         public const string StorePurchased = nameof(StorePurchased);
         // 单位属性更新。

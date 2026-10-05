@@ -126,7 +126,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AdaptiveThicnkess: 0.01
-    - _AdaptiveWidth: 0.4
+    - _AdaptiveWidth: 0.2
     - _AdditionalLightsAmount: 1
     - _AdditionalLightsFaloff: 0.15
     - _AdditionalLightsIntesity: 1

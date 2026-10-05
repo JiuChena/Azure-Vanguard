@@ -25,7 +25,6 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _USEENVIRONMENTREFLETION_ON
   - _USEMETAL_ON
   - _USEOUTLINE_ON
   - _USESHADOWBASEMIX_ON
@@ -82,7 +81,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 5b392eebee543434d84b449d97e9d7ca, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -94,7 +93,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
-        m_Texture: {fileID: 2800000, guid: 5b392eebee543434d84b449d97e9d7ca, type: 3}
+        m_Texture: {fileID: 2800000, guid: ffe2fab89844bd349bb47ed02fb63eef, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
@@ -148,7 +147,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DiffuseSmooth: 0.1
     - _DiffuseSteps: 3
-    - _DiffuseWrap: 0.3
+    - _DiffuseWrap: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionIntensity: 1
@@ -176,7 +175,7 @@ Material:
     - _LambertNLWeight: 1
     - _LambertVLWeight: 0
     - _MainLightDiffuseScale: 1.2
-    - _MaskTexThreshold: 0.5
+    - _MaskTexThreshold: 0.75
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 0
@@ -186,9 +185,9 @@ Material:
     - _OcclusionTransparency: 1
     - _OutlineMaxScale: 10
     - _OutlineMode: 0
-    - _OutlineScreenWidth: 0.002
+    - _OutlineScreenWidth: 0.01
     - _OutlineWidth: 0.2
-    - _OutlineZCorrection: 0
+    - _OutlineZCorrection: 0.000101
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -208,18 +207,18 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _StencilCompare: 0
-    - _StencilForwardComp: 8
+    - _StencilForwardComp: 0
     - _StencilForwardOp: 0
-    - _StencilMode: 0
+    - _StencilMode: 2
     - _StencilRef: 0
     - _Surface: 0
     - _Transparency: 1
-    - _TransparencyChannel: 2
+    - _TransparencyChannel: 3
     - _UVSec: 0
     - _UseAdditionalLightsDiffuse: 0
     - _UseAdditionalLightsSpecular: 0
     - _UseEmission: 0
-    - _UseEnvironmentReflection: 1
+    - _UseEnvironmentReflection: 0
     - _UseHairDirectionHighlight: 0
     - _UseMetal: 1
     - _UseOutline: 1
@@ -234,7 +233,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GlowTint: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0.19708973, g: 0.26126528, b: 0.4056604, a: 0}
+    - _OutlineColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowColor: {r: 0.75, g: 0.75, b: 0.75, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

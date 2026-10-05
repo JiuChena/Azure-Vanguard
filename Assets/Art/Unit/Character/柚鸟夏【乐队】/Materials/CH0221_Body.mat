@@ -12,13 +12,13 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _OUTLINEMODE_VIEWSPACE
   - _USEADDITIONALLIGHTDIFFUSE_ON
   - _USEADDITIONALLIGHTSPECULAR_ON
   - _USEOUTLINE_ON
   - _USERIMLIGHT_ON
   - _USESPECULAR_ON
   m_InvalidKeywords:
+  - _OUTLINEMODE_VIEWSPACE
   - _OUTLINETYPE_NORMAL
   - _RIMSPLITCOLOR_USESECONDCOLOR
   - _USEADDITIONALLIGHTSDIFFUSE_ON
@@ -74,6 +74,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 4033f6c04d9f9fb489cfa8e1d6a06a49, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -99,6 +103,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TransparencyMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -129,7 +137,10 @@ Material:
     - _AlphaToMask: 0
     - _AmbientScale: 1
     - _Blend: 0
+    - _BlendDst: 10
     - _BlendModePreserveSpecular: 1
+    - _BlendSrc: 5
+    - _BrightnessMapStrength: 0
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -146,16 +157,31 @@ Material:
     - _DiffuseWrap: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EmissionIntensity: 1
     - _EnvReflectionStrength: 0.5
     - _EnvironmentReflections: 1
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossyReflections: 1
+    - _GlowStrength: 0
+    - _GlowTransSharpness: 2
+    - _HairDirectionHighlightChannel: 3
+    - _HairDirectionHighlightIntensity: 1
+    - _HairDirectionHighlightLobeOffset: 0
+    - _HairDirectionHighlightSoftness: 0.08
+    - _HairDirectionHighlightTangentBlend: 1
+    - _HairSpecBotArea: 0.3
+    - _HairSpecBotMultiplier: 11
+    - _HairSpecTopLeveler: 2
+    - _HairSpecTopMultiplier: 3
     - _IndirectLightStrength: 0.6
     - _IndirectlightScale: 0.4
+    - _LambertNLWeight: 1
+    - _LambertVLWeight: 1
     - _LightRampOffset: 0
     - _MainLightDiffuseScale: 1
     - _MainLightIntesity: 1
+    - _MaskTexThreshold: 0.5
     - _Metallic: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -166,20 +192,24 @@ Material:
     - _OutlineMaxScale: 20
     - _OutlineMode: 0
     - _OutlinePosBlend: 0
+    - _OutlineScreenWidth: 0.002
     - _OutlineTextureStrength: 0.6
     - _OutlineType: 0
     - _OutlineWidth: 0.5
+    - _OutlineZCorrection: 0
     - _OutlineZOffset: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _RampDiffuseTextureLoaded: 0
     - _RampSmooth: 0.2
     - _ReceiveShadows: 1
+    - _RimFresnelSoftness: 1
     - _RimMax: 1
     - _RimMin: 0.8
     - _RimPower: 12
     - _RimSmoothness: 0.5
     - _RimSplitColor: 2
+    - _RimTextureWeight: 0
     - _RimThickness: 1
     - _ShadowBaseMix: 0.5
     - _Smoothness: 0.4472136
@@ -191,19 +221,28 @@ Material:
     - _SpecularScale: 0.5
     - _SpecularShadowMask: 0
     - _SpecularSize: 0.5
+    - _SpecularSmoothnessChannel: 3
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
+    - _StencilCompare: 6
+    - _StencilForwardComp: 8
+    - _StencilForwardOp: 0
+    - _StencilMode: 0
+    - _StencilRef: 1
     - _StepOffset: 0
     - _Strength: 0
     - _Surface: 0
     - _Thicnkess: 0.003
     - _TipTaper: 0
+    - _Transparency: 1
+    - _TransparencyChannel: 3
     - _UVSec: 0
     - _UseAdditionalLightsDiffuse: 1
     - _UseAdditionalLightsSpecular: 1
     - _UseEmission: 0
     - _UseEnvironmentReflection: 0
     - _UseEnvironmentRefletion: 0
+    - _UseHairDirectionHighlight: 0
     - _UseLightRamp: 2
     - _UseMetal: 0
     - _UseOutline: 1
@@ -220,6 +259,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GlowTint: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineWidthParams: {r: 0, g: 20, b: 0.8, a: 1.2}

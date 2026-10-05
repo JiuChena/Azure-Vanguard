@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d6db5bc16d0724cb13cd64a7e099f2, type: 3}
+  m_Name: CH0221UnitConfig
+  m_EditorClassIdentifier: 
+  unitId: 221
+  behaviorClips:
+    keys:
+    - Idle
+    - Move
+    values:
+    - {fileID: 0}
+    - {fileID: 0}
+  dataTables:
+  - {fileID: 4900000, guid: 5fe637c219abaa44f813053c448fffb7, type: 3}
+  - {fileID: 4900000, guid: b0fba601722a07b4296d0d19417285cc, type: 3}
+  - {fileID: 4900000, guid: afb67818dd2fec441926b9f43077e531, type: 3}
+  - {fileID: 4900000, guid: 1e503a241ab413f4ca90b6ccbf911bc5, type: 3}
+  - {fileID: 4900000, guid: e6785269ff06d774fab650fa7017a20d, type: 3}
+  breakthroughTable: {fileID: 4900000, guid: 3bf923f8dc22b594f8b805706b113457, type: 3}

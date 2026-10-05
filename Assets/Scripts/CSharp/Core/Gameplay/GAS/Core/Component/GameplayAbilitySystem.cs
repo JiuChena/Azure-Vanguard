@@ -14,6 +14,10 @@ namespace Framework.Gameplay.Abilities
         [Header("能力配置")]
         [Tooltip("按列表顺序创建并驱动能力运行时；能力之间的执行顺序由此列表决定")]
         [SerializeField] private List<AbilityDefinitionSO> _abilityDefinitions = new List<AbilityDefinitionSO>();
+        // 单位静态配置：ID 与行为资产表等角色级数据。
+        [Header("单位配置")]
+        [Tooltip("当前单位静态配置；行为能力按其中行为表查询播放资产")]
+        [SerializeField] private UnitConfig _unitConfig;
         // 当前单位创建的能力运行时列表。
         private readonly List<AbilityRuntime> _abilities = new List<AbilityRuntime>();
         // 防止销毁流程重复执行。
@@ -30,7 +34,7 @@ namespace Framework.Gameplay.Abilities
         /// <summary>创建上下文并根据配置列表初始化能力运行时。</summary>
         private void InitializeAbilities()
         {
-            _ownerContext = new AbilityOwnerContext(gameObject);
+            _ownerContext = new AbilityOwnerContext(gameObject, _unitConfig);
 
             // 按 Inspector 列表顺序创建能力运行时并绑定上下文。
             for (int index = 0; index < _abilityDefinitions.Count; index++)

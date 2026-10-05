@@ -19,7 +19,7 @@ namespace BehaviorEditor
         private int layerCount = BehaviorAnimatorControllerConvention.DefaultLayerCount;
         private int slotsPerLayer = BehaviorAnimatorControllerConvention.DefaultSlotsPerLayer;
 
-        [MenuItem("Framework/Behavior Editor/Animator Controller Setup")]
+        [MenuItem("Tools/Behavior Editor/Animator Controller Setup")]
         private static void Open()
         {
             BehaviorAnimatorControllerSetupWindow window =

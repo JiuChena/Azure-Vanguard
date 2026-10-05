@@ -14,13 +14,17 @@ namespace Framework.Gameplay.Abilities
         public GameObject Owner { get; }
         // 能力所属单位 Transform。
         public Transform Transform { get; }
+        // 单位静态配置；GAS 组件未配置时为 null。
+        public UnitConfig UnitConfig { get; }
 
         /// <summary>创建单位能力拥有者上下文。</summary>
         /// <param name="owner">能力所属单位对象。</param>
-        public AbilityOwnerContext(GameObject owner)
+        /// <param name="unitConfig">单位静态配置；允许为 null。</param>
+        public AbilityOwnerContext(GameObject owner, UnitConfig unitConfig = null)
         {
             Owner = owner;
             Transform = owner != null ? owner.transform : null;
+            UnitConfig = unitConfig;
         }
 
         /// <summary>注册一个能力公开的运行时数据对象。</summary>
