@@ -1,0 +1,662 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sprite-ItemIcon-Trinket
+  m_EditorClassIdentifier: 
+  m_GroupName: Sprite-ItemIcon-Trinket
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2ae4813565e02a8458ef16b3479ad284
+  m_SerializeEntries:
+  - m_GUID: 00ac2456369fb364b996ea96119e8c4b
+    m_Address: Trinket_Icon_Badge_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 010d020d1456cd544b8c28d8d2f215d7
+    m_Address: Trinket_Icon_Badge_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 066c97d8932b8754e8955afc4a4bc1c2
+    m_Address: Trinket_Icon_Hairpin_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06e3e2f2a42a2274d95535c2e35527b1
+    m_Address: Trinket_Icon_Gloves_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0899be0740c95294b8c6ce8dfc341e7d
+    m_Address: Trinket_Icon_Bag_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0adadca28f608144c914146fb54d6b6b
+    m_Address: Trinket_Icon_Hat_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c931629447cc484888c0383953c8432
+    m_Address: Trinket_Icon_Bag_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f940dac9002c73468cb8cd6c66d6099
+    m_Address: Trinket_Icon_Gloves_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 103cca6e48517934c981d913c286dedd
+    m_Address: Trinket_Icon_Gloves_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1112cf4ad3f9bae4294a91f000b45e69
+    m_Address: Trinket_Icon_Hat_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a898dbfab730d64cbead601f0655f6d
+    m_Address: Trinket_Icon_Shoes_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1d11353804443de4eb6721daecb45979
+    m_Address: Trinket_Icon_Watch_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 269fd4752a1de35479c69c329d98d15d
+    m_Address: Trinket_Icon_Necklace_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29eed6f195c9db54c9df7df8fb60693b
+    m_Address: Trinket_Icon_Badge_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a081f1a056a92e49b9438ad342cc922
+    m_Address: Trinket_Icon_Hairpin_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c58b2d0d5fd5714d9dfc06bd3195730
+    m_Address: Trinket_Icon_Bag_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fc0d08e40e02124aab0df47e21b35cf
+    m_Address: Trinket_Icon_Watch_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 302b9267aebc8154eafc69f135296bb0
+    m_Address: Trinket_Icon_Hairpin_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3408a28987237144bb59de31f5aecd08
+    m_Address: Trinket_Icon_Shoes_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 368be2b556a9b5145bae7d50db9aa842
+    m_Address: Trinket_Icon_Gloves_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3880d6d85f97618459ff6487e7f710e4
+    m_Address: Trinket_Icon_Badge_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4375be8c1d6bfee4ca69d3d11308368c
+    m_Address: Trinket_Icon_Shoes_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4985739c665aa0f47833ffe23ff5568c
+    m_Address: Trinket_Icon_Necklace_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 57c1ff10525950443bcc827967170133
+    m_Address: Trinket_Icon_Gloves_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 587fa74b6b642a7499388f93690d54a6
+    m_Address: Trinket_Icon_Watch_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e3ebbed0e14ffa4fb654f964b0ca5eb
+    m_Address: Trinket_Icon_Badge_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f82f04f3aa572e499c0cde7f8a88b9f
+    m_Address: Trinket_Icon_Watch_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6736670c40a83a442b59f2287097fbf3
+    m_Address: Trinket_Icon_Error
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 68080512a78d1e443a02705613bad787
+    m_Address: Trinket_Icon_Gloves_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6d463bb1fa60b8b479fbd07d94fcfc0e
+    m_Address: Trinket_Icon_Watch_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 73993ea810b7d0b4895df89b80673f09
+    m_Address: Trinket_Icon_Hat_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 750092ee6a260ae438b25fa368be73aa
+    m_Address: Trinket_Icon_Necklace_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76f1ae027c1596e4aa6d35f8c62f1fdc
+    m_Address: Trinket_Icon_Hat_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 784f05cc808caf44095e17daea2a3375
+    m_Address: Trinket_Icon_Gloves_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7a20217f23e968c4a9c42442aa2df22f
+    m_Address: Trinket_Icon_Hairpin_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b0c4efc3c8c3c9409c447b3df8810f6
+    m_Address: Trinket_Icon_Bag_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c06439c397c21d4f97539b0b6929bb1
+    m_Address: Trinket_Icon_Hat_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 829212977d5bbf7429294da485407d67
+    m_Address: Trinket_Icon_Shoes_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85198bfcf66cb244ea79a41fd03e0841
+    m_Address: Trinket_Icon_Hat_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 854a66f690a9bed4493891202ed06b7d
+    m_Address: Trinket_Icon_Gloves_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89c3e2fe3b5157a42a21b7ee7511b991
+    m_Address: Trinket_Icon_Bag_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 907e4a127aa29a743991278609709d44
+    m_Address: Trinket_Icon_Hairpin_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 960d566156e9377448855b57b462e953
+    m_Address: Trinket_Icon_Hairpin_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 987f996653ff1984a8d0e8c5e7405ddc
+    m_Address: Trinket_Icon_Necklace_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9aafd25252357ec44b772edb34cdd67a
+    m_Address: Trinket_Icon_Bag_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b1c43d628ef65140806b45ffa551b7a
+    m_Address: Trinket_Icon_Shoes_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9d927a07bca52334f9ca35bfdb6b0d63
+    m_Address: Trinket_Icon_Hairpin_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a08987a6577c5af4ab40a21dacb627a9
+    m_Address: Trinket_Icon_Hairpin_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a20cff2bd8bb7cc43b1591b9abb5051b
+    m_Address: Trinket_Icon_Watch_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a91551cb193ffd84ca5b7fa32e89ed87
+    m_Address: Trinket_Icon_Necklace_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a99f6bd8cf9e9ab4cb8b213c5d61914c
+    m_Address: Trinket_Icon_Hat_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae45b232bd3842c43b1991d3f49794e2
+    m_Address: Trinket_Icon_Bag_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae67ece970f7fea4b93e0450d0570f6e
+    m_Address: Trinket_Icon_Charm_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afc7fc3fb443ec7478ae6f6fddb7daf4
+    m_Address: Trinket_Icon_Shoes_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b13d03bb0b5026840a6aacb3208507a9
+    m_Address: Trinket_Icon_Watch_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b54275bd72e934b469f96f09d989abcd
+    m_Address: Trinket_Icon_Badge_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b6de41644a7d4954aa115f7ae4348361
+    m_Address: Trinket_Icon_Charm_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b777544ecd8b0d24aaab932f0881dc57
+    m_Address: Trinket_Icon_Necklace_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb3ade368714b5443aea6ae3eaae9955
+    m_Address: Trinket_Icon_Shoes_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bccd6f87233f1ab489c34e85ca5b4a81
+    m_Address: Trinket_Icon_Gloves_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be6c65cb1864fa14399dd42c51616e96
+    m_Address: Trinket_Icon_Hat_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf6636c12096d0f478d0aa2e31c28a9e
+    m_Address: Trinket_Icon_Charm_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1f9c3de024b6a94bbe56a19cdcda370
+    m_Address: Trinket_Icon_Shoes_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2c4b112b2137214b85ea46027bc9b3d
+    m_Address: Trinket_Icon_Charm_Tier7
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c3356c3418bd1ce4e815965316f7dc33
+    m_Address: Trinket_Icon_Badge_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cd7dcd03cc654be47a86f1baf3a17175
+    m_Address: Trinket_Icon_Watch_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cef6d8f0671d29047b14edcc1e2bb709
+    m_Address: Trinket_Icon_Watch_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d01d55d6b26964642a3d0596d404dd72
+    m_Address: Trinket_Icon_Shoes_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2e409c07aa08e44697df2b13d3ad71a
+    m_Address: Trinket_Icon_Bag_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6b4bd72f6e88a94cafed3127069b05e
+    m_Address: Trinket_Icon_Gloves_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6ca71860f1251f4498dd99b53994122
+    m_Address: Trinket_Icon_Necklace_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d7d1b2f24dc5a3a488ec3e6904fd88cb
+    m_Address: Trinket_Icon_Charm_Tier1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d8212f53ae8fde044b3717ec016129c2
+    m_Address: Trinket_Icon_Charm_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da463100a0c7af5459e3aa1b3df48ee3
+    m_Address: Trinket_Icon_Necklace_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dcc3eb93182f93248a66162fd8e89f82
+    m_Address: Trinket_Icon_Hairpin_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: df36fa2c5ab19d246ae7ce574cb02201
+    m_Address: Trinket_Icon_Necklace_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e204d728cf00f694599008dc97cb6ab9
+    m_Address: Trinket_Icon_Charm_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e20abebd05e706145ab2f84a7c480a0d
+    m_Address: Trinket_Icon_Bag_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e6899525f651d634a8fcf72e545ffe07
+    m_Address: Trinket_Icon_Charm_Tier8
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e82547a15af31ad47abb2d7bd3e0b3d1
+    m_Address: Trinket_Icon_Badge_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb3750e86d4900a4885fa224ee067b0f
+    m_Address: Trinket_Icon_Watch_Tier2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecb2a42f03415ac4796e7a6b31ba4c71
+    m_Address: Trinket_Icon_Hairpin_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f00f8b6ae49d9804ab1d6e78334815f9
+    m_Address: Trinket_Icon_Bag_Tier4
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f042c7e37cd252f499d10b869c667cd9
+    m_Address: Trinket_Icon_Charm_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0f1ea7c73ff0524394ec3d977c87e1c
+    m_Address: Trinket_Icon_Badge_Tier9
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f657bd435f3787c4583f9bab594ff1b3
+    m_Address: Trinket_Icon_Charm_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f766656adf02f7146a64ea384da805eb
+    m_Address: Trinket_Icon_Shoes_Tier6
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8db85925cd2c6c4faa9bbdaa3ee70f3
+    m_Address: Trinket_Icon_Hat_Tier10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9d00e636b4eb064aabb5fe02f135a4f
+    m_Address: Trinket_Icon_Necklace_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe51bc716a1de56448340598860e8958
+    m_Address: Trinket_Icon_Hat_Tier5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffa21e3f7436b7f469a1c31bd0a58b6e
+    m_Address: Trinket_Icon_Badge_Tier3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    - Trinket
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 1db2cf239c53df444b6eb9ec66afa9b0, type: 2}
+    - {fileID: 11400000, guid: ccac24c3269cadc46adc12b130ed2374, type: 2}

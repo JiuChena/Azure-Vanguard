@@ -5,18 +5,18 @@ using System.Text;
 namespace Framework.Gameplay.Unit
 {
     /// <summary>
-    /// 物品消耗条目：表内消耗列的解析结果（格式 itemId:count，逗号分隔多组，如 "1:20000,1002:3"）。
-    /// 金币也是物品（CurrencyIds.Gold=1），消耗统一走 ItemTable id。
+    /// 物品消耗条目：表内消耗列的解析结果（格式 itemId:count，逗号分隔多组，如 "2:20000,1002:3"）。
+    /// 物品 ID 为字符串；基础货币（信用点）也是物品，消耗统一走 ItemTable 主键。
     /// </summary>
     public readonly struct ItemCost
     {
-        // 消耗的物品 id（ItemTable 主键）
-        public readonly int ItemId;
+        // 消耗的物品 id（ItemTable 主键，字符串）
+        public readonly string ItemId;
 
         // 消耗数量
         public readonly int Count;
 
-        public ItemCost(int itemId, int count)
+        public ItemCost(string itemId, int count)
         {
             ItemId = itemId;
             Count = count;
@@ -35,7 +35,8 @@ namespace Framework.Gameplay.Unit
 
                 string[] pair = token.Split(':');
                 if (pair.Length != 2) continue;
-                if (!int.TryParse(pair[0].Trim(), out int itemId)) continue;
+                string itemId = pair[0].Trim();
+                if (itemId.Length == 0) continue;
                 if (!int.TryParse(pair[1].Trim(), out int count)) continue;
                 costs.Add(new ItemCost(itemId, count));
             }

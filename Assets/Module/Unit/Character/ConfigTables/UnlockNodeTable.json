@@ -7,7 +7,7 @@
       "type": "talent",
       "effectKey": "ch0221_reverb_echo",
       "effectValue": 0.3,
-      "cost": "1:5000,1001:2",
+      "cost": "Currency_StarlightStone:5000,Material_UpgradeManual:2",
       "desc": "余音：普攻命中后30%概率附加一次额外音波伤害（effectValue=附加倍率）"
     },
     {
@@ -15,7 +15,7 @@
       "type": "talent",
       "effectKey": "ch0221_stage_spirit",
       "effectValue": 0.03,
-      "cost": "1:8000,1001:3",
+      "cost": "Currency_StarlightStone:8000,Material_UpgradeManual:3",
       "desc": "舞台精神：编队内全员攻击力提升（effectValue=提升比例）"
     },
     {
@@ -23,7 +23,7 @@
       "type": "bonus",
       "effectKey": "atk_pct",
       "effectValue": 0.04,
-      "cost": "",
+      "cost": "None",
       "desc": "突破2解锁：攻击力+4%"
     },
     {
@@ -31,7 +31,7 @@
       "type": "bonus",
       "effectKey": "hp_pct",
       "effectValue": 0.05,
-      "cost": "",
+      "cost": "None",
       "desc": "突破3解锁：生命+5%"
     },
     {
@@ -39,7 +39,7 @@
       "type": "bonus",
       "effectKey": "crit_rate",
       "effectValue": 0.05,
-      "cost": "",
+      "cost": "None",
       "desc": "突破4解锁：暴击率+5%"
     },
     {
@@ -47,8 +47,56 @@
       "type": "bonus",
       "effectKey": "crit_dmg",
       "effectValue": 0.1,
-      "cost": "",
+      "cost": "None",
       "desc": "突破5解锁：暴击伤害+10%"
+    },
+    {
+      "nodeId": 20911,
+      "type": "talent",
+      "effectKey": "ch0209_iron_will",
+      "effectValue": 0.15,
+      "cost": "Currency_StarlightStone:5000,Material_UpgradeManual:2",
+      "desc": "铁意：受击时获得减伤（effectValue=减伤比例）"
+    },
+    {
+      "nodeId": 20912,
+      "type": "talent",
+      "effectKey": "ch0209_guard_stance",
+      "effectValue": 0.2,
+      "cost": "Currency_StarlightStone:8000,Material_UpgradeManual:3",
+      "desc": "护卫姿态：编队内全员防御力提升（effectValue=提升比例）"
+    },
+    {
+      "nodeId": 20921,
+      "type": "bonus",
+      "effectKey": "hp_pct",
+      "effectValue": 0.05,
+      "cost": "Currency_StarlightStone:15000,Material_BreakthroughCore:2",
+      "desc": "生命强化：生命+5%（独立解锁）"
+    },
+    {
+      "nodeId": 20922,
+      "type": "bonus",
+      "effectKey": "def_pct",
+      "effectValue": 0.06,
+      "cost": "Currency_StarlightStone:20000,Material_BreakthroughCore:3",
+      "desc": "防御强化：防御+6%（独立解锁）"
+    },
+    {
+      "nodeId": 20923,
+      "type": "bonus",
+      "effectKey": "crit_rate",
+      "effectValue": 0.05,
+      "cost": "Currency_StarlightStone:25000,Material_BreakthroughCore:4",
+      "desc": "暴击强化：暴击率+5%（独立解锁）"
+    },
+    {
+      "nodeId": 20924,
+      "type": "bonus",
+      "effectKey": "crit_dmg",
+      "effectValue": 0.1,
+      "cost": "Currency_StarlightStone:30000,Material_BreakthroughCore:5",
+      "desc": "暴伤强化：暴击伤害+10%（独立解锁）"
     }
   ]
 }

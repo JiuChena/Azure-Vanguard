@@ -10,9 +10,9 @@ namespace Framework.Gameplay.Inventory
     [MessagePackObject]
     public class ItemStack
     {
-        // 物品 ID，与物品配置表主键对齐，0 保留不使用
+        // 物品 ID（字符串，与物品配置表主键对齐；v2 起由 int 改 string，旧档不兼容，加载失败即重置）
         [Key(0)]
-        public int itemId;
+        public string itemId;
 
         // 该条目的物品数量
         [Key(1)]

@@ -10,13 +10,19 @@ namespace Framework.Gameplay.Player
     [MessagePackObject]
     public class PlayerInfo
     {
+        // 默认名片头像：单图 Addressables 地址（= png 文件名去扩展，Sprite-Character-Avatar-PlayerAvatar 组）
+        public const string DefaultAvatarName = "CHAvatar_PlayerAvatar_CH0221";
+
+        // 旧图集方案时代的默认头像名：已随头像单图化从 Addressables 移除，仅作存量档迁移判据
+        public const string LegacyAvatarName = "Student_Portrait_Airi_Small";
+
         // 存档版本号，未来数据迁移的唯一抓手；[Key] 契约只追加不重排
         [Key(0)]
         public int version = 1;
 
-        // 当前使用头像的资源名称（头像图集内的 sprite 名，如 Student_Portrait_Airi_Small）
+        // 当前使用头像的资源名称（单图 Addressables 地址，如 CHAvatar_PlayerAvatar_CH0221）
         [Key(1)]
-        public string avatarName = "Student_Portrait_Airi_Small";
+        public string avatarName = DefaultAvatarName;
 
         // 玩家昵称
         [Key(2)]

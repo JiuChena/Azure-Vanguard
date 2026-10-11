@@ -13,17 +13,24 @@ namespace Framework.Gameplay.Abilities
     public class UnitConfig : ScriptableObject
     {
         [Header("单位标识")]
-        //单位唯一标识；与配置表第 1 列主键对齐（CH0221 = 221）
-        [Tooltip("单位唯一标识（int，与角色/敌人配置表第 1 列主键对齐）")]
-        [SerializeField] private int unitId;
+        //单位唯一标识；与配置表第 1 列主键对齐（如 CH0221），同时是头像图集 sprite 名与存档仓库键
+        [Tooltip("单位唯一标识（string，与角色/敌人配置表第 1 列主键对齐，如 CH0221）")]
+        [SerializeField] private string unitId;
+
+        //单位显示名；配置表 name 列同源，SO 为准绳——UI 展示角色名一律读这里，表行 Name 只作表内冗余
+        [Tooltip("单位显示名（与配置表 name 列同源，UI 展示以此为准）")]
+        [SerializeField] private string unitName;
 
         [Header("行为资产表")]
         //叶子状态键 → BE 行为资产；键与叶子状态类的 BehaviorKey 常量对齐
         [Tooltip("叶子状态键 → BehaviorClip；键使用叶子状态类中声明的 BehaviorKey 常量字符串")]
         [SerializeField] private SerializableDictionary<string, BehaviorClip> behaviorClips = new SerializableDictionary<string, BehaviorClip>();
 
-        /// <summary>获取单位唯一标识。</summary>
-        public int UnitId => unitId;
+        /// <summary>获取单位唯一标识（如 CH0221）。</summary>
+        public string UnitId => unitId;
+
+        /// <summary>获取单位显示名；UI 展示角色名以此为准（字段名避开 Object.name 防遮蔽 CS0108）。</summary>
+        public string Name => unitName;
 
         /// <summary>获取叶子状态键到 BE 行为资产的查询表。</summary>
         public SerializableDictionary<string, BehaviorClip> BehaviorClips => behaviorClips;

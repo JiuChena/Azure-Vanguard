@@ -11,11 +11,11 @@ namespace Framework.Gameplay.Unit
     /// 本表只管数值与身份（策划可调），图标/BEclip 等资产引用归 UnitConfig（SO）。
     /// </summary>
     [MessagePackObject]
-    public sealed class CharacterRow : IConfigTableRow<int>
+    public sealed class CharacterRow : IConfigTableRow<string>
     {
-        // 单位 ID，全表唯一主键；与 UnitConfig 的 unitId 对齐（CH0221 = 221）
+        // 单位 ID，全表唯一主键；与 UnitConfig.unitId、头像图集 sprite 名、存档仓库键三方对齐（如 CH0221）
         [Key("id")]
-        public int Id;
+        public string Id;
 
         // 角色名称（显示用，后续接入本地化时替换为多语言键）
         [Key("name")]
@@ -81,6 +81,10 @@ namespace Framework.Gameplay.Unit
         [Key("bonusIds")]
         public string BonusIds;
 
+        // 角色标签声明，逗号分隔多值；可带方括号附带属性（如 Indoor[Feeling_0]，格式见 CharacterTagDecl）
+        [Key("tags")]
+        public string Tags;
+
         /// <summary>解析后的天赋节点 id 集合；空列返回空数组。</summary>
         [IgnoreMember]
         public int[] TalentIdList => ParseIdList(TalentIds);
@@ -88,6 +92,10 @@ namespace Framework.Gameplay.Unit
         /// <summary>解析后的属性加成节点 id 集合；空列返回空数组。</summary>
         [IgnoreMember]
         public int[] BonusIdList => ParseIdList(BonusIds);
+
+        /// <summary>解析后的角色标签声明（名称 + 方括号附带属性）；空列返回空数组。</summary>
+        [IgnoreMember]
+        public CharacterTagDecl[] TagList => CharacterTagDecl.ParseList(Tags);
 
         /// <summary>解析逗号分隔的 int 列表；空/碎片自动滤除。</summary>
         private static int[] ParseIdList(string raw)
@@ -105,6 +113,6 @@ namespace Framework.Gameplay.Unit
 
         /// <summary>表行主键。</summary>
         [IgnoreMember]
-        public int PrimaryKey => Id;
+        public string PrimaryKey => Id;
     }
 }

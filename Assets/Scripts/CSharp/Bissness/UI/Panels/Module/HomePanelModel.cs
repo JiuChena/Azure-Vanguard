@@ -1,5 +1,4 @@
 using Framework.Gameplay.Inventory;
-using Framework.Gameplay.Item;
 using Framework.Gameplay.Player;
 
 /// <summary>
@@ -8,6 +7,17 @@ using Framework.Gameplay.Player;
 /// </summary>
 public class HomePanelModel
 {
+    //货币槽位绑定的物品 id（ItemTable 主键），由 Control 注入——货币种类以物品表为准，代码不设常量表
+    private readonly string moneyItemId;
+    private readonly string starlightStoneItemId;
+
+    /// <summary>注入各货币槽位绑定的物品 id（ItemTable 主键）。</summary>
+    public HomePanelModel(string moneyItemId, string starlightStoneItemId)
+    {
+        this.moneyItemId = moneyItemId;
+        this.starlightStoneItemId = starlightStoneItemId;
+    }
+
     #region 玩家展示（已接入）
 
     /// <summary>
@@ -27,12 +37,12 @@ public class HomePanelModel
     /// <summary>
     /// 金钱（基础流通货币）：货币是物品，余额 = 背包持有量。
     /// </summary>
-    public long Money => InventoryManager.Instance.GetCount(CurrencyIds.Gold);
+    public long Money => InventoryManager.Instance.GetCount(moneyItemId);
 
     /// <summary>
     /// 星光石（付费货币）：余额 = 背包持有量。
     /// </summary>
-    public long StarlightStone => InventoryManager.Instance.GetCount(CurrencyIds.StarlightStone);
+    public long StarlightStone => InventoryManager.Instance.GetCount(starlightStoneItemId);
 
     /// <summary>
     /// TODO 顶部时间文本：接入本地/服务器时间后格式化（如 MM/dd HH:mm）。

@@ -13,7 +13,7 @@ public class PreloadPanel : PanelBase
     [Range(0f, 1f)]
     [SerializeField] private float dissolveAmount;
 
-    // 加载进度文本（0~100%），由 EventNames.LoadSceneProgress 事件驱动刷新
+    // 加载进度文本（0~100%），由 EventNames.PreloadProgressChanged 事件驱动刷新（LoadProgressHub 汇聚总进度）
     [SerializeField] private TMP_Text processText;
 
     // 防止进度事件重复触发关闭流程
@@ -48,8 +48,8 @@ public class PreloadPanel : PanelBase
 
     protected override void EventInit()
     {
-        // 监听场景异步加载进度（0~1），由 LoadSceneManager 每帧广播
-        EventCenter.Instance.Register<float>(EventNames.LoadSceneProgress, OnLoadProgressChanged);
+        // 监听多源加载总进度（0~1），由 LoadProgressHub 加权汇聚后广播
+        EventCenter.Instance.Register<float>(EventNames.PreloadProgressChanged, OnLoadProgressChanged);
     }
 
     protected override void ComponentInit()
@@ -117,12 +117,12 @@ public class PreloadPanel : PanelBase
     /// </summary>
     protected override void OnDestroy()
     {
-        EventCenter.Instance.Unregister<float>(EventNames.LoadSceneProgress, OnLoadProgressChanged);
+        EventCenter.Instance.Unregister<float>(EventNames.PreloadProgressChanged, OnLoadProgressChanged);
         base.OnDestroy();
     }
 
     /// <summary>
-    /// 场景加载进度回调：刷新进度文本，进度满时关闭面板进入主城。
+    /// 总进度回调（场景 + 配置预热加权汇聚）：刷新进度文本，进度满时关闭面板进入主城。
     /// </summary>
     /// <param name="progress">加载进度 0~1。</param>
     private void OnLoadProgressChanged(float progress)

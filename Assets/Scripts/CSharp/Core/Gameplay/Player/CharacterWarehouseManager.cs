@@ -32,9 +32,9 @@ namespace Framework.Gameplay.Player
         /// <summary>
         /// 判断是否拥有指定角色。
         /// </summary>
-        /// <param name="unitId">单位 ID，与 CharacterTable 主键对齐。</param>
+        /// <param name="unitId">单位 ID，与 CharacterTable 主键对齐（如 CH0221）。</param>
         /// <returns>已拥有返回 true。</returns>
-        public bool HasCharacter(int unitId)
+        public bool HasCharacter(string unitId)
         {
             return FindEntry(unitId) != null;
         }
@@ -45,7 +45,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="entry">对应的养成条目；未拥有时为 null。</param>
         /// <returns>已拥有返回 true。</returns>
-        public bool TryGetEntry(int unitId, out CharacterEntry entry)
+        public bool TryGetEntry(string unitId, out CharacterEntry entry)
         {
             entry = FindEntry(unitId);
             return entry != null;
@@ -67,11 +67,11 @@ namespace Framework.Gameplay.Player
         /// <summary>
         /// 登记获得新角色（初始 1 级、未突破）；已拥有时幂等拒绝。
         /// </summary>
-        /// <param name="unitId">单位 ID，必须为正数。</param>
+        /// <param name="unitId">单位 ID，必须为非空白字符串。</param>
         /// <returns>新获得返回 true；参数非法或已拥有返回 false 且无副作用。</returns>
-        public bool AddCharacter(int unitId)
+        public bool AddCharacter(string unitId)
         {
-            if (unitId <= 0)
+            if (string.IsNullOrWhiteSpace(unitId))
             {
                 Debug.LogError($"登记角色参数无效：unitId={unitId}");
                 return false;
@@ -90,7 +90,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="level">目标等级，必须不小于 1。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool SetLevel(int unitId, int level)
+        public bool SetLevel(string unitId, int level)
         {
             if (!TryGetMutableEntry(unitId, out var entry) || level < 1)
             {
@@ -109,7 +109,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="amount">增加的经验，必须为正数。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool AddExp(int unitId, int amount)
+        public bool AddExp(string unitId, int amount)
         {
             if (!TryGetMutableEntry(unitId, out var entry) || amount <= 0)
             {
@@ -123,12 +123,69 @@ namespace Framework.Gameplay.Player
         }
 
         /// <summary>
+        /// 设置当前等级内经验（升级结算后的落点）；结算公式与上限校验在养成业务逻辑中，此处只做下限防御。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="exp">目标经验，必须不小于 0。</param>
+        /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
+        public bool SetExp(string unitId, int exp)
+        {
+            if (!TryGetMutableEntry(unitId, out var entry) || exp < 0)
+            {
+                Debug.LogError($"设置经验无效：unitId={unitId}, exp={exp}");
+                return false;
+            }
+
+            entry.exp = exp;
+            NotifyChanged(EventNames.CharacterDataUpdated);
+            return true;
+        }
+
+        /// <summary>
+        /// 设置绑定武器等级（升级结算后的落点）；结算公式与上限校验在养成业务逻辑中，此处只做下限防御。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="level">目标武器等级，必须不小于 1。</param>
+        /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
+        public bool SetWeaponLevel(string unitId, int level)
+        {
+            if (!TryGetMutableEntry(unitId, out var entry) || level < 1)
+            {
+                Debug.LogError($"设置武器等级无效：unitId={unitId}, level={level}");
+                return false;
+            }
+
+            entry.weaponLevel = level;
+            NotifyChanged(EventNames.CharacterDataUpdated);
+            return true;
+        }
+
+        /// <summary>
+        /// 设置绑定武器当前等级内经验（升级结算后的落点）；结算公式与上限校验在养成业务逻辑中，此处只做下限防御。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="exp">目标经验，必须不小于 0。</param>
+        /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
+        public bool SetWeaponExp(string unitId, int exp)
+        {
+            if (!TryGetMutableEntry(unitId, out var entry) || exp < 0)
+            {
+                Debug.LogError($"设置武器经验无效：unitId={unitId}, exp={exp}");
+                return false;
+            }
+
+            entry.weaponExp = exp;
+            NotifyChanged(EventNames.CharacterDataUpdated);
+            return true;
+        }
+
+        /// <summary>
         /// 设置突破阶段；0 = 未突破，1~N 对应 BreakthroughTable 行，阶段校验由养成层负责。
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
         /// <param name="stage">目标突破阶段，必须不小于 0。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool SetBreakStage(int unitId, int stage)
+        public bool SetBreakStage(string unitId, int stage)
         {
             if (!TryGetMutableEntry(unitId, out var entry) || stage < 0)
             {
@@ -147,7 +204,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="level">目标等级，必须不小于 1。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool SetSkillLevelNormal(int unitId, int level)
+        public bool SetSkillLevelNormal(string unitId, int level)
         {
             return SetSkillLevel(unitId, level, nameof(SetSkillLevelNormal),
                 (entry, value) => entry.skillLevelNormal = value);
@@ -159,7 +216,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="level">目标等级，必须不小于 1。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool SetSkillLevelE(int unitId, int level)
+        public bool SetSkillLevelE(string unitId, int level)
         {
             return SetSkillLevel(unitId, level, nameof(SetSkillLevelE),
                 (entry, value) => entry.skillLevelE = value);
@@ -171,7 +228,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="level">目标等级，必须不小于 1。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        public bool SetSkillLevelQ(int unitId, int level)
+        public bool SetSkillLevelQ(string unitId, int level)
         {
             return SetSkillLevel(unitId, level, nameof(SetSkillLevelQ),
                 (entry, value) => entry.skillLevelQ = value);
@@ -183,7 +240,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="nodeId">节点 ID，对应 UnlockNodeTable 主键。</param>
         /// <returns>新解锁返回 true；未拥有该角色、参数非法或已解锁返回 false。</returns>
-        public bool UnlockNode(int unitId, int nodeId)
+        public bool UnlockNode(string unitId, int nodeId)
         {
             if (!TryGetMutableEntry(unitId, out var entry) || nodeId <= 0)
             {
@@ -230,7 +287,7 @@ namespace Framework.Gameplay.Player
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
         /// <returns>对应条目；不存在返回 null。</returns>
-        private CharacterEntry FindEntry(int unitId)
+        private CharacterEntry FindEntry(string unitId)
         {
             for (var i = 0; i < data.characters.Count; i++)
             {
@@ -246,7 +303,7 @@ namespace Framework.Gameplay.Player
         /// <param name="unitId">单位 ID。</param>
         /// <param name="entry">对应条目。</param>
         /// <returns>已拥有返回 true。</returns>
-        private bool TryGetMutableEntry(int unitId, out CharacterEntry entry)
+        private bool TryGetMutableEntry(string unitId, out CharacterEntry entry)
         {
             entry = FindEntry(unitId);
             if (entry == null) Debug.LogError($"角色未拥有：unitId={unitId}");
@@ -261,7 +318,7 @@ namespace Framework.Gameplay.Player
         /// <param name="methodName">调用方方法名，用于日志定位。</param>
         /// <param name="apply">赋值动作。</param>
         /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
-        private bool SetSkillLevel(int unitId, int level, string methodName, System.Action<CharacterEntry, int> apply)
+        private bool SetSkillLevel(string unitId, int level, string methodName, System.Action<CharacterEntry, int> apply)
         {
             if (!TryGetMutableEntry(unitId, out var entry) || level < 1)
             {
@@ -280,10 +337,10 @@ namespace Framework.Gameplay.Player
         private void Normalize()
         {
             // 剔除非法条目
-            data.characters.RemoveAll(e => e == null || e.unitId <= 0);
+            data.characters.RemoveAll(e => e == null || string.IsNullOrWhiteSpace(e.unitId));
 
             // 同 unitId 重复条目保留首个（养成数据无可合并语义）
-            var seen = new HashSet<int>();
+            var seen = new HashSet<string>();
             for (var i = data.characters.Count - 1; i >= 0; i--)
             {
                 if (!seen.Add(data.characters[i].unitId))

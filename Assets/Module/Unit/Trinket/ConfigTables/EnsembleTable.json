@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "tableName": "EnsembleTable",
+  "rows": [
+    {
+      "id": "Ensemble_1",
+      "name": "Ensemble Ensemble_1",
+      "desc": "Placeholder ensemble.",
+      "bonus": "atk_pct:0.1;hp_pct:0.1"
+    },
+    {
+      "id": "Ensemble_2",
+      "name": "Ensemble Ensemble_2",
+      "desc": "Placeholder ensemble.",
+      "bonus": "crit_rate:0.05;energy_recharge:0.1"
+    }
+  ]
+}

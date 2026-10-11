@@ -12,6 +12,10 @@ namespace Core.Gear
         public const string UpdateControlCH = nameof(UpdateControlCH);
         // 场景异步加载进度（0~1）。
         public const string LoadSceneProgress = nameof(LoadSceneProgress);
+        // 多源加载总进度（0~1，LoadProgressHub 加权汇聚后广播）。
+        public const string PreloadProgressChanged = nameof(PreloadProgressChanged);
+        // 玩家向通知请求（载荷 = 英文文案；通知面板消费，Core 层拒绝提示走此通道不依赖 UI）。
+        public const string NoticeRequested = nameof(NoticeRequested);
 
         #endregion
 
@@ -31,6 +35,8 @@ namespace Core.Gear
         public const string BurstCDChanged = nameof(BurstCDChanged);
         // 背包数据更新。
         public const string BagUpdated = nameof(BagUpdated);
+        // 装备数据更新（发放/穿脱，详情经装备仓库查询）。
+        public const string TrinketUpdated = nameof(TrinketUpdated);
         // 获得新角色（详情经角色仓库查询）。
         public const string CharacterAcquired = nameof(CharacterAcquired);
         // 角色养成数据更新（等级/经验/突破/技能等级/节点解锁，详情经角色仓库查询）。

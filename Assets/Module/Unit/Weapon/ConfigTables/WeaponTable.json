@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "tableName": "WeaponTable",
+  "rows": [
+    {
+      "unitId": "CH0221",
+      "name": "Tac-9 Sidearm",
+      "desc": "Standard-issue sidearm of the Vanguard academy. (placeholder)",
+      "baseStatType": "atk",
+      "baseStatValue": 40,
+      "mainStatType": "crit_rate",
+      "mainStatValue": 0.05,
+      "specialEffectKey": "crit_empower",
+      "specialEffectValue": 0.1,
+      "specialDesc": "After a critical hit, damage dealt increases by 10% for 5s. (placeholder)"
+    },
+    {
+      "unitId": "CH0209",
+      "name": "Volley-7 Rifle",
+      "desc": "Rapid-fire training rifle tuned for suppression. (placeholder)",
+      "baseStatType": "atk",
+      "baseStatValue": 52,
+      "mainStatType": "dmg_bonus",
+      "mainStatValue": 0.1,
+      "specialEffectKey": "burst_pierce",
+      "specialEffectValue": 0.15,
+      "specialDesc": "Every 3rd shot deals 15% bonus damage. (placeholder)"
+    }
+  ]
+}

@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8d6db5bc16d0724cb13cd64a7e099f2, type: 3}
   m_Name: CH0221
   m_EditorClassIdentifier: 
-  unitId: 221
+  unitId: CH0221
+  unitName: "\u67DA\u9E1F\u590F\u3010\u4E50\u961F\u3011"
   behaviorClips:
-    keys: []
-    values: []
-  dataTables: []
-  breakthroughTable: {fileID: 0}
+    keys:
+    - 
+    values:
+    - {fileID: 0}
+  dataTables:
+  - {fileID: 4900000, guid: 10d41d612305fe347aa49ca18200779f, type: 3}
+  - {fileID: 4900000, guid: 39159231c9955c8479bbb84b504bc21a, type: 3}
+  - {fileID: 4900000, guid: 4eebcea2b7e75ab4abe861cd76651c1c, type: 3}
+  - {fileID: 4900000, guid: fca09afcb1ea9cd4aa5a7f0af3609917, type: 3}
+  - {fileID: 4900000, guid: ede27a6547b311d45a660b49a4bb5cfa, type: 3}
+  breakthroughTable: {fileID: 4900000, guid: 027aebfcd1c0d104291ca8341b5a5a67, type: 3}

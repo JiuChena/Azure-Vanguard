@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core.Gear;
 using UnityEngine;
@@ -6,6 +7,7 @@ namespace Framework.Gameplay.Inventory
 {
     /// <summary>
     /// 全局背包管理器：物品增删查的唯一入口与唯一存档者，变更即保存并广播 BagUpdated 事件。
+    /// 物品 ID 为字符串（v2 存档格式），与 ItemTable 主键对齐。
     /// </summary>
     public class InventoryManager
     {
@@ -33,7 +35,7 @@ namespace Framework.Gameplay.Inventory
         /// </summary>
         /// <param name="itemId">物品 ID，与物品配置表主键对齐。</param>
         /// <returns>持有数量；未拥有返回 0。</returns>
-        public long GetCount(int itemId)
+        public long GetCount(string itemId)
         {
             var entry = FindEntry(itemId);
             return entry?.count ?? 0;
@@ -45,7 +47,7 @@ namespace Framework.Gameplay.Inventory
         /// <param name="itemId">物品 ID。</param>
         /// <param name="amount">要求的数量，应传入正数。</param>
         /// <returns>持有量大于等于要求量返回 true，否则 false。</returns>
-        public bool HasEnough(int itemId, long amount)
+        public bool HasEnough(string itemId, long amount)
         {
             return GetCount(itemId) >= amount;
         }
@@ -66,13 +68,13 @@ namespace Framework.Gameplay.Inventory
         /// <summary>
         /// 增加指定物品数量；自动累加到既有条目，无则新增条目。
         /// </summary>
-        /// <param name="itemId">物品 ID，必须为正数。</param>
+        /// <param name="itemId">物品 ID，必须非空。</param>
         /// <param name="count">增加的数量，必须为正数。</param>
         /// <returns>成功返回 true；参数非法返回 false 且无副作用。</returns>
-        public bool AddItem(int itemId, long count)
+        public bool AddItem(string itemId, long count)
         {
             // 校验参数，非法入参视为调用方错误
-            if (itemId <= 0 || count <= 0)
+            if (string.IsNullOrEmpty(itemId) || count <= 0)
             {
                 Debug.LogError($"背包增加物品参数无效：itemId={itemId}, count={count}");
                 return false;
@@ -91,13 +93,13 @@ namespace Framework.Gameplay.Inventory
         /// <summary>
         /// 扣除指定物品数量；数量不足时整体失败，不做部分扣除（原子操作）。
         /// </summary>
-        /// <param name="itemId">物品 ID，必须为正数。</param>
+        /// <param name="itemId">物品 ID，必须非空。</param>
         /// <param name="count">扣除的数量，必须为正数。</param>
         /// <returns>成功返回 true；数量不足或参数非法返回 false 且无副作用。</returns>
-        public bool TryRemove(int itemId, long count)
+        public bool TryRemove(string itemId, long count)
         {
             // 校验参数，非法入参视为调用方错误
-            if (itemId <= 0 || count <= 0)
+            if (string.IsNullOrEmpty(itemId) || count <= 0)
             {
                 Debug.LogError($"背包扣除物品参数无效：itemId={itemId}, count={count}");
                 return false;
@@ -130,10 +132,19 @@ namespace Framework.Gameplay.Inventory
 
         /// <summary>
         /// 从本地文件加载背包数据，文件不存在或反序列化失败时使用空背包。
+        /// v2 起物品 ID 为字符串，v1 旧档（int ID）反序列化必然失败——捕获后重置为空背包，不让单个旧档炸掉启动链。
         /// </summary>
         public void LoadData()
         {
-            data = BinaryDataManager.Instance.Load<InventoryData>(SaveFolder, SaveFileName) ?? new InventoryData();
+            try
+            {
+                data = BinaryDataManager.Instance.Load<InventoryData>(SaveFolder, SaveFileName) ?? new InventoryData();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"背包存档反序列化失败（v1 旧档 int ID 已不兼容 v2 string ID，背包重置）：{e.Message}");
+                data = new InventoryData();
+            }
 
             // 防御外部或旧档产生的脏数据
             Normalize();
@@ -148,7 +159,7 @@ namespace Framework.Gameplay.Inventory
         /// </summary>
         /// <param name="itemId">物品 ID。</param>
         /// <returns>对应条目；不存在返回 null。</returns>
-        private ItemStack FindEntry(int itemId)
+        private ItemStack FindEntry(string itemId)
         {
             for (var i = 0; i < data.items.Count; i++)
             {
@@ -164,11 +175,11 @@ namespace Framework.Gameplay.Inventory
         private void Normalize()
         {
             // itemId → 首个有效条目的索引
-            var firstIndex = new Dictionary<int, int>();
+            var firstIndex = new Dictionary<string, int>();
             for (var i = 0; i < data.items.Count; i++)
             {
                 var entry = data.items[i];
-                if (entry.itemId <= 0 || entry.count <= 0) continue;
+                if (string.IsNullOrEmpty(entry.itemId) || entry.count <= 0) continue;
 
                 // 同 ID 重复条目合并进首个条目
                 if (firstIndex.TryGetValue(entry.itemId, out var master))
@@ -180,7 +191,7 @@ namespace Framework.Gameplay.Inventory
             }
 
             // 剔除脏数据与已合并条目
-            data.items.RemoveAll(e => e.itemId <= 0 || e.count <= 0);
+            data.items.RemoveAll(e => string.IsNullOrEmpty(e.itemId) || e.count <= 0);
         }
 
         /// <summary>

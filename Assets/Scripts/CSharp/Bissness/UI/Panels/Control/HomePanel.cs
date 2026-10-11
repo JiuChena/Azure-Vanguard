@@ -1,4 +1,7 @@
+using System.Threading.Tasks;
 using Core.Gear;
+using Framework.Gameplay.Inventory;
+using Framework.Gameplay.Item;
 using Framework.Gameplay.Player;
 using UnityEngine;
 using UnityEngine.U2D;
@@ -26,37 +29,57 @@ public class HomePanel : PanelBase
     [Header("数据")]
     //面板图集
     [SerializeField] private SpriteAtlas panelAtlas;
-    //图标图集（头像 + 角色Icon），按存档资源名从中取 sprite
-    [SerializeField] private SpriteAtlas avatarAtlas;
     //稀有度背景（下标 = 稀有度-1）；素材未入库前留空，代码保留默认图
     //TODO 稀有度边框素材入库后在 Inspector 按稀有度顺序配置
     [SerializeField] private Sprite[] rarityBgs;
 
-    //展示数据模型，Control 的唯一数据来源
-    private readonly HomePanelModel model = new HomePanelModel();
+    [Header("状态栏添加模式")]
+    //信用点加号单次添加数量：点击一次 status.moneyAddButton 直接增加的背包持有量，调试期用，Inspector 可调
+    [SerializeField] private int statusMoneyAddAmount = 10000;
+    //星光石加号单次添加数量：点击一次 status.starlightStoneAddButton 直接增加的背包持有量，调试期用，Inspector 可调
+    [SerializeField] private int statusStarlightStoneAddAmount = 1000;
+    //状态栏货币槽位绑定的物品 id（ItemTable 主键，Inspector 可调）——代码不设常量表
+    [SerializeField] private string statusMoneyItemId = "Currency_CreditPoint";
+    [SerializeField] private string statusStarlightStoneItemId = "Currency_StarlightStone";
 
-    private bool bgStatus = false;
+    //展示数据模型，Control 的唯一数据来源（货币槽位 id 注入）
+    private HomePanelModel model;
+
+    private bool gearDisplay = true;
 
     protected override void EventInit()
     {
         //背包变更 → 状态栏货币文本跟随刷新
         EventCenter.Instance.Register(EventNames.BagUpdated, OnBagUpdated);
 
-        //TODO 菜单栏：menuBar.studentsButton/cultivatedButton/storeButton/gachaButton → 打开对应功能面板
+        //养成入口：打开角色列表面板（养成 UI 第一层；列表项点击进 CultivatePanel，下一轮接线）
+        menuBar.studentsButton.onClick.AddListener(() =>
+            PanelManager.Instance.OpenPanel<CharacterListPanel>(UIPath.CHARACTERLISTPANEL, UILayer.Mid));
+        menuBar.cultivatedButton.onClick.AddListener(() =>
+            PanelManager.Instance.OpenPanel<CultivatePanel>(UIPath.CULTIVATEPANEL, UILayer.Mid));
+        //TODO 菜单栏：menuBar.studentsButton/storeButton/gachaButton → 打开对应功能面板
         //TODO 菜单栏：menuBar.taskButton → 打开任务面板
-        //TODO 状态栏：status.staminaAddButton/moneyAddButton/starlightStoneAddButton → 跳转对应获取途径
+        //调试期添加模式：加号直接增加持有量，变更即存即广播 BagUpdated → RefreshStatus 自动跟随
+        status.moneyAddButton.onClick.AddListener(() => InventoryManager.Instance.AddItem(statusMoneyItemId, statusMoneyAddAmount));
+        status.starlightStoneAddButton.onClick.AddListener(() => InventoryManager.Instance.AddItem(statusStarlightStoneItemId, statusStarlightStoneAddAmount));
+        //TODO 状态栏：status.staminaAddButton → 跳转体力获取途径（体力域暂缓）；获取途径面板就绪后两个货币加号替换为 OpenPanel 跳转
         //TODO 状态栏：status.settingsButton → 打开设置面板；status.bgExpandButton → 背景展开/收起
         //TODO 玩法：gameplay.combatButton → 进入战斗；gameplay.activitiesButton → 打开活动面板
+        // gameplay.combatButton.onClick.AddListener(() => PanelManager.Instance.OpenPanel());
         //TODO 玩家展示：playerDisplay.avatarBtn → 打开头像选择面板，选中后 PlayerInfoManager.Instance.SetAvatar
         
         status.bgExpandButton.onClick.AddListener(() =>
         {
-            
+            gearDisplay = !gearDisplay;
+            animator.SetBool("Display", gearDisplay);
         });
     }
 
     protected override void ComponentInit()
     {
+        //模型随序列化 id 就绪后构建（货币槽位绑定 ItemTable 主键）
+        model = new HomePanelModel(statusMoneyItemId, statusStarlightStoneItemId);
+
         Timer.Instance.AddTimerEvent(1, () =>
         {
             animator.SetBool("Display", true);
@@ -114,12 +137,8 @@ public class HomePanel : PanelBase
 
         PlayerInfo info = model.PlayerInfo;
 
-        //头像：按存档资源名从图集取，取不到保留场景默认图
-        Sprite avatar = avatarAtlas != null ? avatarAtlas.GetSprite(info.avatarName) : null;
-        if (avatar != null && playerDisplay.avatarImg != null)
-        {
-            playerDisplay.avatarImg.sprite = avatar;
-        }
+        //头像：单图按需（名片头像名存 PlayerInfo.avatarName）；未命中保留场景默认图
+        _ = RefreshPlayerAvatarAsync(info.avatarName);
 
         if (playerDisplay.playerName != null) playerDisplay.playerName.text = info.nickName;
         if (playerDisplay.levelText != null) playerDisplay.levelText.text = $"Lv.{info.level}";
@@ -131,6 +150,15 @@ public class HomePanel : PanelBase
             RectTransform fill = playerDisplay.levelImg.rectTransform;
             fill.anchorMax = new Vector2(progress, fill.anchorMax.y);
         }
+    }
+
+    /// <summary>异步填充名片头像；回包时玩家已换头像（存档重载等）则丢弃结果。</summary>
+    private async Task RefreshPlayerAvatarAsync(string avatarName)
+    {
+        Sprite avatar = await IconLibrary.GetAsync(avatarName);
+        if (avatar == null || playerDisplay == null) return;
+        if (model != null && model.PlayerInfo != null && model.PlayerInfo.avatarName != avatarName) return;
+        if (playerDisplay.avatarImg != null) playerDisplay.avatarImg.sprite = avatar;
     }
 
     #endregion
@@ -153,13 +181,17 @@ public class HomePanel : PanelBase
             rarityBg.sprite = rarityBgs[rarity - 1];
         }
 
-        //角色图标：按资源名从图集取，取不到保留默认图
+        //角色图标：单图按需，取不到保留默认图（槽位节点未搭建，TODO 接角色数据后改传 unitId 走 CharacterAvatarKey）
         Image chIcon = slot.Find("CHIcon")?.GetComponent<Image>();
-        Sprite icon = avatarAtlas != null ? avatarAtlas.GetSprite(chIconName) : null;
-        if (chIcon != null && icon != null)
-        {
-            chIcon.sprite = icon;
-        }
+        if (chIcon != null) _ = FillSlotIconAsync(chIcon, chIconName);
+    }
+
+    /// <summary>异步填充槽位图标。</summary>
+    private static async Task FillSlotIconAsync(Image chIcon, string iconName)
+    {
+        Sprite icon = await IconLibrary.GetAsync(iconName);
+        if (icon == null || chIcon == null) return;
+        chIcon.sprite = icon;
     }
 
     #endregion

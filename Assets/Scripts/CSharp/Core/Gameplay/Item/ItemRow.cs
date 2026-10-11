@@ -7,19 +7,21 @@ namespace Framework.Gameplay.Item
 {
     /// <summary>
     /// 物品配置表行：对应 ConfigSources/Excel/ItemTable.xlsx，字段与 Excel 列一一对应（列名即 [Key] 名）。
+    /// 物品 ID 为字符串（2026-10-09 起，设计约定 id 类型先问策划）。
     /// </summary>
     [MessagePackObject]
-    public sealed class ItemRow : IConfigTableRow<int>
+    public sealed class ItemRow : IConfigTableRow<string>
     {
-        // 物品 ID，全表唯一主键
+        // 物品 ID，全表唯一主键（字符串）
         [Key("id")]
-        public int Id;
+        public string Id;
 
         // 物品名称（显示用，后续接入本地化时替换为多语言键）
         [Key("name")]
         public string Name;
 
-        // 物品图标的资源名，运行时经图集/Addressables 取图
+        // 物品图标的 Addressables 地址（与图标组内条目名一字不差，如 Item_Icon_Currency_CreditPoint；
+        // 图标分组的组内名称即映射真相，本列就是 id→地址 的映射表）
         [Key("icon")]
         public string Icon;
 
@@ -51,6 +53,10 @@ namespace Framework.Gameplay.Item
         [Key("tags")]
         public string Tags;
 
+        // 使用后提供的升级经验（技能书专用，养成面板"点击使用技能书升级"读取本列）；非经验物品为 0
+        [Key("exp")]
+        public int Exp;
+
         /// <summary>解析后的功能标签集合；空标签行返回空数组，标签精确匹配不分大小写变体。</summary>
         [IgnoreMember]
         public string[] TagList
@@ -71,6 +77,6 @@ namespace Framework.Gameplay.Item
 
         /// <summary>表行主键。</summary>
         [IgnoreMember]
-        public int PrimaryKey => Id;
+        public string PrimaryKey => Id;
     }
 }

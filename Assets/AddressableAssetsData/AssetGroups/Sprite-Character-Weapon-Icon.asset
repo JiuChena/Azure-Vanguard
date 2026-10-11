@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sprite-Character-Weapon-Icon
+  m_EditorClassIdentifier: 
+  m_GroupName: Sprite-Character-Weapon-Icon
+  m_Data:
+    m_SerializedData: []
+  m_GUID: c8ed8f15ab5fe5842923f19272a96608
+  m_SerializeEntries:
+  - m_GUID: 8c6b923dcc48ac14a82053387b19cf97
+    m_Address: CHWeapon_CH0209
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CHWeaponIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce4b78c1a252bef4f838089261f97d3f
+    m_Address: CHWeapon_CH0221
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CHWeaponIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 05ebfd772a4abec478a3cd3a9fd429f4, type: 2}
+    - {fileID: 11400000, guid: 81beff0db79ed3c42b2b67d0590056d4, type: 2}

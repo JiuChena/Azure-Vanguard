@@ -5,31 +5,31 @@
     {
       "breakStage": 1,
       "levelCap": 40,
-      "costItems": "1:20000,1002:3,1003:5",
+      "costItems": "Currency_CreditPoint:20000,Material_BreakthroughCore:3,Material_RefineCrystal:5",
       "unlockNodeIds": ""
     },
     {
       "breakStage": 2,
       "levelCap": 50,
-      "costItems": "1:40000,1002:5,1003:8",
+      "costItems": "Currency_CreditPoint:40000,Material_BreakthroughCore:5,Material_RefineCrystal:8",
       "unlockNodeIds": "22121"
     },
     {
       "breakStage": 3,
       "levelCap": 60,
-      "costItems": "1:60000,1002:8,1003:12",
+      "costItems": "Currency_CreditPoint:60000,Material_BreakthroughCore:8,Material_RefineCrystal:12",
       "unlockNodeIds": "22122"
     },
     {
       "breakStage": 4,
       "levelCap": 70,
-      "costItems": "1:100000,1002:12,1003:16",
+      "costItems": "Currency_CreditPoint:100000,Material_BreakthroughCore:12,Material_RefineCrystal:16",
       "unlockNodeIds": "22123"
     },
     {
       "breakStage": 5,
       "levelCap": 80,
-      "costItems": "1:160000,1002:16,1003:24",
+      "costItems": "Currency_CreditPoint:160000,Material_BreakthroughCore:16,Material_RefineCrystal:24",
       "unlockNodeIds": "22124"
     }
   ]

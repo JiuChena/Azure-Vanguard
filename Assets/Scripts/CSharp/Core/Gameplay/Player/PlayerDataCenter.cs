@@ -16,10 +16,10 @@ namespace Framework.Gameplay.Player
         private const string PlayerDataRoot = "PlayerData";
 
         // 新账号默认拥有的角色（初始可选，随 CharacterTable 扩充追加）
-        private static readonly int[] DefaultCharacterIds = { 221 };
+        private static readonly string[] DefaultCharacterIds = { "CH0221", "CH0209" };
 
         // 新账号初始金币额度；仅保证养成/商店链路可测，非数值定案
-        private const long DefaultGoldCount = 50000;
+        private const long DefaultCreditPointCount = 50000;
 
         /// <summary>
         /// 全量保存：遍历所有存档域落盘。用于退游戏/切场景前兜底。
@@ -54,16 +54,16 @@ namespace Framework.Gameplay.Player
         /// 新账号默认数据发放：无存档时发默认角色与初始货币，有存档（老账号）幂等跳过。
         /// 游戏启动时（任何 UI 读档前）调用一次。
         /// </summary>
-        public static void EnsureNewAccountDefaults()
+        public static void EnsureNewAccountDefaults(string baseCurrencyItemId)
         {
             if (!IsNewAccount()) return;
 
-            foreach (int unitId in DefaultCharacterIds)
+            foreach (string unitId in DefaultCharacterIds)
             {
                 CharacterWarehouseManager.Instance.AddCharacter(unitId);
             }
 
-            InventoryManager.Instance.AddItem(CurrencyIds.Gold, DefaultGoldCount);
+            InventoryManager.Instance.AddItem(baseCurrencyItemId, DefaultCreditPointCount);
 
             // 各域变更已即存落盘；此处兜底再全量保存一次，保证整个 PlayerData/ 目录完整建立
             SaveAll();

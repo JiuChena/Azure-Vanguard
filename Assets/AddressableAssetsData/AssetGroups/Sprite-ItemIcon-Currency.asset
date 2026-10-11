@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sprite-ItemIcon-Currency
+  m_EditorClassIdentifier: 
+  m_GroupName: Sprite-ItemIcon-Currency
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 812dc1436a61237419429e4b242776ad
+  m_SerializeEntries:
+  - m_GUID: 07edc25cb5cecd845b4889432d9618b1
+    m_Address: Item_Icon_Currency_StarlightStone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92144ceb67e5c9a45a446a7fdc4ef048
+    m_Address: Item_Icon_Currency_CreditPoint
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4961476c33baa92469cf3b51def058cc, type: 2}
+    - {fileID: 11400000, guid: 64f2a329ed7365b449dd722ff00eb8b5, type: 2}

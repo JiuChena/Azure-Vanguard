@@ -25,6 +25,7 @@ namespace Core.Gear
 
         // 共享 Canvas 根 Transform，加载完成后缓存。
         public Transform RectTrans_Canvas;
+        private Canvas canvas;
         // 各 UI 层级的挂点 Transform：底层。
         private Transform bot;
         // 各 UI 层级的挂点 Transform：中层。
@@ -195,6 +196,9 @@ namespace Core.Gear
             mid = RectTrans_Canvas.Find(CorePathDependencies.UISystem_Canvas_LayerMid);
             top = RectTrans_Canvas.Find(CorePathDependencies.UISystem_Canvas_LayerTop);
             system = RectTrans_Canvas.Find(CorePathDependencies.UISystem_Canvas_LayerSystem);
+            
+            canvas = RectTrans_Canvas.GetComponent<Canvas>();
+            if(canvas != null) canvas.worldCamera = CameraManager.Instance.Get(CameraType.UI);
         }
 
         /// <summary>

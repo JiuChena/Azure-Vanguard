@@ -35,6 +35,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69b6a40d3ae84ee4c9856427ab6ad514
+    m_Address: ConfigTables/UpgradeCostTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6bec30ee2bb6fea4c8a6b8ea2b85c49f
+    m_Address: ConfigTables/WeaponLevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f11fbf170827bb468f55389308ef880
+    m_Address: ConfigTables/TrinketTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afb67818dd2fec441926b9f43077e531
     m_Address: ConfigTables/SkillTable
     m_ReadOnly: 0
@@ -47,6 +65,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be420d7b5b74ec24ba793301d08a39dd
+    m_Address: ConfigTables/WeaponTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e6785269ff06d774fab650fa7017a20d
     m_Address: ConfigTables/UnlockNodeTable
     m_ReadOnly: 0
@@ -55,6 +79,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebc7332c685737c49af31463d7165fed
     m_Address: ConfigTables/ItemTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffab960fdcad1734a8793d426e3f1d19
+    m_Address: ConfigTables/EnsembleTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - DataTable

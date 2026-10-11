@@ -31,6 +31,36 @@
       "cost": 6,
       "effectIds": "2210301,2210302",
       "desc": "奏响终乐章，对大范围敌人造成重伤并治愈全队"
+    },
+    {
+      "skillId": 20901,
+      "name": "盾击",
+      "type": "normal",
+      "maxLevel": 10,
+      "cooldown": 0,
+      "cost": 0,
+      "effectIds": "2090101",
+      "desc": "对目标敌人造成一次盾击伤害"
+    },
+    {
+      "skillId": 20902,
+      "name": "坚壁领域",
+      "type": "e",
+      "maxLevel": 10,
+      "cooldown": 8,
+      "cost": 2,
+      "effectIds": "2090201,2090202",
+      "desc": "展开护盾领域，对周围敌人造成伤害并减速"
+    },
+    {
+      "skillId": 20903,
+      "name": "不动如山",
+      "type": "burst",
+      "maxLevel": 10,
+      "cooldown": 25,
+      "cost": 6,
+      "effectIds": "2090301,2090302",
+      "desc": "进入固守姿态，回复自身生命并重击周围敌人"
     }
   ]
 }

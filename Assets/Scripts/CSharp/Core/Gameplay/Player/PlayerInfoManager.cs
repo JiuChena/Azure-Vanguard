@@ -47,7 +47,7 @@ namespace Framework.Gameplay.Player
         /// <summary>
         /// 更换玩家头像（存头像图集内的资源名），变更即保存。
         /// </summary>
-        /// <param name="avatarName">头像资源名称，与 SpriteAtlas 内 sprite 名一致。</param>
+        /// <param name="avatarName">头像资源名称，单图 Addressables 地址（= png 文件名去扩展）。</param>
         public void SetAvatar(string avatarName)
         {
             if (string.IsNullOrEmpty(avatarName))
@@ -100,6 +100,14 @@ namespace Framework.Gameplay.Player
         public void LoadData()
         {
             data = BinaryDataManager.Instance.Load<PlayerInfo>(SaveFolder, SaveFileName) ?? new PlayerInfo();
+
+            // 存量档迁移：旧默认头像名已随头像单图化废弃（Addressables 组内已无此地址，加载会报错），
+            // 命中即一次性改写为新默认头像并回存；幂等，新档与已迁移档不进此分支
+            if (data.avatarName == PlayerInfo.LegacyAvatarName)
+            {
+                data.avatarName = PlayerInfo.DefaultAvatarName;
+                SaveData();
+            }
         }
 
         #endregion

@@ -12,9 +12,9 @@ namespace Framework.Gameplay.Player
     [MessagePackObject]
     public class CharacterEntry
     {
-        // 单位 ID，与 CharacterTable 主键及 CharacterUnitConfig.unitId 对齐
+        // 单位 ID，与 CharacterTable 主键、CharacterUnitConfig.unitId 及头像图集 sprite 名对齐（如 CH0221）
         [Key(0)]
-        public int unitId;
+        public string unitId;
 
         // 角色等级，下限 1；上限由养成层按 LevelTable 控制，仓库只做下限防御
         [Key(1)]
@@ -43,5 +43,14 @@ namespace Framework.Gameplay.Player
         // 已解锁节点 ID 列表（天赋 + 属性加成，对应 UnlockNodeTable 主键），解锁即永久
         [Key(7)]
         public List<int> unlockedNodes = new();
+
+        // 绑定武器等级，下限 1；上限随角色突破（与角色等级共用 GetLevelCap）
+        // 注意：旧档反序列化缺失键时为 0，消费方须按 Math.Max(1, weaponLevel) 兜底
+        [Key(8)]
+        public int weaponLevel = 1;
+
+        // 绑定武器当前等级内已累积经验；升级结算公式在养成业务逻辑中，仓库只存值
+        [Key(9)]
+        public int weaponExp;
     }
 }

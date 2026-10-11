@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Sprite-ItemIcon-ExpItem
+  m_EditorClassIdentifier: 
+  m_GroupName: Sprite-ItemIcon-ExpItem
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 811e8a115e1f36b43863fc2443298934
+  m_SerializeEntries:
+  - m_GUID: 030c18e3796259d46a2a817a71a06993
+    m_Address: Item_Icon_Exp_Weapon_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 056c4c12f71054f49ae513efa2ff641b
+    m_Address: Item_Icon_Exp_Weapon_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b1fad5b047216640adc078bafd96f35
+    m_Address: Item_Icon_Exp_Weapon_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56ee9a375ccf0404193143a34bf5c639
+    m_Address: Item_Icon_Exp_Character_3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afec5136aca5cde49a2f01b9e858fddb
+    m_Address: Item_Icon_Exp_Character_1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: beb7baac6c4f70c4dba0928ec6ceff3b
+    m_Address: Item_Icon_Exp_Character_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e75a9292724c664489cec29bb217e524
+    m_Address: Item_Icon_Exp_Character_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e89ea3e21ce490b449096ce4e8b82e04
+    m_Address: Item_Icon_Exp_Weapon_0
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemIcon
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6243f7452db3bf94cabb41fb6f2c875e, type: 2}
+    - {fileID: 11400000, guid: fd661925a205ca24cb98de3e1f8174ab, type: 2}

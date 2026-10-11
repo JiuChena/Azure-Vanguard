@@ -668,9 +668,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1701
-        y: 1605
+        y: 1607
         width: 85
-        height: 70
+        height: 67
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -979,7 +979,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_42
+      name: Feeling_0
       rect:
         serializedVersion: 2
         x: 606
@@ -1000,7 +1000,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_43
+      name: Feeling_3
       rect:
         serializedVersion: 2
         x: 719
@@ -1021,7 +1021,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_44
+      name: Feeling_4
       rect:
         serializedVersion: 2
         x: 871
@@ -1042,7 +1042,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_45
+      name: Feeling_1
       rect:
         serializedVersion: 2
         x: 987
@@ -1063,7 +1063,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_46
+      name: Feeling_5
       rect:
         serializedVersion: 2
         x: 1065
@@ -1084,7 +1084,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_47
+      name: Feeling_2
       rect:
         serializedVersion: 2
         x: 1468
@@ -1302,7 +1302,7 @@ TextureImporter:
         width: 70
         height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1310,6 +1310,27 @@ TextureImporter:
       bones: []
       spriteID: 60fc81ed15b871a44909ce55f2b98539
       internalID: -1595856012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Common_58
+      rect:
+        serializedVersion: 2
+        x: 1450
+        y: 1829
+        width: 59
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 19, y: 4, z: 18, w: 21}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 522aa390de1ca5244acf8e297ecf8be0
+      internalID: -825963329
       vertices: []
       indices: 
       edges: []
@@ -1362,12 +1383,6 @@ TextureImporter:
       Common_4: -1783610166
       Common_40: 555865488
       Common_41: 1660349518
-      Common_42: -1719741691
-      Common_43: -1927883739
-      Common_44: 19782457
-      Common_45: -30871558
-      Common_46: -1881802387
-      Common_47: 1107765956
       Common_48: -353672617
       Common_49: -1310163065
       Common_5: -924742564
@@ -1379,10 +1394,17 @@ TextureImporter:
       Common_55: -254398365
       Common_56: -92116332
       Common_57: -1595856012
+      Common_58: -825963329
       Common_6: 841206999
       Common_7: -1732822662
       Common_8: 1971871925
       Common_9: -1374131990
+      Feeling_0: -1719741691
+      Feeling_1: -30871558
+      Feeling_2: 1107765956
+      Feeling_3: -1927883739
+      Feeling_4: 19782457
+      Feeling_5: -1881802387
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
