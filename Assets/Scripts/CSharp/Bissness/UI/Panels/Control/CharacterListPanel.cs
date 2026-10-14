@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Gear;
-using Framework.Gameplay.Abilities;
 using Framework.Gameplay.Player;
 using Framework.Gameplay.Unit;
 using TMPro;
@@ -31,9 +30,6 @@ public class CharacterListPanel : PanelBase
 
     //角色表缓存：InitTableAsync 就绪后可用（主键为字符串 id，如 CH0221）；行缺失的仓库条目刷新时跳过
     private DataTable<CharacterRow, string> characterTable;
-
-    //显示名准绳（SO.Name，2026-10-07 拍板）：unitId → 名称；表加载后预热一次，未命中回退表行 Name
-    private readonly Dictionary<string, string> nameOverrides = new Dictionary<string, string>();
 
     //排序方式：下标与排序下拉框选项一致（0=默认/获得顺序 1=稀有度 2=等级）
     private int sortMode;
@@ -179,12 +175,8 @@ public class CharacterListPanel : PanelBase
         //绑定来源：池化复用下异步头像回包以此校验（改绑即丢弃）
         cell.unitId = entry.unitId;
 
-        //名字准绳 = SO 的 Name（PreloadNamesAsync 预热），未命中回退表行 Name
-        if (cell.nameText != null)
-        {
-            cell.nameText.text = nameOverrides.TryGetValue(entry.unitId, out string name)
-                ? name : row.Name;
-        }
+        //名字取表行 Name（表驱动：名字随表走，面板不再加载 UnitConfig）
+        if (cell.nameText != null) cell.nameText.text = row.Name;
         if (cell.levelText != null) cell.levelText.text = $"Lv.{entry.level}";
 
         //稀有度背景：下标 = 稀有度-1，越界或未配置时保留默认图（与 HomePanel 名片同口径）
@@ -203,9 +195,9 @@ public class CharacterListPanel : PanelBase
     }
 
     /// <summary>异步填充单元格头像；回包时单元格已改绑其他角色（池化复用）则丢弃结果。</summary>
-    private static async Task FillAvatarAsync(CHListItem cell, string unitId)
+    private async Task FillAvatarAsync(CHListItem cell, string unitId)
     {
-        Sprite avatar = await IconLibrary.GetCharacterAvatarAsync(IconLibrary.VariantCollection, unitId);
+        Sprite avatar = await IconLibrary.GetCharacterAvatarAsync(IconLibrary.VariantCollection, unitId, ResourceScope);
         if (avatar == null || cell == null || cell.unitId != unitId) return;
         if (cell.iconImg != null) cell.iconImg.sprite = avatar;
     }
@@ -227,33 +219,7 @@ public class CharacterListPanel : PanelBase
                 Debug.LogError("[CharacterListPanel] 角色表加载失败，列表为空");
                 return;
             }
-            await PreloadNamesAsync();
             RefreshList();
-        }
-        catch (Exception e)
-        {
-            Debug.LogException(e);
-        }
-    }
-
-    /// <summary>
-    /// 预热显示名：批量加载全表角色的 UnitConfig（常驻缓存），名字以 SO 的 Name 为准绳；
-    /// 加载失败的 id 不入映射，FillCell 回退表行 Name。
-    /// </summary>
-    private async Task PreloadNamesAsync()
-    {
-        try
-        {
-            List<string> ids = new List<string>(characterTable.Count);
-            foreach (CharacterRow row in characterTable.Rows) ids.Add(row.Id);
-            await UnitConfigLibrary.PreloadAsync(ids);
-
-            nameOverrides.Clear();
-            foreach (string id in ids)
-            {
-                if (UnitConfigLibrary.TryGetCached(id, out UnitConfig config)
-                    && !string.IsNullOrEmpty(config.Name)) nameOverrides[id] = config.Name;
-            }
         }
         catch (Exception e)
         {

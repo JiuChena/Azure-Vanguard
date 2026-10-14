@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 1bb74d38d12a99a44bc924574bdbb8b6
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: b0a4f0f868eb8b8f68c15c9eed876e10
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -45,6 +45,7 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: 25c5e1419bc316d4389bfd85c89003bf, type: 2}
+  - {fileID: 11400000, guid: c0455c744214b9046b9dfbddde0302ec, type: 2}
   - {fileID: 11400000, guid: 09d4a598b1eb78e478d3cc2c74d06f34, type: 2}
   - {fileID: 11400000, guid: 7e22fa9127d5ce640bd11d60245dab1b, type: 2}
   - {fileID: 11400000, guid: 75766c5b523f33246a4a527747646701, type: 2}
@@ -54,13 +55,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92f470c309787964c98cffd9ef37b8f1, type: 2}
   - {fileID: 11400000, guid: 485fb7df503a07345b9379ef9c71dd0e, type: 2}
   - {fileID: 11400000, guid: ce5924a964bfb50409ba15e5bc9990b6, type: 2}
+  - {fileID: 11400000, guid: de8c17a0aa15c094188fc9912c6b4413, type: 2}
   - {fileID: 11400000, guid: 2d1420080aa76954dab3603aa4bc8fb8, type: 2}
   - {fileID: 11400000, guid: f9a665368df015e49aa6b9dc8e3b89ba, type: 2}
   - {fileID: 11400000, guid: 88229f3abc16e9d46a17ee7f96b021de, type: 2}
   - {fileID: 11400000, guid: e7e0a0559b795c34084c4f7451b0e3b8, type: 2}
   - {fileID: 11400000, guid: 3360cb4843109834985e60b68b1df937, type: 2}
+  - {fileID: 11400000, guid: 56a6c06ffde00684f8953278825f90cd, type: 2}
+  - {fileID: 11400000, guid: 88e8192d9d86d144abfa18617e30989d, type: 2}
   - {fileID: 11400000, guid: 43967cacef7fee74ebf1cf7efba9197b, type: 2}
   - {fileID: 11400000, guid: ee50b3177a93d7647ac93117b0695d84, type: 2}
+  - {fileID: 11400000, guid: ddbf22bf88da06d45b782bb645434f42, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -113,9 +118,15 @@ MonoBehaviour:
     - CHAvatar_Small
     - CHAvatar_SpecialPopup
     - CHWeaponIcon
+    - CHSkillIcon
     - ItemIcon
     - Tag
     - Trinket
+    - Item
+    - Video
+    - Cultivate
+    - CombatSelect
+    - Formation
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 748fa413453203442acbf8c80562ac46, type: 2}

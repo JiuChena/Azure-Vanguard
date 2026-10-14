@@ -103,12 +103,13 @@ namespace Framework.Gameplay.Progression
         private const string TableNameWeaponLevel = "WeaponLevelTable";
         private const string TableNameItem = "ItemTable";
         private const string TableNameUpgradeCost = "UpgradeCostTable";
+        private const string TableNameSkillLevel = "SkillLevelTable";
 
         private static CharacterProgressionManager instance;
         public static CharacterProgressionManager Instance => instance ??= new CharacterProgressionManager();
 
-        // 八张养成表：EnsureTablesAsync 后可用（加载失败为 null，下次操作自动重试）
-        // 角色表、武器表与物品表主键为字符串 id（CH0221 / 技能书 1011）；其余五表主键为 int
+        // 九张养成表：EnsureTablesAsync 后可用（加载失败为 null，下次操作自动重试）
+        // 角色表、武器表与物品表主键为字符串 id（CH0221 / 技能书 1011）；其余六表主键为 int
         private DataTable<CharacterRow, string> characterTable;
         private DataTable<LevelRow, int> levelTable;
         private DataTable<BreakthroughRow, int> breakthroughTable;
@@ -117,16 +118,17 @@ namespace Framework.Gameplay.Progression
         private DataTable<WeaponLevelRow, int> weaponLevelTable;
         private DataTable<ItemRow, string> itemTable;
         private DataTable<UpgradeCostRow, int> upgradeCostTable;
+        private DataTable<SkillLevelRow, int> skillLevelTable;
 
         private CharacterProgressionManager() { }
 
         #region 表接入
 
         /// <summary>
-        /// 确保八张养成表已加载；LoadTableAsync 命中缓存时直接短路，重复调用无代价。
+        /// 确保九张养成表已加载；LoadTableAsync 命中缓存时直接短路，重复调用无代价。
         /// 同步查询（GetLevelCap / GetUpgradeCost）或养成 UI 首次展示前 await 一次。
         /// </summary>
-        /// <returns>八张表全部就绪返回 true；任一加载失败返回 false（失败详情由 DataTableManager 报错定位）。</returns>
+        /// <returns>九张表全部就绪返回 true；任一加载失败返回 false（失败详情由 DataTableManager 报错定位）。</returns>
         public async Task<bool> EnsureReadyAsync()
         {
             return await EnsureTablesAsync();
@@ -298,25 +300,158 @@ namespace Framework.Gameplay.Progression
                 }
             }
 
+            return RunProgressionOp(() =>
+            {
+                foreach (ItemCost cost in costs)
+                {
+                    // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错；事务整体回滚
+                    if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                    {
+                        Debug.LogError($"突破扣耗异常：{ItemCost.Format(costs)}（unitId={unitId}）");
+                        return false;
+                    }
+                }
+
+                CharacterWarehouseManager.Instance.SetBreakStage(unitId, nextStage);
+
+                // 突破附带节点免费解锁（UnlockNode 幂等，重复无副作用）
+                foreach (int nodeId in row.UnlockNodeIdList)
+                {
+                    CharacterWarehouseManager.Instance.UnlockNode(unitId, nodeId);
+                }
+
+                return true;
+            }, false);
+        }
+
+        #endregion
+
+        #region 技能升级
+
+        /// <summary>
+        /// 下一级技能升级的消耗清单（展示用，只读不扣）：目标 = 当前等级 + 1，已满级返回空数组。
+        /// 全部技能（普攻/天赋/E/Q）共用 SkillLevelTable（行 id = 目标等级）。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="skillType">技能类型（SkillRow.SkillTypes 取值）。</param>
+        /// <returns>下一级消耗；表未就绪、未拥有、无该技能行或已满级返回空数组（定位失败报错）。</returns>
+        public async Task<ItemCost[]> GetNextSkillLevelCostAsync(string unitId, string skillType)
+        {
+            if (!await EnsureTablesAsync()) return Array.Empty<ItemCost>();
+            await SkillDataLibrary.EnsureLoadedAsync();
+            if (!CharacterWarehouseManager.Instance.TryGetEntry(unitId, out CharacterEntry entry))
+            {
+                Debug.LogError($"技能升级消耗查询失败：角色未拥有 unitId={unitId}");
+                return Array.Empty<ItemCost>();
+            }
+            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out SkillRow row))
+            {
+                Debug.LogError($"技能升级消耗查询失败：SkillTable 无该类型技能 unitId={unitId}, skillType={skillType}");
+                return Array.Empty<ItemCost>();
+            }
+
+            if (EntrySkillLevel(entry, row.Type) >= row.MaxLevel) return Array.Empty<ItemCost>();
+            if (!skillLevelTable.TryGet(EntrySkillLevel(entry, row.Type) + 1, out SkillLevelRow costRow))
+            {
+                return Array.Empty<ItemCost>();
+            }
+            return costRow.CostList;
+        }
+
+        /// <summary>
+        /// 技能升级（交互与突破同款：材料足够即整体扣耗，玩家无需手动填充）：校验（满级/材料）→
+        /// 事务内整体扣耗 + 等级落账。失败不扣耗弹 Notice；成功经仓库广播回流刷新。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="skillType">技能类型（SkillRow.SkillTypes 取值）。</param>
+        /// <returns>成功返回 true；表未就绪、未拥有、无技能行、已满级、表缺行或材料不足返回 false 且不扣耗。</returns>
+        public async Task<bool> SkillLevelUpAsync(string unitId, string skillType)
+        {
+            if (!await EnsureTablesAsync()) return false;
+            await SkillDataLibrary.EnsureLoadedAsync();
+            if (!CharacterWarehouseManager.Instance.TryGetEntry(unitId, out CharacterEntry entry))
+            {
+                Debug.LogError($"技能升级失败：角色未拥有 unitId={unitId}");
+                return false;
+            }
+            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out SkillRow row))
+            {
+                Debug.LogError($"技能升级失败：SkillTable 无该类型技能 unitId={unitId}, skillType={skillType}");
+                return false;
+            }
+
+            int level = EntrySkillLevel(entry, row.Type);
+            if (level >= row.MaxLevel)
+            {
+                NotifyPlayer("Skill has reached the max level");
+                return false;
+            }
+
+            // SkillLevelTable 行 = 目标等级（2..10 连号），缺行属于配表错误，报错拒绝
+            if (!skillLevelTable.TryGet(level + 1, out SkillLevelRow costRow))
+            {
+                Debug.LogError($"技能升级失败：SkillLevelTable 缺目标等级 {level + 1} 的行（unitId={unitId}, skillType={skillType}）");
+                return false;
+            }
+
+            // 材料校验先行（全部足够才扣，不做部分扣除）
+            ItemCost[] costs = costRow.CostList;
             foreach (ItemCost cost in costs)
             {
-                // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错
-                if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                if (!InventoryManager.Instance.HasEnough(cost.ItemId, cost.Count))
                 {
-                    Debug.LogError($"突破扣耗异常：{ItemCost.Format(costs)}（unitId={unitId}）");
+                    NotifyPlayer("Not enough materials");
                     return false;
                 }
             }
 
-            CharacterWarehouseManager.Instance.SetBreakStage(unitId, nextStage);
-
-            // 突破附带节点免费解锁（UnlockNode 幂等，重复无副作用）
-            foreach (int nodeId in row.UnlockNodeIdList)
+            return RunProgressionOp(() =>
             {
-                CharacterWarehouseManager.Instance.UnlockNode(unitId, nodeId);
-            }
+                foreach (ItemCost cost in costs)
+                {
+                    // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错；事务整体回滚
+                    if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                    {
+                        Debug.LogError($"技能升级扣耗异常：{ItemCost.Format(costs)}（unitId={unitId}）");
+                        return false;
+                    }
+                }
 
-            return true;
+                SetSkillLevel(unitId, level + 1, skillType);
+                return true;
+            }, false);
+        }
+
+        /// <summary>条目上的技能等级（普攻/天赋/E/Q → 对应字段；未知类型按普攻）。</summary>
+        private static int EntrySkillLevel(CharacterEntry entry, string skillType)
+        {
+            switch (skillType)
+            {
+                case SkillRow.SkillTypes.E: return entry.skillLevelE;
+                case SkillRow.SkillTypes.Burst: return entry.skillLevelQ;
+                case SkillRow.SkillTypes.Talent: return entry.skillLevelTalent;
+                default: return entry.skillLevelNormal;
+            }
+        }
+
+        /// <summary>落账技能等级（事务变更段调用；仓库广播在批量域内只标脏，EndBatch 统一提交）。</summary>
+        private static void SetSkillLevel(string unitId, int level, string skillType)
+        {
+            switch (skillType)
+            {
+                case SkillRow.SkillTypes.E:
+                    CharacterWarehouseManager.Instance.SetSkillLevelE(unitId, level);
+                    break;
+                case SkillRow.SkillTypes.Burst:
+                    CharacterWarehouseManager.Instance.SetSkillLevelQ(unitId, level);
+                    break;
+                case SkillRow.SkillTypes.Talent:
+                    CharacterWarehouseManager.Instance.SetSkillLevelTalent(unitId, level);
+                    break;
+                default:
+                    CharacterWarehouseManager.Instance.SetSkillLevelNormal(unitId, level);
+                    break;
+            }
         }
 
         #endregion
@@ -426,37 +561,40 @@ namespace Framework.Gameplay.Progression
                 }
             }
 
-            foreach (KeyValuePair<string, long> pair in merged)
+            return RunProgressionOp(() =>
             {
-                // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错
-                if (!InventoryManager.Instance.TryRemove(pair.Key, pair.Value))
+                foreach (KeyValuePair<string, long> pair in merged)
                 {
-                    Debug.LogError($"技能书喂养扣耗异常：{pair.Key} x{pair.Value}（unitId={unitId}）");
-                    return LevelUpResult.Failed;
+                    // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错；事务整体回滚
+                    if (!InventoryManager.Instance.TryRemove(pair.Key, pair.Value))
+                    {
+                        Debug.LogError($"技能书喂养扣耗异常：{pair.Key} x{pair.Value}（unitId={unitId}）");
+                        return LevelUpResult.Failed;
+                    }
                 }
-            }
-            foreach (ItemCost cost in creditCosts)
-            {
-                if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                foreach (ItemCost cost in creditCosts)
                 {
-                    Debug.LogError($"技能书喂养信用点扣耗异常：{cost.ItemId} x{cost.Count}（unitId={unitId}）");
-                    return LevelUpResult.Failed;
+                    if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                    {
+                        Debug.LogError($"技能书喂养信用点扣耗异常：{cost.ItemId} x{cost.Count}（unitId={unitId}）");
+                        return LevelUpResult.Failed;
+                    }
                 }
-            }
 
-            // 未拥有已在上方拦截，写入口必成功；武器侧落账武器字段
-            if (isWeapon)
-            {
-                if (newLevel != oldLevel) CharacterWarehouseManager.Instance.SetWeaponLevel(unitId, newLevel);
-                CharacterWarehouseManager.Instance.SetWeaponExp(unitId, newExp);
-            }
-            else
-            {
-                if (newLevel != oldLevel) CharacterWarehouseManager.Instance.SetLevel(unitId, newLevel);
-                CharacterWarehouseManager.Instance.SetExp(unitId, newExp);
-            }
+                // 未拥有已在上方拦截，写入口必成功；武器侧落账武器字段
+                if (isWeapon)
+                {
+                    if (newLevel != oldLevel) CharacterWarehouseManager.Instance.SetWeaponLevel(unitId, newLevel);
+                    CharacterWarehouseManager.Instance.SetWeaponExp(unitId, newExp);
+                }
+                else
+                {
+                    if (newLevel != oldLevel) CharacterWarehouseManager.Instance.SetLevel(unitId, newLevel);
+                    CharacterWarehouseManager.Instance.SetExp(unitId, newExp);
+                }
 
-            return new LevelUpResult(true, oldLevel, newLevel, discarded);
+                return new LevelUpResult(true, oldLevel, newLevel, discarded);
+            }, LevelUpResult.Failed);
         }
 
         /// <summary>
@@ -680,6 +818,101 @@ namespace Framework.Gameplay.Progression
 
         #endregion
 
+        #region 养成事务（整体提交）
+
+        //事务日志子目录与文件名（相对于 Data/）
+        private const string JournalFolder = "Journal";
+        private const string JournalFileName = "ProgressionOp";
+
+        /// <summary>
+        /// 以整体事务执行一次养成操作的变更段：进入前把背包+仓库的前状态写快照日志 →
+        /// 批量域内变更（不落盘不出广播）→ 全部成功后统一落盘一次并删日志；
+        /// body 提前结束（任何拒绝/异常）则从快照整体回滚再提交——材料不丢、养成不生效。
+        /// body 内变更段必须全同步（其间不得 await）；拒绝路径直接 return 即可，无需手工回滚。
+        /// </summary>
+        /// <typeparam name="T">操作结果类型。</typeparam>
+        /// <param name="body">变更段：扣耗与落账。</param>
+        /// <param name="failedResult">拒绝时 body 返回的失败值（false / LevelUpResult.Failed 等）。</param>
+        /// <returns>body 的返回值。</returns>
+        private static T RunProgressionOp<T>(Func<T> body, T failedResult)
+        {
+            //先写快照日志（写失败异常上抛，此时尚未动任何内存状态）
+            BinaryDataManager.Instance.Save(JournalFolder, JournalFileName, new ProgressionOpJournal
+            {
+                bag = InventoryManager.Instance.SnapshotData(),
+                warehouse = CharacterWarehouseManager.Instance.SnapshotData(),
+            });
+
+            InventoryManager.Instance.BeginBatch();
+            CharacterWarehouseManager.Instance.BeginBatch();
+            bool open = true;
+            try
+            {
+                T result = body();
+                open = false;
+                EndOpBatches();
+                BinaryDataManager.Instance.Delete(JournalFolder, JournalFileName);
+                return result;
+            }
+            finally
+            {
+                if (open)
+                {
+                    //body 提前结束：内存状态可能已部分变更 → 从快照整体回滚，批量域闭合时一次落盘
+                    ProgressionOpJournal journal = ReadJournalSnapshot();
+                    if (journal != null)
+                    {
+                        InventoryManager.Instance.RestoreData(journal.bag);
+                        CharacterWarehouseManager.Instance.RestoreData(journal.warehouse);
+                    }
+                    else
+                    {
+                        Debug.LogError("[CharacterProgressionManager] 事务日志无法读取，回滚失败，保留当前状态（可能部分变更）");
+                    }
+                    EndOpBatches();
+                    BinaryDataManager.Instance.Delete(JournalFolder, JournalFileName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 养成事务中断恢复（启动时调用一次，须在任何读档 UI 与默认发放之前）：
+        /// 存在未提交的事务日志 = 上次操作被打断，按快照整体回滚并清日志；无日志时零开销返回。
+        /// </summary>
+        public static void RecoverInterruptedOp()
+        {
+            ProgressionOpJournal journal = ReadJournalSnapshot();
+            BinaryDataManager.Instance.Delete(JournalFolder, JournalFileName);
+            if (journal == null) return;
+
+            InventoryManager.Instance.RestoreData(journal.bag);
+            CharacterWarehouseManager.Instance.RestoreData(journal.warehouse);
+            Debug.LogWarning("[CharacterProgressionManager] 检测到上次养成操作被中断，已回滚到操作前状态");
+        }
+
+        /// <summary>读取事务日志快照；文件缺失返回 null，损坏/版本不符/字段缺失报错并返回 null（调用方不得据此回滚）。</summary>
+        private static ProgressionOpJournal ReadJournalSnapshot()
+        {
+            if (!BinaryDataManager.Instance.FileExists(JournalFolder, JournalFileName)) return null;
+
+            ProgressionOpJournal journal = BinaryDataManager.Instance.Load<ProgressionOpJournal>(JournalFolder, JournalFileName);
+            if (journal == null || journal.version != 1 || journal.bag == null || journal.warehouse == null)
+            {
+                Debug.LogError($"[CharacterProgressionManager] 事务日志损坏或版本不符（{JournalFileName}），无法据其回滚");
+                return null;
+            }
+            return journal;
+        }
+
+        /// <summary>闭合背包与仓库两个批量域（有脏数据时各自落盘+广播一次）。</summary>
+        private static void EndOpBatches()
+        {
+            InventoryManager.Instance.EndBatch();
+            CharacterWarehouseManager.Instance.EndBatch();
+        }
+
+        #endregion
+
         #region 节点解锁
 
         /// <summary>
@@ -723,16 +956,26 @@ namespace Framework.Gameplay.Progression
                 }
             }
 
-            foreach (ItemCost cost in costs)
+            return RunProgressionOp(() =>
             {
-                if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                foreach (ItemCost cost in costs)
                 {
-                    Debug.LogError($"解锁节点扣耗异常：{ItemCost.Format(costs)}（节点 {nodeId}）");
+                    // 校验后扣除失败属于异常路径（单线程下不应发生），如实报错；事务整体回滚
+                    if (!InventoryManager.Instance.TryRemove(cost.ItemId, cost.Count))
+                    {
+                        Debug.LogError($"解锁节点扣耗异常：{ItemCost.Format(costs)}（节点 {nodeId}）");
+                        return false;
+                    }
+                }
+
+                // 登记失败（参数/重复等异常路径）同样触发事务整体回滚，材料不丢
+                if (!CharacterWarehouseManager.Instance.UnlockNode(unitId, nodeId))
+                {
+                    Debug.LogError($"解锁节点登记失败：unitId={unitId}, nodeId={nodeId}");
                     return false;
                 }
-            }
-
-            return CharacterWarehouseManager.Instance.UnlockNode(unitId, nodeId);
+                return true;
+            }, false);
         }
 
         #endregion
@@ -778,7 +1021,7 @@ namespace Framework.Gameplay.Progression
 
         #region Private
 
-        /// <summary>确保八张养成表已加载并缓存到字段；某张失败为 null 时下次调用自动重试。</summary>
+        /// <summary>确保九张养成表已加载并缓存到字段；某张失败为 null 时下次调用自动重试。</summary>
         private async Task<bool> EnsureTablesAsync()
         {
             characterTable = await DataTableManager.Instance.LoadTableAsync<CharacterRow, string>(TableNameCharacter);
@@ -789,11 +1032,13 @@ namespace Framework.Gameplay.Progression
             weaponLevelTable = await DataTableManager.Instance.LoadTableAsync<WeaponLevelRow, int>(TableNameWeaponLevel);
             itemTable = await DataTableManager.Instance.LoadTableAsync<ItemRow, string>(TableNameItem);
             upgradeCostTable = await DataTableManager.Instance.LoadTableAsync<UpgradeCostRow, int>(TableNameUpgradeCost);
+            skillLevelTable = await DataTableManager.Instance.LoadTableAsync<SkillLevelRow, int>(TableNameSkillLevel);
 
             return characterTable != null && levelTable != null
                 && breakthroughTable != null && unlockNodeTable != null
                 && weaponTable != null && weaponLevelTable != null
-                && itemTable != null && upgradeCostTable != null;
+                && itemTable != null && upgradeCostTable != null
+                && skillLevelTable != null;
         }
 
         /// <summary>节点查询委托：表未命中返回 null，由计算器跳过该节点。</summary>

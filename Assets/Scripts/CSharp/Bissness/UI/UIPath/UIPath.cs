@@ -8,4 +8,6 @@ public static class UIPath
     public static string CHARACTERLISTPANEL = "CharacterListPanel";
     //角色养成面板（Prefab-UI-Panels-Normal 组；角色列表面板点击列表项进入）
     public static string CULTIVATEPANEL = "CultivatePanel";
+    //战斗选择出击面板（Prefab-UI-Panels-Normal 组；主城作战入口打开）
+    public static string COMBATSELECTPANEL = "CombatSelectPanel";
 }

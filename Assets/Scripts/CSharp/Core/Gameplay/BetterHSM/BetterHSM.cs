@@ -4,7 +4,10 @@ using System.Collections.Generic;
 namespace Core.Gear
 {
     /// <summary>
-    /// 为单个实体持有状态实例并执行中断仲裁的纯 C# 状态机。
+    /// 为单个实体持有分层状态图并执行逐层中断仲裁的纯 C# 状态机。
+    /// 状态可经 AddChild 声明父状态构成树；激活链恒为 root→leaf 的单路径，
+    /// 中断仲裁沿链自根向叶逐层进行——层级即优先序，父层先评、命中即止，
+    /// priority 数值只在同层内竞争。
     /// </summary>
     public sealed class BetterHSM<TContext> : IDisposable
     {
@@ -14,7 +17,11 @@ namespace Core.Gear
         private readonly Dictionary<Type, StateBase<TContext>> _states = new Dictionary<Type, StateBase<TContext>>();
         // 用于稳定初始化和销毁顺序的状态列表。
         private readonly List<StateBase<TContext>> _stateList = new List<StateBase<TContext>>();
-        // 当前处于激活状态的实例。
+        // 当前激活链：root→leaf 的单路径，Build 与切换时重建（复用列表，热路径零分配）。
+        private readonly List<StateBase<TContext>> _activeChain = new List<StateBase<TContext>>();
+        // 切换时复用的目标祖先链 scratch。
+        private readonly List<StateBase<TContext>> _targetChain = new List<StateBase<TContext>>();
+        // 当前处于激活状态的叶子实例。
         private StateBase<TContext> _currentState;
         // 状态图是否已经完成构建并封口。
         private bool _isBuilt;
@@ -36,7 +43,7 @@ namespace Core.Gear
         public TContext Context => _context;
 
         /// <summary>
-        /// 获取当前激活的状态；构建前或尚未进入初始状态时返回 null。
+        /// 获取当前激活的状态（激活链叶子）；构建前或尚未进入初始状态时返回 null。
         /// </summary>
         public StateBase<TContext> CurrentState => _currentState;
 
@@ -55,7 +62,9 @@ namespace Core.Gear
         }
 
         /// <summary>
-        /// 推进当前实体状态的一次帧更新，并最多执行一次状态切换。
+        /// 推进当前实体状态的一次帧更新：沿激活链自根向叶逐层仲裁中断
+        /// （父层先评、命中即止；门控启用且未标脏的层整层跳过），全部未命中才更新叶子。
+        /// 每帧最多执行一次状态切换，切换帧不调用任何 OnUpdate。
         /// </summary>
         /// <exception cref="InvalidOperationException">状态图尚未构建时抛出。</exception>
         public void Update()
@@ -65,17 +74,25 @@ namespace Core.Gear
             if (!_isBuilt) throw new InvalidOperationException("HSM 必须在状态图构建完成后才能调用 Update。");
             if (_currentState == null) return;
 
-            // 先完整仲裁当前状态的所有边，避免条件书写顺序决定结果。
-            if (!_currentState.Interrupts.TryEvaluate(out StateTransitionRequest<TContext> request))
+            // 沿激活链 root→leaf 逐层仲裁：层级即优先序，父层命中后其余层本帧完全不评估。
+            for (int depth = 0; depth < _activeChain.Count; depth++)
             {
-                _currentState.OnUpdate();
+                StateBase<TContext> layer = _activeChain[depth];
+                // 门控未启用的层恒评估；启用的层仅在标脏后评估，消费即清（防卡脏）。
+                if (!layer.ShouldEvaluateInterrupts) continue;
+                layer.ConsumeDirty();
+                if (!layer.Interrupts.TryEvaluate(out StateTransitionRequest<TContext> request)) continue;
+
+                // 父层边命中当前已激活叶：不算切换（叶子目标约束下这是唯一可能命中的链上目标），
+                // 本帧照常更新叶子。
+                if (ReferenceEquals(request.TargetState, _currentState)) break;
+
+                // 只由状态机执行生命周期切换，本帧不再更新任何状态。
+                ExecuteTransition(request.TargetState);
                 return;
             }
 
-            // 只由状态机执行生命周期切换，本帧不再更新目标状态。
-            _currentState.OnExit();
-            _currentState = request.TargetState;
-            _currentState.OnEnter();
+            _currentState.OnUpdate();
         }
 
         /// <summary>
@@ -85,14 +102,16 @@ namespace Core.Gear
         {
             if (_isDisposed) return;
 
-            // 只有完整初始化过的状态才接收销毁生命周期。
+            // 只有完整初始化过的状态才接收销毁生命周期：整链自叶向根退出。
             if (_isBuilt)
             {
-                _currentState?.OnExit();
+                for (int depth = _activeChain.Count - 1; depth >= 0; depth--) _activeChain[depth].OnExit();
                 for (int index = 0; index < _stateList.Count; index++) _stateList[index].OnDispose();
             }
 
             _currentState = null;
+            _activeChain.Clear();
+            _targetChain.Clear();
             _states.Clear();
             _stateList.Clear();
             _isDisposed = true;
@@ -106,6 +125,18 @@ namespace Core.Gear
         /// <exception cref="InvalidOperationException">同类型状态重复注册或状态已绑定其他状态机时抛出。</exception>
         internal void RegisterState(StateBase<TContext> state)
         {
+            RegisterState(state, null);
+        }
+
+        /// <summary>
+        /// 将状态绑定到本状态机并挂到指定父状态下（parent 为 null 表示根状态）。
+        /// </summary>
+        /// <param name="state">需要注册的实体专属状态实例。</param>
+        /// <param name="parent">必须已注册的父状态实例。</param>
+        /// <exception cref="ArgumentNullException">状态为空时抛出。</exception>
+        /// <exception cref="InvalidOperationException">同类型状态重复注册、状态已绑定其他状态机或父状态未注册时抛出。</exception>
+        internal void RegisterState(StateBase<TContext> state, StateBase<TContext> parent)
+        {
             // 验证状态节点可安全归属到当前图。
             ThrowIfDisposed();
             if (_isBuilt) throw new InvalidOperationException("HSM 状态图已构建，不能继续注册状态。");
@@ -114,9 +145,13 @@ namespace Core.Gear
                 throw new InvalidOperationException($"HSM 不允许重复注册状态类型：{state.GetType().FullName}。");
             if (state.IsAttached)
                 throw new InvalidOperationException($"状态 {state.GetType().FullName} 已经绑定到其他 HSM。");
+            if (parent != null && !ContainsState(parent))
+                throw new InvalidOperationException($"父状态必须已注册到当前 HSM：{parent.GetType().FullName}。");
 
-            // 绑定上下文后记录该实体专属状态实例。
+            // 绑定上下文与父子关系后记录该实体专属状态实例。
             state.Attach(_context);
+            state.SetParent(parent);
+            state.Interrupts.SetOwner(state);
             _states.Add(state.GetType(), state);
             _stateList.Add(state);
         }
@@ -135,23 +170,41 @@ namespace Core.Gear
         /// <summary>
         /// 完成状态图初始化、封口所有边并进入初始状态。
         /// </summary>
-        /// <param name="initialState">已注册到当前状态机的初始状态。</param>
-        /// <exception cref="InvalidOperationException">初始状态无效或状态图已构建时抛出。</exception>
+        /// <param name="initialState">已注册到当前状态机的叶子初始状态。</param>
+        /// <exception cref="InvalidOperationException">初始状态无效、校验未通过或状态图已构建时抛出。</exception>
         internal void Build(StateBase<TContext> initialState)
         {
-            // 验证图具备一个属于当前实体的初始状态。
+            // 验证图具备一个属于当前实体的叶子初始状态。
             ThrowIfDisposed();
             if (_isBuilt) throw new InvalidOperationException("HSM 状态图已构建，不能重复构建。");
             if (!ContainsState(initialState)) throw new InvalidOperationException("初始状态必须已注册到当前 HSM。");
+            if (initialState.ChildCount > 0)
+                throw new InvalidOperationException(
+                    $"初始状态必须是叶子状态：{initialState.GetType().FullName} 拥有 {initialState.ChildCount} 个子状态。");
 
-            // 先完成全部状态的一次性初始化，再封口中断容器。
+            // 全部转换边目标必须是叶子：复合状态没有默认子状态语义，进入复合状态即歧义，构建期直接报错。
+            for (int index = 0; index < _stateList.Count; index++)
+            {
+                StateInterruptContainer<TContext> interrupts = _stateList[index].Interrupts;
+                for (int bindingIndex = 0; bindingIndex < interrupts.BindingCount; bindingIndex++)
+                {
+                    StateBase<TContext> target = interrupts.GetBindingTarget(bindingIndex);
+                    if (target.ChildCount > 0)
+                        throw new InvalidOperationException(
+                            $"转换边目标必须是叶子状态：{_stateList[index].GetType().FullName} -> " +
+                            $"{target.GetType().FullName}（目标拥有 {target.ChildCount} 个子状态）。");
+                }
+            }
+
+            // 先完成全部状态的一次性初始化，再封口中断容器（Seal 内完成优先级排序）。
             for (int index = 0; index < _stateList.Count; index++) _stateList[index].OnInitialize();
             for (int index = 0; index < _stateList.Count; index++) _stateList[index].Interrupts.Seal();
 
-            // 只有初始化完全完成后才允许进入运行时更新。
+            // 只有初始化完全完成后才允许进入运行时更新：构建初始激活链并自顶向下整链进入。
             _isBuilt = true;
+            BuildAncestorChain(initialState, _activeChain);
             _currentState = initialState;
-            _currentState.OnEnter();
+            for (int depth = 0; depth < _activeChain.Count; depth++) _activeChain[depth].OnEnter();
         }
 
         /// <summary>
@@ -161,6 +214,53 @@ namespace Core.Gear
         private void ThrowIfDisposed()
         {
             if (_isDisposed) throw new ObjectDisposedException(nameof(BetterHSM<TContext>));
+        }
+
+        /// <summary>
+        /// 执行一次状态切换（目标必为叶子且不等于当前叶）：
+        /// 沿公共祖先（LCA）级联退出与进入后重建激活链。
+        /// </summary>
+        /// <param name="targetState">仲裁胜出的目标叶子状态。</param>
+        private void ExecuteTransition(StateBase<TContext> targetState)
+        {
+            // 构建目标祖先链（root→target），复用 scratch 列表。
+            BuildAncestorChain(targetState, _targetChain);
+
+            // LCA：激活链自叶端向根端扫，第一个也出现在目标链中的状态即最深公共祖先
+            // （两条都是 root 序路径，公共部分必然是前缀）；跨树（多根）时不存在，记 -1 表示整链全退。
+            // 目标必为叶且不等于当前叶，故 LCA 既不会是目标（Enter 至少一级）也不会是当前叶（Exit 至少一级）。
+            int lcaDepth = -1;
+            for (int depth = _activeChain.Count - 1; depth >= 0; depth--)
+            {
+                if (!_targetChain.Contains(_activeChain[depth])) continue;
+
+                lcaDepth = depth;
+                break;
+            }
+
+            // Exit 级联：叶→祖先方向，直到（不含）LCA；跨树则整链全退。
+            for (int depth = _activeChain.Count - 1; depth > lcaDepth; depth--) _activeChain[depth].OnExit();
+
+            // Enter 级联：LCA 之后一层到目标（含目标），自上而下；跨树从目标根开始。
+            for (int depth = lcaDepth + 1; depth < _targetChain.Count; depth++) _targetChain[depth].OnEnter();
+
+            // 重建激活链并指向新叶；本帧由调用方直接返回，不调任何 OnUpdate。
+            _activeChain.Clear();
+            for (int depth = 0; depth < _targetChain.Count; depth++) _activeChain.Add(_targetChain[depth]);
+            _currentState = targetState;
+        }
+
+        /// <summary>
+        /// 构建指定叶状态的祖先链（root→leaf 序），写入复用列表。
+        /// </summary>
+        /// <param name="leafState">链尾叶子状态。</param>
+        /// <param name="chain">接收结果的复用列表。</param>
+        private static void BuildAncestorChain(StateBase<TContext> leafState, List<StateBase<TContext>> chain)
+        {
+            // 自叶向根上溯后原地反转，得到 root→leaf 序。
+            chain.Clear();
+            for (StateBase<TContext> node = leafState; node != null; node = node.Parent) chain.Add(node);
+            chain.Reverse();
         }
     }
 }

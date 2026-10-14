@@ -19,6 +19,8 @@ public class CultivateStatPageView : MonoBehaviour
     public RectTransform expFillRect;
     //职业文案（Left/Archetype/Text）
     public TMP_Text archetypeText;
+    //职业定位图标（Left/Archetype/Icon）
+    public Image archetypeIcon;
 
     [Header("角色标签")]
     //标签列表容器（Left/Scroll View/Content，GridLayout；CHTag 经 ObjectsPool 出池入池）
@@ -31,8 +33,8 @@ public class CultivateStatPageView : MonoBehaviour
     [Header("升级操作（技能书喂养）")]
     //升级区根节点（Bot/Left/LevelUp）：升级态显示，与突破区互斥（二选一）
     public RectTransform levelUpSection;
-    //技能书喂养格（升级区 Content 下 4 个 CostItem，按品质升序；Icon 点击暂存 +1 / Reduce 暂存 -1）
-    public CostItemView[] bookCells;
+    //书格容器（升级区 Content）：格子由 Control 按 bookItemIds 从 costItemPrefab 动态生成（GridLayout 自动排列，固定 4 格不入池）
+    public RectTransform bookContent;
     //突破区根节点（Bot/Left/Breakthrough）：等级达上限且还有突破阶段时显示，与升级区互斥
     public RectTransform breakthroughSection;
     //突破材料只读列表容器（突破区 Content；CostItem 经 ObjectsPool 出池入池，展示持有/需要）

@@ -120,6 +120,54 @@ namespace Framework.Gameplay.Inventory
 
         #endregion
 
+        #region 批量提交（养成事务）
+
+        //批量域深度：>0 时变更只标脏不落盘不出广播，域闭合统一提交一次
+        private int batchDepth;
+
+        //批量域内发生过变更
+        private bool batchDirty;
+
+        /// <summary>开启批量提交域：域内变更不落盘不出广播，EndBatch 统一提交（养成事务用，可嵌套）。</summary>
+        public void BeginBatch()
+        {
+            batchDepth++;
+        }
+
+        /// <summary>关闭批量提交域：有脏数据时统一落盘并广播一次；无配对 BeginBatch 时报错忽略。</summary>
+        public void EndBatch()
+        {
+            if (batchDepth <= 0)
+            {
+                Debug.LogError("[InventoryManager] EndBatch 无配对 BeginBatch，忽略");
+                return;
+            }
+
+            batchDepth--;
+            if (batchDepth == 0 && batchDirty)
+            {
+                batchDirty = false;
+                SaveData();
+                EventCenter.Instance.SetEventTrigger(EventNames.BagUpdated);
+            }
+        }
+
+        /// <summary>内部数据引用（养成事务快照专用，调用方只做序列化，不得改动）。</summary>
+        public InventoryData SnapshotData()
+        {
+            return data;
+        }
+
+        /// <summary>整份数据替换（养成事务回滚/启动恢复专用）：替换后按当前批量域状态落盘广播。</summary>
+        public void RestoreData(InventoryData restored)
+        {
+            data = restored ?? new InventoryData();
+            Normalize();
+            NotifyChanged();
+        }
+
+        #endregion
+
         #region 持久化
 
         /// <summary>
@@ -195,10 +243,16 @@ namespace Framework.Gameplay.Inventory
         }
 
         /// <summary>
-        /// 变更后的统一出口：即改即存并广播 BagUpdated 事件。
+        /// 变更后的统一出口：批量域内只标脏（EndBatch 统一提交），域外即改即存并广播 BagUpdated 事件。
         /// </summary>
         private void NotifyChanged()
         {
+            if (batchDepth > 0)
+            {
+                batchDirty = true;
+                return;
+            }
+
             SaveData();
             EventCenter.Instance.SetEventTrigger(EventNames.BagUpdated);
         }

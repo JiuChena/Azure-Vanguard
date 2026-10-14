@@ -52,5 +52,10 @@ namespace Framework.Gameplay.Player
         // 绑定武器当前等级内已累积经验；升级结算公式在养成业务逻辑中，仓库只存值
         [Key(9)]
         public int weaponExp;
+
+        // 天赋技能等级，下限 1
+        // 注意：旧档反序列化缺失键时为 0，仓库加载校验会兜底为 1
+        [Key(10)]
+        public int skillLevelTalent = 1;
     }
 }

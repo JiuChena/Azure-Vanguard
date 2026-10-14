@@ -7,8 +7,9 @@ namespace Framework.Gameplay.Abilities
 {
     /// <summary>
     /// 单位配置运行时库：按单位 ID（= Addressables 地址 = SO.unitId）加载 <see cref="UnitConfig"/> 资产。
-    /// 常驻不释放（与 AddressableTableSource 同口径）：配置量小且全期有效，Lease 挂 Persistent 作用域。
-    /// 缓存命中直接短路；并发加载经 pending 表去重；加载失败的 id 不入缓存，下次自动重试。
+    /// 双口径：不传作用域常驻不释放（与 AddressableTableSource 同口径，战斗等全期消费方）；
+    /// 传入 <see cref="ResourceScope"/> 则每次调用登记独立租约、随作用域统一释放（面板类调用方传 PanelBase.ResourceScope），不走静态缓存。
+    /// 常驻口径缓存命中直接短路；并发加载经 pending 表去重；加载失败的 id 不入缓存，下次自动重试。
     /// </summary>
     public static class UnitConfigLibrary
     {
@@ -20,15 +21,40 @@ namespace Framework.Gameplay.Abilities
 
         /// <summary>
         /// 获取单位配置；缓存命中直接返回，否则从 Addressables 加载（地址 = unitId）。
+        /// 传入作用域时走作用域租约（不进静态缓存，随作用域释放）。
         /// </summary>
         /// <param name="unitId">单位 ID（如 CH0221）。</param>
+        /// <param name="scope">可选资源作用域：传入则租约随作用域统一释放（面板资源口径），不传则常驻缓存。</param>
         /// <returns>单位配置；id 非法或加载失败返回 null（失败详情由 AddressableManager 报错定位）。</returns>
-        public static async Task<UnitConfig> GetAsync(string unitId)
+        public static async Task<UnitConfig> GetAsync(string unitId, ResourceScope scope = null)
         {
             if (string.IsNullOrWhiteSpace(unitId))
             {
                 Debug.LogError($"[UnitConfigLibrary] 获取失败：unitId 为空");
                 return null;
+            }
+
+            //作用域口径：每调用一租约，随作用域统一释放（AddressableManager 按 key 去重并发与共享计数）
+            if (scope != null)
+            {
+                if (scope.IsDisposed) return null;
+                try
+                {
+                    ResourceLease<CharacterUnitConfig> lease = await AddressableManager.Instance
+                        .AcquireAssetAsync<CharacterUnitConfig>(unitId, scope);
+                    //等待加载期间作用域已被释放（关板竞态）：租约未登记进作用域，手动归还防计数悬挂
+                    if (scope.IsDisposed)
+                    {
+                        lease?.Dispose();
+                        return null;
+                    }
+                    return lease?.Asset;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[UnitConfigLibrary] 配置加载失败：{unitId}（{e.Message}）");
+                    return null;
+                }
             }
 
             if (cache.TryGetValue(unitId, out UnitConfig hit)) return hit;

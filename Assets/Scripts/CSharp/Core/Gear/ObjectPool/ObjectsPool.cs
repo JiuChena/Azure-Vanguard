@@ -186,6 +186,37 @@ namespace Core.Gear
 
         #endregion
 
+        #region Prewarm
+
+        /// <summary>
+        /// 预热缓存池：确保指定预制体在池中至少有 count 个备用实例（不足则补实例化，挂池根失活待用）。
+        /// 开局预载常用小控件（列表项/背包格等）用，消除首次开板的实例化尖峰；
+        /// 备用件是空壳，内容（图标/文本）照常在业务取用时刷新；重复调用幂等（只补差额）。
+        /// </summary>
+        public void Prewarm(GameObject prefab, int count)
+        {
+            if (prefab == null || count <= 0) return;
+
+            //与 Get/Put 同键（prefab.name），直接补进对应队列
+            string nameKey = prefab.name;
+            if (!objectPool.TryGetValue(nameKey, out Queue<GameObject> queue))
+            {
+                queue = new Queue<GameObject>();
+                objectPool.Add(nameKey, queue);
+            }
+
+            for (int i = queue.Count; i < count; i++)
+            {
+                GameObject instance = Instantiate(prefab);
+                instance.name = nameKey;
+                instance.transform.SetParent(transform, false);
+                instance.SetActive(false);
+                queue.Enqueue(instance);
+            }
+        }
+
+        #endregion
+
         #region Clear
 
         /// <summary>

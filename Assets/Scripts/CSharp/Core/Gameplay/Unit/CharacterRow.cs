@@ -29,6 +29,10 @@ namespace Framework.Gameplay.Unit
         [Key("profession")]
         public string Profession;
 
+        // 角色主要定位类型（对应 Tag 图集中的 Tag_Small_DPS / Tag_Small_Defence / Tag_Small_Support / Tag_Small_Heal）
+        [Key("archetype")]
+        public string Archetype;
+
         // 阵营（如 student/enemy）
         [Key("camp")]
         public string Camp;

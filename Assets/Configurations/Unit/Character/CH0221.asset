@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CH0221
   m_EditorClassIdentifier: 
   unitId: CH0221
-  unitName: "\u67DA\u9E1F\u590F\u3010\u4E50\u961F\u3011"
+  unitName: "\u67DA\u9E1F\u590F[\u4E50\u961F]"
   behaviorClips:
     keys:
     - 

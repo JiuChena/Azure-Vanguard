@@ -29,6 +29,9 @@ namespace Core.Gear
         // 所属作用域
         public ResourceScope Scope { get; private set; }
 
+        // 关联的完整资源键（Type::唯一键）：精确查询/扫漏用（查询键须与加载键同模式）
+        public string ResourceKey => resourceKey;
+
         // 是否已释放
         public bool IsReleased { get; private set; }
 

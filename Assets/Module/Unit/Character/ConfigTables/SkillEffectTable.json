@@ -101,6 +101,16 @@
       "growth": 0.15,
       "duration": 0,
       "desc": "范围内敌人受攻击力倍率伤害"
+    },
+    {
+      "effectId": 9010101,
+      "effectType": "damage",
+      "target": "single_target",
+      "range": 0,
+      "value": 1,
+      "growth": 0,
+      "duration": 0,
+      "desc": "对目标造成近战攻击力伤害"
     }
   ]
 }

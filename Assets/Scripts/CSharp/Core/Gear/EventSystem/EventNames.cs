@@ -55,6 +55,12 @@ namespace Core.Gear
         public const string CharacterSwitched = UnitSwitched;
         // 单位死亡（携带单位 GameObject）。
         public const string UnitDeath = nameof(UnitDeath);
+        // 战斗点数变化（载荷 = int 当前值）。
+        public const string BattlePointChanged = nameof(BattlePointChanged);
+        // 战斗波次推进（载荷 = int 1 基波号）。
+        public const string BattleWaveChanged = nameof(BattleWaveChanged);
+        // 战斗胜负判定（载荷 = int，BattleOutcome 枚举值；只发一次）。
+        public const string BattleOutcomeDecided = nameof(BattleOutcomeDecided);
         // Buff 施加。
         public const string BuffApplied = nameof(BuffApplied);
         // Buff 移除。

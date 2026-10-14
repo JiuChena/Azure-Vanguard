@@ -4,63 +4,111 @@
   "rows": [
     {
       "skillId": 22101,
-      "name": "音波弹",
+      "name": "Sonic Shot",
       "type": "normal",
       "maxLevel": 10,
       "cooldown": 0,
       "cost": 0,
       "effectIds": "2210101",
-      "desc": "对目标敌人造成一次音波伤害"
+      "desc": "Deals {rate:percent} ATK as sonic damage to a target enemy, plus {atkadd} bonus damage",
+      "params": "{rate:1.0:0.08, atkadd:50:20}",
+      "icon": "NormalAttack"
     },
     {
       "skillId": 22102,
-      "name": "和弦扩散",
+      "name": "Chord Wave",
       "type": "e",
       "maxLevel": 10,
       "cooldown": 8,
       "cost": 2,
       "effectIds": "2210201,2210202",
-      "desc": "以自身为中心扩散音浪，伤害并减速范围内敌人"
+      "desc": "Expands a sonic wave around the user, dealing {rate:percent} ATK damage to enemies in range and slowing their movement by {slow:percent} for {slowtime} seconds",
+      "params": "{rate:1.5:0.12, slow:0.4:0.03, slowtime:2.5:0}",
+      "icon": "CH0221_Skill"
     },
     {
       "skillId": 22103,
-      "name": "终乐章",
+      "name": "Finale",
       "type": "burst",
       "maxLevel": 10,
       "cooldown": 25,
       "cost": 6,
       "effectIds": "2210301,2210302",
-      "desc": "奏响终乐章，对大范围敌人造成重伤并治愈全队"
+      "desc": "Plays the finale, dealing {rate:percent} ATK damage to enemies in a large area and healing the whole team for {healrate:percent} of their Max HP",
+      "params": "{rate:3.2:0.25, healrate:0.15:0.01}",
+      "icon": "CH0221_EX"
     },
     {
       "skillId": 20901,
-      "name": "盾击",
+      "name": "Shield Bash",
       "type": "normal",
       "maxLevel": 10,
       "cooldown": 0,
       "cost": 0,
       "effectIds": "2090101",
-      "desc": "对目标敌人造成一次盾击伤害"
+      "desc": "Deals {rate:percent} ATK as shield bash damage to a target enemy, plus {atkadd} bonus damage",
+      "params": "{rate:1.0:0.08, atkadd:50:20}",
+      "icon": "NormalAttack"
     },
     {
       "skillId": 20902,
-      "name": "坚壁领域",
+      "name": "Bulwark Field",
       "type": "e",
       "maxLevel": 10,
       "cooldown": 8,
       "cost": 2,
       "effectIds": "2090201,2090202",
-      "desc": "展开护盾领域，对周围敌人造成伤害并减速"
+      "desc": "Deploys a shield field, dealing {rate:percent} ATK damage to nearby enemies and slowing their movement by {slow:percent} for {slowtime} seconds",
+      "params": "{rate:1.2:0.1, slow:0.3:0.02, slowtime:2:0}",
+      "icon": "CH0209_Skill"
     },
     {
       "skillId": 20903,
-      "name": "不动如山",
+      "name": "Immovable",
       "type": "burst",
       "maxLevel": 10,
       "cooldown": 25,
       "cost": 6,
       "effectIds": "2090301,2090302",
-      "desc": "进入固守姿态，回复自身生命并重击周围敌人"
+      "desc": "Enters a guarding stance, restoring {healrate:percent} of Max HP and striking nearby enemies for {rate:percent} ATK damage",
+      "params": "{healrate:0.25:0.01, rate:1.5:0.15}",
+      "icon": "CH0209_EX"
+    },
+    {
+      "skillId": 22104,
+      "name": "Perfect Pitch",
+      "type": "talent",
+      "maxLevel": 10,
+      "cooldown": 0,
+      "cost": 0,
+      "effectIds": "",
+      "desc": "Raises own ATK by {atkup:percent} when entering combat",
+      "params": "{atkup:0.04:0.01}",
+      "icon": "CH0221_Talent"
+    },
+    {
+      "skillId": 20904,
+      "name": "Guard Instinct",
+      "type": "talent",
+      "maxLevel": 10,
+      "cooldown": 0,
+      "cost": 0,
+      "effectIds": "",
+      "desc": "Raises own DEF by {defup:percent} when HP falls below {threshold:percent}",
+      "params": "{threshold:0.5:0, defup:0.15:0.02}",
+      "icon": "CH0209_Talent"
+    },
+    {
+      "skillId": 90101,
+      "name": "Melee Strike",
+      "type": "normal",
+      "maxLevel": 10,
+      "cooldown": 0,
+      "cost": 0,
+      "effectIds": "9010101",
+      "desc": "Deals {rate:percent} ATK plus {atkadd} as melee damage to a target enemy",
+      "params": "{rate:1.0:0.08, atkadd:30:15}",
+      "icon": "NormalAttack"
     }
   ]
 }

@@ -14,4 +14,8 @@ public class CultivateTrinketPageView : MonoBehaviour
     [Header("合奏展示")]
     //合奏加成文本（SetBonus/Scroll View/Viewport/Content；触发合奏时写描述，未触发清空）
     public TMP_Text setBonusText;
+
+    [Header("装备背包")]
+    //背包分区（TrinketBag）：条目列表/类别与套装筛选/详情卡，内容由 Control 绑定
+    public TrinketBagView bag;
 }

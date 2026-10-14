@@ -9,5 +9,7 @@ namespace Core.Gear
         public const string Preload = nameof(Preload);
         // 主城场景（预加载完成后进入的第一个场景）。
         public const string Home = nameof(Home);
+        // 战斗测试场景（战斗框架首切片）。
+        public const string CombatTest = nameof(CombatTest);
     }
 }

@@ -8,7 +8,8 @@ namespace Framework.Gameplay.Unit
     /// <summary>
     /// 技能骨架表行：对应 Assets/Module/Unit/Character/Excel/SkillTable.xlsx。
     /// 技能是骨架，具体效果在 SkillEffectTable 一效果一行，本表经 effectIds 引用。
-    /// 技能 id 编码 = 角色 id×100 + 槽位（01 普攻 / 02 E / 03 Q），如 22102。
+    /// 技能 id 编码 = 角色 id×100 + 槽位（01 普攻 / 02 E / 03 Q / 04 天赋），如 22102。
+    /// params 列 = 占位符参数集，解析与按等级取值统一走 <see cref="SkillDataLibrary"/>。
     /// </summary>
     [MessagePackObject]
     public sealed class SkillRow : IConfigTableRow<int>
@@ -18,6 +19,8 @@ namespace Framework.Gameplay.Unit
         {
             // 普攻
             public const string Normal = "normal";
+            // 天赋技能（被动型）
+            public const string Talent = "talent";
             // 小技能 E
             public const string E = "e";
             // 爆发技能 Q
@@ -32,11 +35,11 @@ namespace Framework.Gameplay.Unit
         [Key("name")]
         public string Name;
 
-        // 技能类型：normal普攻 / e小技能 / burst爆发
+        // 技能类型：normal普攻 / talent天赋 / e小技能 / burst爆发
         [Key("type")]
         public string Type;
 
-        // 最大等级（普攻/E/Q 为 1~10，天赋/加成节点无等级不进本表）
+        // 最大等级（普攻/天赋/E/Q 均为 1~10）
         [Key("maxLevel")]
         public int MaxLevel;
 
@@ -55,6 +58,14 @@ namespace Framework.Gameplay.Unit
         // 技能描述文本
         [Key("desc")]
         public string Desc;
+
+        // 技能参数占位符集：{键:初值:每级成长, ...}；键同时用于描述文本占位符与表现层查询
+        [Key("params")]
+        public string Params;
+
+        // 技能图标地址（Sprite-Character-Skill-Icon 组内条目；普攻全角色共用 NormalAttack）
+        [Key("icon")]
+        public string Icon;
 
         /// <summary>解析后的效果 id 集合；空列返回空数组。</summary>
         [IgnoreMember]

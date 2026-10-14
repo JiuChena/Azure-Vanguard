@@ -235,6 +235,18 @@ namespace Framework.Gameplay.Player
         }
 
         /// <summary>
+        /// 设置天赋技能等级；技能上限由养成层控制，此处只做下限防御。
+        /// </summary>
+        /// <param name="unitId">单位 ID。</param>
+        /// <param name="level">目标等级，必须不小于 1。</param>
+        /// <returns>成功返回 true；未拥有该角色或参数非法返回 false。</returns>
+        public bool SetSkillLevelTalent(string unitId, int level)
+        {
+            return SetSkillLevel(unitId, level, nameof(SetSkillLevelTalent),
+                (entry, value) => entry.skillLevelTalent = value);
+        }
+
+        /// <summary>
         /// 解锁指定节点（天赋/属性加成）；解锁即永久，重复解锁幂等拒绝。
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
@@ -253,6 +265,54 @@ namespace Framework.Gameplay.Player
             entry.unlockedNodes.Add(nodeId);
             NotifyChanged(EventNames.CharacterDataUpdated);
             return true;
+        }
+
+        #endregion
+
+        #region 批量提交（养成事务）
+
+        //批量域深度：>0 时变更只标脏不落盘不出广播，域闭合统一提交一次
+        private int batchDepth;
+
+        //批量域内发生过变更
+        private bool batchDirty;
+
+        /// <summary>开启批量提交域：域内变更不落盘不出广播，EndBatch 统一提交（养成事务用，可嵌套）。</summary>
+        public void BeginBatch()
+        {
+            batchDepth++;
+        }
+
+        /// <summary>关闭批量提交域：有脏数据时统一落盘并广播一次；无配对 BeginBatch 时报错忽略。</summary>
+        public void EndBatch()
+        {
+            if (batchDepth <= 0)
+            {
+                Debug.LogError("[CharacterWarehouseManager] EndBatch 无配对 BeginBatch，忽略");
+                return;
+            }
+
+            batchDepth--;
+            if (batchDepth == 0 && batchDirty)
+            {
+                batchDirty = false;
+                SaveData();
+                EventCenter.Instance.SetEventTrigger(EventNames.CharacterDataUpdated);
+            }
+        }
+
+        /// <summary>内部数据引用（养成事务快照专用，调用方只做序列化，不得改动）。</summary>
+        public CharacterWarehouseData SnapshotData()
+        {
+            return data;
+        }
+
+        /// <summary>整份数据替换（养成事务回滚/启动恢复专用）：替换后按当前批量域状态落盘广播。</summary>
+        public void RestoreData(CharacterWarehouseData restored)
+        {
+            data = restored ?? new CharacterWarehouseData();
+            Normalize();
+            NotifyChanged(EventNames.CharacterDataUpdated);
         }
 
         #endregion
@@ -356,6 +416,7 @@ namespace Framework.Gameplay.Player
                 if (entry.skillLevelNormal < 1) entry.skillLevelNormal = 1;
                 if (entry.skillLevelE < 1) entry.skillLevelE = 1;
                 if (entry.skillLevelQ < 1) entry.skillLevelQ = 1;
+                if (entry.skillLevelTalent < 1) entry.skillLevelTalent = 1; // 旧档缺 [Key(10)] 反序列化为 0
                 entry.exp = System.Math.Max(0, entry.exp);
 
                 // 节点列表去重并剔除非法 ID
@@ -369,11 +430,17 @@ namespace Framework.Gameplay.Player
         }
 
         /// <summary>
-        /// 变更后的统一出口：即改即存并广播指定事件。
+        /// 变更后的统一出口：批量域内只标脏（EndBatch 统一提交），域外即改即存并广播指定事件。
         /// </summary>
         /// <param name="eventName">要广播的事件名（EventNames 常量）。</param>
         private void NotifyChanged(string eventName)
         {
+            if (batchDepth > 0)
+            {
+                batchDirty = true;
+                return;
+            }
+
             SaveData();
             EventCenter.Instance.SetEventTrigger(eventName);
         }

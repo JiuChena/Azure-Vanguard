@@ -21,6 +21,13 @@ public class TrinketSlotView : MonoBehaviour
     //副词条文本 ×3（Property/Sub Stat 1/2/3/Text；模板与主词条同口径）
     public TMP_Text[] subStatTexts;
 
+    //套装名文本（Property/SetBonusName/Text；模板 "套装：{0}" 由接线脚本烘焙自用户静态串前缀，
+    //{0}=合奏名（EnsembleTable）；无合奏写 "-"，模板捕获缓存于 Control）
+    public TMP_Text setBonusNameText;
+
+    //打开装备背包的按钮（子节点 Button；点击开背包换装，点击音效走该按钮的持久化接线）
+    public Button openBagButton;
+
     //当前绑定的装备实例 ID：异步图标回包校验（防串写），运行时由 Control 绑定（0 = 空槽）
     [System.NonSerialized] public ulong instanceId;
 }

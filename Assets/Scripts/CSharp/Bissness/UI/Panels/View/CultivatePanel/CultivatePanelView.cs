@@ -12,9 +12,9 @@ public class CultivatePanelView : MonoBehaviour
     public CultivateCharacterBarView characterBar;
 
     [Header("页签与页面")]
-    //页签开关（Toggles/List 下 5 个：属性/武器/饰品/技能/突破[页未建]），下标与 pages 对齐，突破页除外
+    //页签开关（Toggles/List 下 5 个：属性/武器/饰品/技能/突破），下标与 pages 对齐
     public Toggle[] pageToggles;
-    //页面节点（Pages 下 4 个：StatPage/GunPage/TrinketPage/AbilityPage；Ascend 页预制体未建）
+    //页面节点（Pages 下 5 个：StatPage/GunPage/TrinketPage/AbilityPage/AscendPage；突破页内容未接）
     public GameObject[] pages;
 
     [Header("属性页")]
@@ -28,6 +28,10 @@ public class CultivatePanelView : MonoBehaviour
     [Header("装备页")]
     //装备页分区：三装备槽位/合奏展示
     public CultivateTrinketPageView trinketPage;
+
+    [Header("技能页")]
+    //技能页分区：技能格开关/详情名与描述
+    public CultivateAbilityPageView abilityPage;
 
     [Header("角色展示区")]
     //角色模型展示分区：模型锚点与朝向点

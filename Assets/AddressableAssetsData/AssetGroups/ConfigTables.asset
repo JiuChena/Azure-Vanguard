@@ -23,6 +23,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 29cd88e3284eb94438423391b4e66531
+    m_Address: ConfigTables/EnemyTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3583c60945a4a84479a009542aff4e8f
+    m_Address: ConfigTables/SkillLevelTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 361342b5a1f90cc43aa86b0a14ee020c
+    m_Address: ConfigTables/WaveTable
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - DataTable
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3bf923f8dc22b594f8b805706b113457
     m_Address: ConfigTables/BreakthroughTable
     m_ReadOnly: 0

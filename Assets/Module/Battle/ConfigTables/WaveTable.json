@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "tableName": "WaveTable",
+  "rows": [
+    {
+      "id": "W0001",
+      "waveIndex": 1,
+      "enemyId": "EN0001",
+      "count": 3,
+      "spawnInterval": 2
+    },
+    {
+      "id": "W0002",
+      "waveIndex": 2,
+      "enemyId": "EN0001",
+      "count": 5,
+      "spawnInterval": 1.5
+    }
+  ]
+}

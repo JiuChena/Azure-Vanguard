@@ -93,6 +93,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -1126,7 +1139,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_49
+      name: Tag_Small_DPS
       rect:
         serializedVersion: 2
         x: 1621
@@ -1147,7 +1160,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_50
+      name: Tag_Small_Defence
       rect:
         serializedVersion: 2
         x: 1552
@@ -1189,7 +1202,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_52
+      name: Tag_Small_Support
       rect:
         serializedVersion: 2
         x: 1690
@@ -1210,7 +1223,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Common_53
+      name: Tag_Small_Heal
       rect:
         serializedVersion: 2
         x: 1552
@@ -1384,12 +1397,8 @@ TextureImporter:
       Common_40: 555865488
       Common_41: 1660349518
       Common_48: -353672617
-      Common_49: -1310163065
       Common_5: -924742564
-      Common_50: -933908135
       Common_51: -458664371
-      Common_52: -1245824037
-      Common_53: 988978712
       Common_54: 1990152601
       Common_55: -254398365
       Common_56: -92116332
@@ -1405,6 +1414,10 @@ TextureImporter:
       Feeling_3: -1927883739
       Feeling_4: 19782457
       Feeling_5: -1881802387
+      Tag_Small_DPS: -1310163065
+      Tag_Small_Defence: -933908135
+      Tag_Small_Heal: 988978712
+      Tag_Small_Support: -1245824037
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

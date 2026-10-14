@@ -7,7 +7,8 @@ namespace Core.Gear
 {
     /// <summary>
     /// UI 图标运行时库：按地址名加载单图 Sprite（png 的 Sprite 是子资源，走「名[名]」子地址直载）。
-    /// 常驻不释放（与 UnitConfigLibrary 同口径）：图标小且反复使用，Lease 挂 Persistent 作用域。
+    /// 双口径：不传作用域常驻不释放（与 UnitConfigLibrary 同口径，跨面板反复使用的系统级图标）；
+    /// 传入 <see cref="ResourceScope"/> 则每次调用登记独立租约、随作用域统一释放（面板类调用方传 PanelBase.ResourceScope）。
     /// 缓存命中直接短路；并发加载经 pending 表去重；加载失败的名字不入缓存，下次自动重试并返回 null（调用方保留默认图）。
     /// 角色头像地址约定：CHAvatar_&lt;变体&gt;_&lt;unitId&gt;（如 CHAvatar_Small_CH0221），变体分组见 Addressables 组 Sprite-CharacterAvatar-*。
     /// </summary>
@@ -43,24 +44,52 @@ namespace Core.Gear
         }
 
         /// <summary>
-        /// 获取角色头像（地址键 = <see cref="CharacterAvatarKey"/>），并发去重与缓存口径同 <see cref="GetAsync"/>。
+        /// 获取角色头像（地址键 = <see cref="CharacterAvatarKey"/>），并发去重与缓存口径同 <see cref="GetAsync"/>；
+        /// 传入作用域时租约登记进作用域，随作用域释放（面板资源口径）。
         /// </summary>
-        public static Task<Sprite> GetCharacterAvatarAsync(string variant, string unitId)
+        public static Task<Sprite> GetCharacterAvatarAsync(string variant, string unitId, ResourceScope scope = null)
         {
-            return GetAsync(CharacterAvatarKey(variant, unitId));
+            return GetAsync(CharacterAvatarKey(variant, unitId), scope);
         }
 
         /// <summary>
-        /// 获取图标 Sprite；缓存命中直接返回，否则从 Addressables 加载。
+        /// 获取图标 Sprite。
+        /// 不传作用域：常驻缓存口径——命中直接返回，否则加载后入全局缓存，永不释放（跨面板反复使用的系统级图标）。
+        /// 传入作用域：不走全局缓存，每次调用向作用域登记一个独立租约，作用域 Dispose 时级联释放
+        /// （面板类调用方传 PanelBase.ResourceScope）；并发与跨调用方共享由 AddressableManager 按 key 去重计数。
         /// </summary>
         /// <param name="spriteName">地址名（= png 文件名 = Sprite 子资源名，如 CHAvatar_Small_CH0221）。</param>
+        /// <param name="scope">可选资源作用域：传入则租约随作用域统一释放，不传则常驻缓存。</param>
         /// <returns>Sprite；名字非法或未登记时返回 null（调用方保留默认图）。</returns>
-        public static async Task<Sprite> GetAsync(string spriteName)
+        public static async Task<Sprite> GetAsync(string spriteName, ResourceScope scope = null)
         {
             if (string.IsNullOrWhiteSpace(spriteName))
             {
                 Debug.LogError("[IconLibrary] 获取失败：spriteName 为空");
                 return null;
+            }
+
+            //作用域口径：每调用一租约，随作用域统一释放
+            if (scope != null)
+            {
+                if (scope.IsDisposed) return null;
+                try
+                {
+                    ResourceLease<Sprite> lease = await AddressableManager.Instance
+                        .AcquireAssetAsync<Sprite>($"{spriteName}[{spriteName}]", scope);
+                    //等待加载期间作用域已被释放（关板竞态）：租约未登记进作用域，手动归还防计数悬挂
+                    if (scope.IsDisposed)
+                    {
+                        lease?.Dispose();
+                        return null;
+                    }
+                    return lease?.Asset;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[IconLibrary] 图标加载失败：{spriteName}（{e.Message}）");
+                    return null;
+                }
             }
 
             if (cache.TryGetValue(spriteName, out Sprite hit)) return hit;

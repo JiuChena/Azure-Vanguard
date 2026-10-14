@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "tableName": "EnemyTable",
+  "rows": [
+    {
+      "id": "EN0001",
+      "name": "Grunt Meleer",
+      "camp": "enemy",
+      "hp": 500,
+      "atk": 50,
+      "def": 10,
+      "atkInterval": 1.5,
+      "range": 1.2,
+      "moveSpeed": 3.5,
+      "normalAtkId": 90101,
+      "critRate": 0,
+      "critDmg": 0
+    }
+  ]
+}

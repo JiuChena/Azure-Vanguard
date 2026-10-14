@@ -3571,7 +3571,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4996403078529642782}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 46c6076c8cd88be498f7598e1a9daed9, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -3792,10 +3792,11 @@ MonoBehaviour:
   status: {fileID: 7460915266433696228}
   gameplay: {fileID: 2578332137267358567}
   panelAtlas: {fileID: 100100200, guid: 1dcf6b3d61199a544a2f1caeabb65075, type: 3}
-  avatarAtlas: {fileID: 100100200, guid: 06e5ea7190924fcea4e0a4f5a7359e0d, type: 3}
   rarityBgs: []
   statusMoneyAddAmount: 10000
   statusStarlightStoneAddAmount: 1000
+  statusMoneyItemId: Currency_CreditPoint
+  statusStarlightStoneItemId: Currency_StarlightStone
 --- !u!95 &7974348478686719543
 Animator:
   serializedVersion: 5

@@ -4,9 +4,10 @@
   "rows": [
     {
       "id": "CH0221",
-      "name": "柚鸟夏【乐队】",
+      "name": "柚鸟夏[乐队]",
       "rarity": 4,
       "profession": "support",
+      "archetype": "Support",
       "camp": "student",
       "cost": 10,
       "hp": 900,
@@ -24,9 +25,10 @@
     },
     {
       "id": "CH0209",
-      "name": "CH0209",
+      "name": "花子[泳装]",
       "rarity": 3,
       "profession": "tank",
+      "archetype": "Defence",
       "camp": "student",
       "cost": 8,
       "hp": 1400,

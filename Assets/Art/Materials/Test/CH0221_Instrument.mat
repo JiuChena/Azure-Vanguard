@@ -206,7 +206,7 @@ Material:
     - _OutlineScreenWidth: 0.01
     - _OutlineTextureStrength: 0.6
     - _OutlineType: 0
-    - _OutlineWidth: 0.3
+    - _OutlineWidth: 0.15
     - _OutlineZCorrection: 0.000101
     - _OutlineZOffset: 0
     - _Parallax: 0.02
