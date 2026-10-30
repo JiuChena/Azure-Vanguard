@@ -14,7 +14,7 @@ namespace Framework.Gameplay.Battle
         // 守点模拟状态（null = 关卡无守点）
         public GuardPointState GuardPoint { get; set; }
 
-        // 守点位置（射程判定用；场景数据，⑥装配传入）
+        // 守点位置（索敌范围判定用；场景数据，⑥装配传入）
         public Vector3 GuardPointPosition { get; set; }
 
         /// <summary>枚举指定阵营的存活敌方候选（Downed 不进候选）。</summary>
@@ -28,18 +28,19 @@ namespace Framework.Gameplay.Battle
             }
         }
 
-        /// <summary>守点是否在射程内（守点已破不视为有效目标）。</summary>
+        /// <summary>守点是否在索敌范围内（守点已破不视为有效目标）。</summary>
         public bool IsGuardPointInRange(BattleUnitState unit)
         {
             if (GuardPoint == null || GuardPoint.IsBroken) return false;
-            float rangeSq = unit.Stats.Range * unit.Stats.Range;
+            float rangeSq = unit.StopRange * unit.StopRange;
             return (GuardPointPosition - unit.Position).sqrMagnitude <= rangeSq;
         }
     }
 
     /// <summary>
-    /// 单位意图策略接口：每拍由 BattleController 逐存活单位回调，写意图字段（移动目的地/攻击目标）。
-    /// 角色侧实现 = 默认索敌策略（首切片，切片 2 由 GAS 能力/策略配置替代）；敌人侧实现 = BHSM（批 3）。
+    /// 单位意图策略接口：每帧由 ④ 感知能力按单位阵营回调（含倒地单位——策略实现自守卫不产目标，
+    /// 感知据此镜像 Vital 变化触发死亡/复活转移），写意图字段（移动目的地/攻击目标）。
+    /// 角色侧实现 = 默认索敌策略；敌人侧实现 = 近战意图策略。
     /// </summary>
     public interface IUnitIntentStrategy
     {

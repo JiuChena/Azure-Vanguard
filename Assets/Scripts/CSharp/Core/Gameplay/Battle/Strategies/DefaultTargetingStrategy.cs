@@ -1,8 +1,8 @@
 namespace Framework.Gameplay.Battle
 {
     /// <summary>
-    /// 角色侧默认索敌策略（首切片占位，角色未挂 GAS 时的兜底）：射程内最近敌人。
-    /// 切片 2 接 GAS 后由角色能力/策略配置参数化替代（差异化索敌=角色能力，挂账口径）。
+    /// 角色侧默认索敌策略（④ 感知能力按阵营调用）：射程内最近敌人。
+    /// 差异化索敌=角色能力/策略配置参数化（切片 2 挂账口径）。
     /// 只写攻击目标意图；角色移动由玩家指令驱动，策略不碰 MoveDestination。
     /// </summary>
     public sealed class DefaultTargetingStrategy : IUnitIntentStrategy

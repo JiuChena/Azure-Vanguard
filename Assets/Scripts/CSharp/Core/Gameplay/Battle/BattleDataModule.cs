@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Gear;
+using Framework.Gameplay.Abilities.Stat;
 using Framework.Gameplay.Player;
 using Framework.Gameplay.Progression;
 using Framework.Gameplay.Unit;
@@ -13,7 +14,7 @@ namespace Framework.Gameplay.Battle
     /// 战斗数据模块（①数据层→③模拟层的唯一出接口，static 门面，同 SkillDataLibrary 惯例）。
     /// 四域：加载（EnsureLoadedAsync，幂等并发共享）、预热（PreloadAsync，进战斗一次性装配）、
     /// 查询（战斗中纯同步 O(1) 字典直查，零 async 零表 IO）、失效（Clear，缓存生命周期 = 一场战斗）。
-    /// 缓存以 unitId/enemyId 为键统一存放 BattleUnitStats（角色/敌人两源装配到同一形状）。
+    /// 缓存键：角色 = unitId，敌人 = id@等级（EnemyCacheKey，如 EN_Solider_AR_0001@1，1 级也带后缀）；两源装配到同一形状。
     /// 全部表经 DataTableManager 加载（进程级缓存，与养成域/技能域共享，无二次 IO）。
     /// </summary>
     public static class BattleDataModule
@@ -55,8 +56,15 @@ namespace Framework.Gameplay.Battle
         // 敌人表缓存
         private static DataTable<EnemyRow, string> enemyTable;
 
+        // 等级成长表缓存（敌人等级乘区数据源；v1 与角色共用 LevelTable 曲线，
+        // 将来敌用独立曲线 = 本表换 EnemyLevelTable 一行 + 行类同形状）
+        private static DataTable<LevelRow, int> levelTable;
+
         // 波次表缓存
         private static DataTable<WaveRow, string> waveTable;
+
+        // 关卡表缓存（守点血量/点数经济/波次序列/胜负策略，一行一关）
+        private static DataTable<StageRow, string> stageTable;
 
         // 技能表缓存（角色普攻走 SkillDataLibrary 编码定位；敌人普攻按主键直查）
         private static DataTable<SkillRow, int> skillTable;
@@ -73,8 +81,13 @@ namespace Framework.Gameplay.Battle
         // 普攻解析包缓存：同上统一键
         private static readonly Dictionary<string, NormalAttackData> normalAttackCache = new Dictionary<string, NormalAttackData>();
 
-        // 关卡波次序列缓存：LevelConfig 资产名 → 按 waveIds 顺序的行列表
-        private static readonly Dictionary<string, List<WaveRow>> waveCache = new Dictionary<string, List<WaveRow>>();
+        // 单位状态数据白值基底缓存（stat 能力）：键同 statsCache（角色=unitId，敌人=id@等级）；
+        // 这里只存 base 字典——TryCreateStatData 按基底逐单位出独立实例（敌人同 id 多实例各持己份，
+        // buff 条目不串单位）
+        private static readonly Dictionary<string, Dictionary<StatType, float>> statBaseCache = new Dictionary<string, Dictionary<StatType, float>>();
+
+        // 关卡波次编组缓存：stageId → 按 StageRow.WaveIds 顺序的波次编组
+        private static readonly Dictionary<string, List<WaveGroup>> waveCache = new Dictionary<string, List<WaveGroup>>();
 
         /// <summary>
         /// 加载域：确保战斗相关表全部就位（幂等，并发调用共享同一次加载）；
@@ -83,37 +96,49 @@ namespace Framework.Gameplay.Battle
         public static async Task<bool> EnsureLoadedAsync()
         {
             if (characterTable != null && enemyTable != null && waveTable != null
-                && skillTable != null && skillEffectTable != null) return true;
+                && stageTable != null && skillTable != null && skillEffectTable != null
+                && levelTable != null) return true;
 
             loadTask ??= LoadAllAsync();
             return await loadTask;
         }
 
-        // 逐表加载：任一失败整批判败（保持 null，下次重试）；成功表靠 DataTableManager 缓存幂等
+        // 逐表加载：任一失败整批判败（保持 null，下次重试）；成功表靠 DataTableManager 缓存幂等。
+        // 注意起载顺序：SkillDataLibrary 内部同样请求 SkillTable，必须等六表直载就位后再起——
+        // Play 真异步下两路同键并发会双双穿过 DataTableManager 缓存检查（check-then-act 无去重），
+        // 后完成者 Add 撞重复键；EditMode 同步表源串行完成，此竞态测不出（2026-10-17 Play 首暴）。
         private static async Task<bool> LoadAllAsync()
         {
-            Task<SkillDataLibraryLoadGuard> skillLibraryTask = LoadSkillLibraryAsync();
-
             Task<DataTable<CharacterRow, string>> characterTask =
                 DataTableManager.Instance.LoadTableAsync<CharacterRow, string>("CharacterTable");
             Task<DataTable<EnemyRow, string>> enemyTask =
                 DataTableManager.Instance.LoadTableAsync<EnemyRow, string>("EnemyTable");
             Task<DataTable<WaveRow, string>> waveTask =
                 DataTableManager.Instance.LoadTableAsync<WaveRow, string>("WaveTable");
+            Task<DataTable<StageRow, string>> stageTask =
+                DataTableManager.Instance.LoadTableAsync<StageRow, string>("StageTable");
             Task<DataTable<SkillRow, int>> skillTask =
                 DataTableManager.Instance.LoadTableAsync<SkillRow, int>("SkillTable");
             Task<DataTable<SkillEffectRow, int>> effectTask =
                 DataTableManager.Instance.LoadTableAsync<SkillEffectRow, int>("SkillEffectTable");
+            Task<DataTable<LevelRow, int>> levelTask =
+                DataTableManager.Instance.LoadTableAsync<LevelRow, int>("LevelTable");
 
             characterTable = await characterTask;
             enemyTable = await enemyTask;
             waveTable = await waveTask;
+            stageTable = await stageTask;
             skillTable = await skillTask;
             skillEffectTable = await effectTask;
-            bool skillLibraryOk = (await skillLibraryTask).Ok;
+            // LevelTable 同键消费方：Preloader（启动期先行）与养成 resolver（EnsureLoaded 完成后才跑），
+            // 均与本段无同帧并发窗口，直载安全（同 SkillTable 竞态口径的手推结论）
+            levelTable = await levelTask;
 
-            if (characterTable == null || enemyTable == null || waveTable == null
-                || skillTable == null || skillEffectTable == null || !skillLibraryOk)
+            // 七表已入 DataTableManager 缓存，SkillDataLibrary 的 SkillTable 请求此刻命中缓存，无并发窗口
+            bool skillLibraryOk = (await LoadSkillLibraryAsync()).Ok;
+
+            if (characterTable == null || enemyTable == null || waveTable == null || stageTable == null
+                || skillTable == null || skillEffectTable == null || levelTable == null || !skillLibraryOk)
             {
                 Debug.LogError("[BattleData] 战斗表加载未全部就位（缺失表见上方 LogError），预热中止。");
                 loadTask = null;
@@ -144,16 +169,16 @@ namespace Framework.Gameplay.Battle
         /// 战斗中查询路径（TryGet 系）从此零 async 零表 IO 零养成结算。
         /// </summary>
         /// <param name="unitIds">编队角色 id（CHxxxx）。</param>
-        /// <param name="level">关卡配置（波次序列与敌人来源）。</param>
+        /// <param name="stageId">关卡 id（StageTable 主键；波次序列与敌人来源）。</param>
         /// <param name="statsResolver">角色属性结算入口；null 时默认走 CharacterProgressionManager。
         /// 验证脚本注入 stub 以脱离养成域独立推演。</param>
         /// <returns>全部就位返回 true；任一关键数据缺失返回 false（缺失项已 LogError 定位）。</returns>
-        public static async Task<bool> PreloadAsync(IReadOnlyList<string> unitIds, LevelConfig level,
+        public static async Task<bool> PreloadAsync(IReadOnlyList<string> unitIds, string stageId,
             Func<string, Task<CharacterStats>> statsResolver = null)
         {
-            if (level == null)
+            if (string.IsNullOrEmpty(stageId))
             {
-                Debug.LogError("[BattleData] 预热失败：LevelConfig 为空。");
+                Debug.LogError("[BattleData] 预热失败：stageId 为空。");
                 return false;
             }
             if (!await EnsureLoadedAsync()) return false;
@@ -179,19 +204,32 @@ namespace Framework.Gameplay.Battle
                 if (!TryCacheCharacter(unitId, stats)) allOk = false;
             }
 
-            // 波次序列：按 waveIds 有序装配（WaveIndex 升序互证）
-            if (!CacheWaves(level)) allOk = false;
+            // 波次序列：按 StageRow.WaveIds 顺序编组（全表按 waveId 归组）
+            if (!CacheWaves(stageId)) allOk = false;
 
-            // 波次涉及的敌人：数值 + 普攻
-            if (waveCache.TryGetValue(level.name, out List<WaveRow> waves))
+            // 波次涉及的敌人：数值 + 普攻（编组 → 行 → 时间点条目；同 id 可多等级，按 (id, 等级) 去重）
+            if (waveCache.TryGetValue(stageId, out List<WaveGroup> groups))
             {
-                HashSet<string> enemyIds = new HashSet<string>();
-                for (int i = 0; i < waves.Count; i++) enemyIds.Add(waves[i].EnemyId);
-
-                foreach (string enemyId in enemyIds)
+                HashSet<(string EnemyId, int Level)> enemyKeys = new HashSet<(string, int)>();
+                for (int g = 0; g < groups.Count; g++)
                 {
-                    if (statsCache.ContainsKey(enemyId)) continue;
-                    if (!TryCacheEnemy(enemyId)) allOk = false;
+                    IReadOnlyList<WaveRow> rows = groups[g].Rows;
+                    for (int r = 0; r < rows.Count; r++)
+                    {
+                        IReadOnlyList<WaveSpawnEntry> points = rows[r].TimePoints;
+                        for (int p = 0; p < points.Count; p++)
+                        {
+                            for (int u = 0; u < points[p].Units.Count; u++)
+                                enemyKeys.Add((points[p].Units[u].EnemyId, points[p].Units[u].Level));
+                        }
+                    }
+                }
+
+                foreach ((string enemyId, int level) in enemyKeys)
+                {
+                    string statsKey = EnemyCacheKey(enemyId, level);
+                    if (statsCache.ContainsKey(statsKey)) continue;
+                    if (!TryCacheEnemy(enemyId, level)) allOk = false;
                 }
             }
 
@@ -216,21 +254,92 @@ namespace Framework.Gameplay.Battle
             return false;
         }
 
-        /// <summary>按主键取波次行。</summary>
-        public static bool TryGetWave(string waveId, out WaveRow row)
+        /// <summary>
+        /// 取单位状态数据（stat 能力出口：白值 base 只读 + 加成条目注册/注销，final 读取点惰性重算）。
+        /// 每次调用产出全新独立实例（构造即拷贝 base，条目表互不共享）——敌人同 id 多实例各持己份，
+        /// 战斗内 buff 增删互不影响；未预热返回 false 并报错。
+        /// </summary>
+        public static bool TryCreateStatData(string id, out StatRuntimeData statData)
         {
-            if (waveTable != null && waveTable.TryGet(waveId, out row)) return true;
-            row = null;
-            Debug.LogError($"[BattleData] WaveTable 无波次行：{waveId}");
+            if (statBaseCache.TryGetValue(id, out Dictionary<StatType, float> baseValues))
+            {
+                statData = new StatRuntimeData(baseValues);
+                return true;
+            }
+            statData = null;
+            Debug.LogError($"[BattleData] 单位状态数据未预热：id={id}（确认 PreloadAsync 已覆盖该单位）");
             return false;
         }
 
-        /// <summary>取关卡波次序列（按 waveIds 顺序）；未预热返回空并报错。</summary>
-        public static IReadOnlyList<WaveRow> GetWaves(LevelConfig level)
+        /// <summary>取技能 CD（秒；SkillTable.cooldown 列）；未配/未加载返回 false。</summary>
+        public static bool TryGetSkillCooldown(int skillId, out float cooldown)
         {
-            if (level != null && waveCache.TryGetValue(level.name, out List<WaveRow> waves)) return waves;
-            Debug.LogError($"[BattleData] 波次序列未预热：level={level?.name}");
-            return Array.Empty<WaveRow>();
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row))
+            {
+                cooldown = row.Cooldown;
+                return true;
+            }
+            cooldown = 0f;
+            return false;
+        }
+
+        /// <summary>取技能能量回复量（energyGain 列：普攻行=命中回能 / E·EX 行=施放回能；配 0 不回能）。</summary>
+        public static bool TryGetSkillEnergyGain(int skillId, out int gain)
+        {
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row))
+            {
+                gain = row.EnergyGain;
+                return true;
+            }
+            gain = 0;
+            return false;
+        }
+
+        /// <summary>取敌人击杀回能量（energyOnKill 列；每种敌人不同，boss 可配多）。</summary>
+        public static bool TryGetEnemyEnergyOnKill(string enemyId, out int energy)
+        {
+            if (!string.IsNullOrEmpty(enemyId) && enemyTable != null && enemyTable.TryGet(enemyId, out EnemyRow row))
+            {
+                energy = row.EnergyOnKill;
+                return true;
+            }
+            energy = 0;
+            return false;
+        }
+
+        /// <summary>取技能效果 id 列表（SkillTable.effectIds 逗号分隔解析）。</summary>
+        public static bool TryGetSkillEffects(int skillId, out IReadOnlyList<int> effectIds)
+        {
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row)
+                && !string.IsNullOrEmpty(row.EffectIds))
+            {
+                string[] parts = row.EffectIds.Split(',');
+                var list = new List<int>(parts.Length);
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    if (int.TryParse(parts[i].Trim(), out int id)) list.Add(id);
+                }
+                effectIds = list;
+                return list.Count > 0;
+            }
+            effectIds = null;
+            return false;
+        }
+
+        /// <summary>取技能效果行（SkillEffectTable 主键查）。</summary>
+        public static bool TryGetSkillEffect(int effectId, out SkillEffectRow row)
+        {
+            if (skillEffectTable != null && skillEffectTable.TryGet(effectId, out row)) return true;
+            row = null;
+            return false;
+        }
+
+        /// <summary>取关卡波次编组（按 StageTable.waveIds 顺序）；未预热返回空并报错。</summary>
+        public static IReadOnlyList<WaveGroup> GetWaveGroups(string stageId)
+        {
+            if (!string.IsNullOrEmpty(stageId) && waveCache.TryGetValue(stageId, out List<WaveGroup> groups)) return groups;
+            Debug.LogError($"[BattleData] 波次编组未预热：stageId={stageId}");
+            return Array.Empty<WaveGroup>();
         }
 
         #endregion
@@ -240,6 +349,7 @@ namespace Framework.Gameplay.Battle
         {
             statsCache.Clear();
             normalAttackCache.Clear();
+            statBaseCache.Clear();
             waveCache.Clear();
             loadTask = null;
         }
@@ -255,27 +365,96 @@ namespace Framework.Gameplay.Battle
 
             statsCache[unitId] = new BattleUnitStats(
                 stats.MaxHp, stats.Atk, stats.Def, stats.CritRate, stats.CritDmg,
-                row.MoveSpeed, row.AtkInterval, row.Range);
+                row.MoveSpeed, row.AtkInterval, row.Range,
+                row.RotateSpeed, row.RotateNode,
+                row.BulletSpread, row.HeadNode, 0f,
+                maxEnergy: row.MaxEnergy, energyRecharge: stats.EnergyRecharge,
+                skillEId: row.SkillEId, skillQId: row.SkillQId, normalAtkId: row.NormalAtkId);
+
+            // stat 链装配（过渡口径）：base 直接取 CharacterStats final 八项（养成加成已折入，无独立条目），
+            // 战斗专有三项取 CharacterRow；迁移批换真白值 + 节点/武器/装备 modifier 灌入后本注释作废
+            statBaseCache[unitId] = CreateCharacterStatBase(stats, row);
 
             bool found = SkillDataLibrary.TryGetSkillRow(unitId, SkillRow.SkillTypes.Normal, out SkillRow skillRow);
             return CacheNormalAttack(unitId, found, skillRow, GetCharacterNormalLevel(unitId));
         }
 
-        // 装配敌人：EnemyRow → 统一形状 + 普攻（SkillTable 主键直查，不走角色编码约定）
-        private static bool TryCacheEnemy(string enemyId)
+        // 装配敌人：EnemyRow（1 级基准）× LevelTable.multiplier(level) → 统一形状 + 普攻（主键直查，不走角色编码约定）
+        private static bool TryCacheEnemy(string enemyId, int level)
         {
             if (!enemyTable.TryGet(enemyId, out EnemyRow row))
             {
                 Debug.LogError($"[BattleData] EnemyTable 无敌人行：enemyId={enemyId}");
                 return false;
             }
+            if (!levelTable.TryGet(level, out LevelRow levelRow))
+            {
+                Debug.LogError($"[BattleData] LevelTable 无等级行：level={level}（enemyId={enemyId}），敌人装配拒绝。");
+                return false;
+            }
 
-            statsCache[enemyId] = new BattleUnitStats(
-                row.Hp, row.Atk, row.Def, row.CritRate, row.CritDmg,
-                row.MoveSpeed, row.AtkInterval, row.Range);
+            // 成长三项：1 级基准 × 等级系数，向下取整（与角色白值取整口径一致）；③数值与 stat 基底共用同一组值
+            int maxHp = Mathf.FloorToInt(row.Hp * levelRow.Multiplier);
+            int atk = Mathf.FloorToInt(row.Atk * levelRow.Multiplier);
+            int def = Mathf.FloorToInt(row.Def * levelRow.Multiplier);
+
+            string statsKey = EnemyCacheKey(enemyId, level);
+            statsCache[statsKey] = new BattleUnitStats(
+                maxHp, atk, def, row.CritRate, row.CritDmg,
+                row.MoveSpeed, row.AtkInterval, row.Range,
+                row.RotateSpeed, row.RotateNode,
+                row.BulletSpread, row.HeadNode, row.StopLateralOffset, row.BlockRadius, row.GuardPointDamage,
+                maxEnergy: 0, energyRecharge: 1f, normalAtkId: row.NormalAtkId);
+
+            // stat 链装配：敌人无养成链，成长三项（已折算）+ 其余字段直装即真白值，
+            // 空加成条目表（战斗内 buff 走 AddModifier）
+            statBaseCache[statsKey] = CreateEnemyStatBase(row, maxHp, atk, def);
 
             bool found = skillTable.TryGet(row.NormalAtkId, out SkillRow skillRow);
-            return CacheNormalAttack(enemyId, found, skillRow, 1);
+            return CacheNormalAttack(statsKey, found, skillRow, 1);
+        }
+
+        /// <summary>
+        /// 敌人统一缓存键：id@等级（如 EN_Solider_AR_0001@10；1 级也带后缀，键形统一）。
+        /// 该键只作数据查找（stats/normalAttack/statBase 三缓存与 pack）；单位身份、索敌、视图地址仍用纯 id。
+        /// </summary>
+        public static string EnemyCacheKey(string enemyId, int level) => $"{enemyId}@{level}";
+
+        // 过渡口径装配角色状态白值基底：base = CharacterStats final 八项 + CharacterRow 战斗三项
+        private static Dictionary<StatType, float> CreateCharacterStatBase(CharacterStats stats, CharacterRow row)
+        {
+            var baseValues = new Dictionary<StatType, float>
+            {
+                [StatType.MaxHp] = stats.MaxHp,
+                [StatType.Atk] = stats.Atk,
+                [StatType.Def] = stats.Def,
+                [StatType.CritRate] = stats.CritRate,
+                [StatType.CritDmg] = stats.CritDmg,
+                [StatType.EnergyRecharge] = stats.EnergyRecharge,
+                [StatType.DamageBonus] = stats.DamageBonus,
+                [StatType.HealBonus] = stats.HealBonus,
+                [StatType.MoveSpeed] = row.MoveSpeed,
+                [StatType.AtkInterval] = row.AtkInterval,
+                [StatType.Range] = row.Range,
+            };
+            return baseValues;
+        }
+
+        // 敌人状态白值基底：成长三项已按等级折算传入，其余字段直装（无养成链，base 即 final）
+        private static Dictionary<StatType, float> CreateEnemyStatBase(EnemyRow row, int maxHp, int atk, int def)
+        {
+            var baseValues = new Dictionary<StatType, float>
+            {
+                [StatType.MaxHp] = maxHp,
+                [StatType.Atk] = atk,
+                [StatType.Def] = def,
+                [StatType.CritRate] = row.CritRate,
+                [StatType.CritDmg] = row.CritDmg,
+                [StatType.MoveSpeed] = row.MoveSpeed,
+                [StatType.AtkInterval] = row.AtkInterval,
+                [StatType.Range] = row.Range,
+            };
+            return baseValues;
         }
 
         // 普攻解析：单效果假设（首切片普攻 effectIds 单值；多值取首效果并告警），atkadd 缺键按 0
@@ -315,38 +494,59 @@ namespace Framework.Gameplay.Battle
             return true;
         }
 
-        // 波次序列装配：waveIds 顺序为准，WaveIndex 升序互证（不一致当场报错拒绝）
-        private static bool CacheWaves(LevelConfig level)
+        // 波次编组装配：WaveTable.Rows 全表按 waveId 归组（行主键 = id 列，组内保表序），
+        // 再按 StageRow.WaveIds 顺序编组；关卡行缺失 / waveIds 引用不存在的波次 / 重复引用 → 当场报错拒绝
+        private static bool CacheWaves(string stageId)
         {
-            string[] waveIds = level.WaveIds;
+            if (!stageTable.TryGet(stageId, out StageRow stage))
+            {
+                Debug.LogError($"[BattleData] StageTable 无关卡行：stageId={stageId}");
+                return false;
+            }
+            string[] waveIds = stage.WaveIds;
             if (waveIds == null || waveIds.Length == 0)
             {
-                Debug.LogError($"[BattleData] LevelConfig 未配波次：level={level.name}");
+                Debug.LogError($"[BattleData] StageTable 未配波次：stageId={stageId}");
                 return false;
             }
 
-            List<WaveRow> waves = new List<WaveRow>(waveIds.Length);
+            IReadOnlyList<WaveRow> rows = waveTable.Rows;
+            Dictionary<string, List<WaveRow>> byWaveId = new Dictionary<string, List<WaveRow>>(rows.Count);
+            for (int i = 0; i < rows.Count; i++)
+            {
+                WaveRow row = rows[i];
+                if (string.IsNullOrEmpty(row.WaveId))
+                {
+                    Debug.LogError($"[BattleData] WaveTable 行缺 waveId：id={row.Id}");
+                    return false;
+                }
+                if (!byWaveId.TryGetValue(row.WaveId, out List<WaveRow> bucket))
+                {
+                    bucket = new List<WaveRow>();
+                    byWaveId[row.WaveId] = bucket;
+                }
+                bucket.Add(row);
+            }
+
+            List<WaveGroup> groups = new List<WaveGroup>(waveIds.Length);
+            var referenced = new HashSet<string>();
             for (int i = 0; i < waveIds.Length; i++)
             {
-                if (!waveTable.TryGet(waveIds[i], out WaveRow row))
+                string waveId = waveIds[i];
+                if (!referenced.Add(waveId))
                 {
-                    Debug.LogError($"[BattleData] WaveTable 无波次行：{waveIds[i]}（level={level.name}）");
+                    Debug.LogError($"[BattleData] waveIds 重复引用波次：{waveId}（stageId={stageId}）");
                     return false;
                 }
-                waves.Add(row);
-            }
-
-            for (int i = 1; i < waves.Count; i++)
-            {
-                if (waves[i].WaveIndex <= waves[i - 1].WaveIndex)
+                if (!byWaveId.TryGetValue(waveId, out List<WaveRow> rowsOfWave))
                 {
-                    Debug.LogError($"[BattleData] 波次序号与 waveIds 顺序不一致：level={level.name}, " +
-                        $"{waves[i - 1].Id}({waves[i - 1].WaveIndex}) -> {waves[i].Id}({waves[i].WaveIndex})");
+                    Debug.LogError($"[BattleData] WaveTable 无波次行：{waveId}（stageId={stageId}）");
                     return false;
                 }
+                groups.Add(new WaveGroup(waveId, rowsOfWave));
             }
 
-            waveCache[level.name] = waves;
+            waveCache[stageId] = groups;
             return true;
         }
 

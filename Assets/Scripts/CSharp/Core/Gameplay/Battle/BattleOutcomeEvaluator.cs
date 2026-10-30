@@ -37,7 +37,7 @@ namespace Framework.Gameplay.Battle
 
     /// <summary>
     /// 胜负判定策略基类（继承式可重写判定，2026-10-14 拍板）：普通关默认实现 = GuardPointEvaluator，
-    /// 挑战关（限时全歼/守点健康度等）继承重写；关卡经 GuardPointEvaluatorAsset 引用具体实现。
+    /// 挑战关（限时全歼/守点健康度等）继承重写；StageTable.outcome 键经 CombatManager 注册表选实现。
     /// </summary>
     public abstract class BattleOutcomeEvaluator
     {

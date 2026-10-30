@@ -17,6 +17,13 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 4827fdc1b18e2204088817225cf6dcf5
   m_SerializeEntries:
+  - m_GUID: 3d5fa2c2556c26342bbdadeec3a42fe6
+    m_Address: FormationPanel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Panels
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 49e2e1e62230b544c95661d2b842fb1e
     m_Address: CombatSelectPanel
     m_ReadOnly: 0
@@ -44,6 +51,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Panels
     - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d3b7b6a1ec2245a46bad12641ec040e7
+    m_Address: CombatPanel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Panels
+    - UI
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f019c996caefdc048b92f5f92eb8a85d
+    m_Address: HsmDebugPanel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 51b971490a143bd47a604a4a7ed16e61, type: 2}

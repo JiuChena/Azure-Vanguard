@@ -46,6 +46,9 @@ public class NoticePanel : PanelBase
 
     public override void OnEscapePressed() { } //常驻面板，ESC 不关闭
 
+    //常驻面板不入关闭栈：CloseAllPanels 清栈与 ESC 弹栈都触不到本面板（仍注册在字典，GetPanel 可查）
+    public override bool ResidentPanel => true;
+
     /// <summary>
     /// 提交一条通知：立即覆盖旧文案并重触发入场动画（连发即刷掉上一条），停留计时复位。
     /// </summary>

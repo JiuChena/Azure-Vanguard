@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Framework.Gameplay.Abilities;
 using UnityEngine;
 
 namespace BehaviorEditor
@@ -111,6 +112,7 @@ namespace BehaviorEditor
             Quaternion rotation = useWorldSpace ? Quaternion.Euler(behaviorEvent.rotationOffset) : anchor.rotation * Quaternion.Euler(behaviorEvent.rotationOffset);
 
             // 填充复用上下文，具体业务由执行配置子类决定。
+            eventContext.OwnerContext = context.OwnerContext;
             eventContext.OwnerGameObject = context.OwnerGameObject;
             eventContext.OwnerTransform = context.OwnerTransform;
             eventContext.ReferenceTransform = reference;

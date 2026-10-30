@@ -10,4 +10,10 @@ public static class UIPath
     public static string CULTIVATEPANEL = "CultivatePanel";
     //战斗选择出击面板（Prefab-UI-Panels-Normal 组；主城作战入口打开）
     public static string COMBATSELECTPANEL = "CombatSelectPanel";
+    //编队（战备）面板（Prefab-UI-Panels-Normal 组；作战选择面板选关进入）
+    public static string FORMATIONPANEL = "FormationPanel";
+    //战斗 HUD 面板（Prefab-UI-Panels-Normal 组；战斗场景装配完成后打开）
+    public static string COMBATPANEL = "CombatPanel";
+    //HSM 状态调试面板（Prefab-UI-Panels-Normal 组；战斗场景 F1 切换开/关，左键点击角色选中）
+    public static string HSMDEBUGPANEL = "HsmDebugPanel";
 }

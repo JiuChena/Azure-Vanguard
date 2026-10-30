@@ -1,12 +1,19 @@
+using BehaviorEditor;
 using Framework.Gameplay.Abilities.Configuration;
 
 namespace Framework.Gameplay.Abilities
 {
-    /// <summary>执行 BetterHSM 能力的单位独占运行时逻辑。</summary>
+    /// <summary>执行 BetterHSM 能力的单位独占运行时逻辑：状态机与 BE 行为播放一体化。</summary>
     public sealed class BetterHSMAbilityRuntime : AbilityRuntime
     {
         // 当前能力的静态配置。
         private readonly BetterHSMAbilitySO _configuration;
+        // 当前实体创建并由本能力驱动的 BE 行为播放执行器（状态机播同名 clip 的宿主）。
+        private BehaviorExecutor _executor;
+        // 当前实体 BE 播放入口：按键查 UnitConfig 行为表并驱动执行器。
+        private BehaviorAbilityRuntimeData _behaviorData;
+        // BE 播放入口在拥有者上下文中的注册键。
+        private const AbilityRuntimeDataType BehaviorDataType = AbilityRuntimeDataType.Behavior;
         // 当前实体创建并由本能力唯一驱动的状态机运行时包装。
         private BetterHSMAbilityContext _abilityContext;
         // 当前能力向其他能力公开的运行时数据。
@@ -30,6 +37,11 @@ namespace Framework.Gameplay.Abilities
             if (ownerContext == null) throw new System.ArgumentNullException(nameof(ownerContext));
             if (_configuration == null) throw new System.InvalidOperationException("BetterHSM 能力配置不能为空。");
 
+            // 建 BE 播放执行器与播放入口（状态 OnEnter 经上下文按键播放同名 clip；UnitConfig 未配置时播放请求报错跳过）。
+            _executor = new BehaviorExecutor(OwnerContext.Owner, false);
+            _behaviorData = new BehaviorAbilityRuntimeData(_executor, _configuration.UnitConfig, OwnerContext.Owner, OwnerContext);
+            OwnerContext.Register(BehaviorDataType, _behaviorData);
+
             // 按 SO 选择的顶层分类创建当前实体独有的状态图。
             _abilityContext = BetterHSMAbilitySchemeCatalog.Create(_configuration.EntityCategory, _configuration.RegistrationId, ownerContext);
 
@@ -42,6 +54,8 @@ namespace Framework.Gameplay.Abilities
         /// <param name="deltaTime">当前帧时长，单位：秒。</param>
         public override void AbilityUpdate(float deltaTime)
         {
+            // BE 播放头常开推进，空闲时执行器内部直接返回。
+            _executor?.Tick(deltaTime);
             // HSM 自行从状态上下文读取所需时间和数据；不接收 GAS 的 deltaTime 参数。
             _abilityContext?.Update();
         }
@@ -49,8 +63,14 @@ namespace Framework.Gameplay.Abilities
         /// <summary>释放能力持有的运行时依赖。</summary>
         public override void AbilityDispose()
         {
-            // 先撤销对外查询入口，再释放状态机及其所有状态实例。
+            // 先撤销对外入口，再停播并释放状态机及其所有状态实例。
+            OwnerContext?.Unregister(BehaviorDataType, _behaviorData);
             OwnerContext?.Unregister(RuntimeDataType, _runtimeData);
+            // 撤销注册工厂建图时注册的门控标脏入口（无门控方案未注册，静默）。
+            OwnerContext?.Unregister(AbilityRuntimeDataType.HSMGate);
+            _executor?.Stop();
+            _executor = null;
+            _behaviorData = null;
             _abilityContext?.Dispose();
             _abilityContext = null;
             _runtimeData = null;

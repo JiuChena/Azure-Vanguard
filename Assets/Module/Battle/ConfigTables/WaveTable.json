@@ -3,18 +3,32 @@
   "tableName": "WaveTable",
   "rows": [
     {
-      "id": "W0001",
-      "waveIndex": 1,
-      "enemyId": "EN0001",
-      "count": 3,
-      "spawnInterval": 2
+      "id": "WT0001",
+      "waveId": "W0001",
+      "enemyCreatePointId": "P1",
+      "routeId": "R0001",
+      "t1": "5[EN_Solider_AR_0001:3]",
+      "t2": "",
+      "t3": "",
+      "t4": "",
+      "t5": "",
+      "t6": "",
+      "t7": "",
+      "t8": ""
     },
     {
-      "id": "W0002",
-      "waveIndex": 2,
-      "enemyId": "EN0001",
-      "count": 5,
-      "spawnInterval": 1.5
+      "id": "WT0002",
+      "waveId": "W0002",
+      "enemyCreatePointId": "P1",
+      "routeId": "R0001",
+      "t1": "10[EN_Solider_AR_0001:5]",
+      "t2": "",
+      "t3": "",
+      "t4": "",
+      "t5": "",
+      "t6": "",
+      "t7": "",
+      "t8": ""
     }
   ]
 }

@@ -9,7 +9,7 @@ namespace Framework.Gameplay.Battle
     /// </summary>
     public sealed class BattleDataPack
     {
-        // 单位数值（角色+敌人统一键）
+        // 单位数值（角色键 = unitId，敌人键 = id@等级如 EN_Solider_AR_0001@1）
         public Dictionary<string, BattleUnitStats> Stats { get; } = new Dictionary<string, BattleUnitStats>();
 
         // 普攻解析包（rate/atkadd 已按等级折算）

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "tableName": "StageTable",
+  "rows": [
+    {
+      "id": "LV_0001",
+      "waveIds": "W0001;W0002"
+    }
+  ]
+}

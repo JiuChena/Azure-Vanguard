@@ -1,3 +1,4 @@
+using Framework.Gameplay.Abilities;
 using UnityEngine;
 
 namespace BehaviorEditor
@@ -7,6 +8,11 @@ namespace BehaviorEditor
     /// </summary>
     public sealed class BehaviorEventContext
     {
+        /// <summary>宿主 GAS 能力上下文（执行链注入：BHSM 能力创建 data 时带 OwnerContext）。
+        /// 效果段（EventSO.Execute）经它直接访问宿主全部能力（感知层/Stat/其他），无需 GetComponent——
+        /// 2026-10-27 技能方案第 0 步，BE clip 宿主本就是 GAS 拥有者。</summary>
+        public AbilityOwnerContext OwnerContext { get; internal set; }
+
         /// <summary>执行行为的宿主对象。</summary>
         public GameObject OwnerGameObject { get; internal set; }
         /// <summary>执行行为的宿主变换。</summary>

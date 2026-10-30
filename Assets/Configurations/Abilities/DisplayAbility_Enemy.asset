@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16ccd558205552b4fa83d15a871ed33e, type: 3}
+  m_Name: DisplayAbility_Enemy
+  m_EditorClassIdentifier: 
+  fieldEntries:
+  - key: hp
+    label: Hp
+    source: 0
+    statType: 0
+    style: 0
+  - key: atk
+    label: Atk
+    source: 0
+    statType: 1
+    style: 0
+  - key: def
+    label: Def
+    source: 0
+    statType: 2
+    style: 0
+  - key: move_speed
+    label: MoveSpeed
+    source: 0
+    statType: 8
+    style: 0
+  - key: atk_interval
+    label: AtkInterval
+    source: 0
+    statType: 9
+    style: 1
+  - key: range
+    label: Range
+    source: 0
+    statType: 10
+    style: 0
+  buffSection:
+    enabled: 0
+    headerLabel: BUFFS
+    style: 3
+    maxShown: 0

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Gear;
+using Framework.Gameplay.Abilities.BetterHSM.Combat;
 using Framework.Gameplay.Abilities.BetterHSM.Test;
 
 namespace Framework.Gameplay.Abilities
@@ -19,7 +20,8 @@ namespace Framework.Gameplay.Abilities
                     {
                         //此处写每个角色的HSM状态注册方案
                         { BetterHSMRegistrationId.CH0221Test, CH0221TestBetterHSMRegistration.Create },
-                        { BetterHSMRegistrationId.CH0221TestHierarchical, CH0221TestHierarchicalRegistration.Create }
+                        { BetterHSMRegistrationId.CH0221TestHierarchical, CH0221TestHierarchicalRegistration.Create },
+                        { BetterHSMRegistrationId.CharacterCombat, CharacterCombatRegistration.Create }
                     }
                 },
                 {
@@ -27,6 +29,7 @@ namespace Framework.Gameplay.Abilities
                     new Dictionary<BetterHSMRegistrationId, Func<AbilityOwnerContext, BetterHSMAbilityContext>>()
                     {
                         //此处写每个敌人的HSM状态注册方案
+                        { BetterHSMRegistrationId.EnemyMelee, EnemyMeleeRegistration.Create }
                     }
                 },
                 {

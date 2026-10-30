@@ -74,12 +74,12 @@ namespace Core.Gear
                 GameObject obj = GameObject.Instantiate(panelLease.Asset, layerRoot);
                 obj.name = panelName;
 
-                // 获取面板脚本，注入作用域，注册面板名并压入关闭栈。
+                // 获取面板脚本，注入作用域，注册面板名；非常驻面板压入关闭栈（常驻面板不入栈）。
                 T panelScript = obj.GetComponent<T>();
                 panelScript.ResourceScope = panelScope;
                 panelScript.PanelName = panelName;
                 panelsDic[panelName] = panelScript;
-                panelStack.Push(panelScript);
+                if (!panelScript.ResidentPanel) panelStack.Push(panelScript);
 
                 panelScript.DisplayPanel();
                 callback?.Invoke(panelScript);
@@ -133,6 +133,20 @@ namespace Core.Gear
             }
 
             callback?.Invoke();
+        }
+
+        /// <summary>
+        /// 清空关闭栈中的所有面板：按打开序逆序逐个走标准关闭流程（退出动画+延迟销毁+资源释放）。
+        /// 常驻面板不入栈故天然豁免；已在关闭中的面板（不在注册表）自动跳过。用于进战斗等
+        /// 需要整体清空 UI 的流程点；全清后栈为空，后续 ESC 轮询无栈可弹。
+        /// </summary>
+        public void CloseAllPanels()
+        {
+            while (panelStack.Count > 0)
+            {
+                PanelBase panel = panelStack.Pop();
+                if (panel != null) ClosePanel(panel);
+            }
         }
 
         /// <summary>

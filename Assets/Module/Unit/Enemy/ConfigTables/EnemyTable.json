@@ -3,18 +3,26 @@
   "tableName": "EnemyTable",
   "rows": [
     {
-      "id": "EN0001",
-      "name": "Grunt Meleer",
+      "id": "EN_Solider_AR_0001",
+      "name": "AR Soldier",
       "camp": "enemy",
-      "hp": 500,
+      "hp": 3000,
       "atk": 50,
       "def": 10,
       "atkInterval": 1.5,
-      "range": 1.2,
-      "moveSpeed": 3.5,
+      "range": 3,
+      "moveSpeed": 2,
+      "rotateSpeed": 360,
+      "rotateNode": "",
       "normalAtkId": 90101,
       "critRate": 0,
-      "critDmg": 0
+      "critDmg": 0,
+      "bulletSpread": 0.2,
+      "headNode": "Bip001 Head",
+      "stopLateralOffset": 0.15,
+      "blockRadius": 0.8,
+      "guardPointDamage": 1,
+      "energyOnKill": 15
     }
   ]
 }

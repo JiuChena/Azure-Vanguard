@@ -48,6 +48,12 @@ namespace Core.Gear
         /// </summary>
         public string PanelName { get; internal set; }
 
+        /// <summary>
+        /// 是否常驻面板：常驻面板不入关闭栈（OpenPanel 跳过压栈），因此 <see cref="PanelManager.CloseAllPanels"/>
+        /// 清栈与 ESC 弹栈都触不到它；面板本身仍注册在管理器字典中，GetPanel 查询不受影响。
+        /// </summary>
+        public virtual bool ResidentPanel => false;
+
         private void Awake() { EventInit(); }
         private void Start() { ComponentInit(); }
         private void Update() { OnUpdate(); }

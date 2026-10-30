@@ -53,10 +53,14 @@ namespace BehaviorEditor
         /// </summary>
         private void OnGUI()
         {
+            // 扩展区域与原有表单共享滚动视图，小窗口也能访问导出按钮。
+            windowScrollPosition = UnityEditor.EditorGUILayout.BeginScrollView(windowScrollPosition);
             UnityEditor.EditorGUILayout.LabelField("Timeline -> BehaviorClip", UnityEditor.EditorStyles.boldLabel);
             UnityEditor.EditorGUILayout.HelpBox(
                 "轨道由各自编译器独立导出；未注册的 Timeline 轨道会在导出时提示跳过。",
                 UnityEditor.MessageType.Info);
+
+            DrawUnitBehaviorPicker();
 
             sourceTimeline = (TimelineAsset)UnityEditor.EditorGUILayout.ObjectField(
                 "Source Timeline", sourceTimeline, typeof(TimelineAsset), false);
@@ -101,6 +105,7 @@ namespace BehaviorEditor
                 if (GUILayout.Button("End Editing And Export", GUILayout.Height(32f)))
                     EndBehaviorAuthoring();
             }
+            UnityEditor.EditorGUILayout.EndScrollView();
         }
 
         /// <summary>
@@ -108,6 +113,8 @@ namespace BehaviorEditor
         /// </summary>
         private void OnEnable()
         {
+            // 只重建已缓存引用的配对，不在窗口启用或重绘时扫描项目。
+            RebuildUnitBehaviorPairs();
         }
 
         /// <summary>

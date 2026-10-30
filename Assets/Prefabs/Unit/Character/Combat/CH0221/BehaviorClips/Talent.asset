@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4729dab1b065fe941aa6d4f9dd582add, type: 3}
+  m_Name: Talent
+  m_EditorClassIdentifier: 
+  trackData:
+  - rid: 8829553822955733011
+  - rid: 8829553822955733012
+  - rid: 8829553822955733013
+  playbackSettings:
+    duration: 1.5
+    wrapMode: 1
+    speedMultiplier: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8829553822955733011
+      type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        segments:
+        - authoringTrackName: Animation Track
+          clip: {fileID: -5979131190045853971, guid: a0b07bfa45501de46836234f6ef6f7e8,
+            type: 3}
+          crossFadeDuration: 0
+          layer: 0
+          startTime: 0
+        logPlayback: 0
+    - rid: 8829553822955733012
+      type: {class: ActivationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: -100
+        tracks:
+        - trackName: Activation Track
+          targetPath: bone_root/prop_root/bone_drum_stick_l/Star
+          postPlaybackState: 3
+          intervals:
+          - {x: 0.9166667, y: 1.5}
+    - rid: 8829553822955733013
+      type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        tracks:
+        - trackName: Audio Track
+          targetPath: 
+          volume: 1
+          stereoPan: 0
+          spatialBlend: 0
+          segments:
+          - clip: {fileID: 8300000, guid: 4c0417808699792469fc5e6a05cfc61f, type: 3}
+            start: 0.9361904761904761
+            duration: 0.5638095238095239
+            clipIn: 0
+            timeScale: 1
+            loop: 0
+            volume: 1
+            mixInDuration: 0
+            mixOutDuration: 0
+            mixInCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            mixOutCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4

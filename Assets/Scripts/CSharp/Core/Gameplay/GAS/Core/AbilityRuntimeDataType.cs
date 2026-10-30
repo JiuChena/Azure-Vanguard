@@ -11,6 +11,12 @@ namespace Framework.Gameplay.Abilities
         Sprint,
         BetterHSM,
         Behavior,
+        BattleUnit,
+        BattleWorld,
+        HSMGate,
+        Stat,
+        Display,
+        Buff,
         // </auto-generated>
     }
 }

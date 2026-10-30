@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Framework.Gameplay.Abilities;
 using UnityEngine;
 
 namespace BehaviorEditor
@@ -11,6 +12,8 @@ namespace BehaviorEditor
     {
         // 行为播放宿主对象，用于轨道解析和日志关联。
         private readonly GameObject ownerGameObject;
+        // 宿主 GAS 能力上下文（技能方案第 0 步：Play 注入，随执行上下文传给效果段）。
+        private AbilityOwnerContext ownerContext;
         // 是否输出行为播放头的开始、停止、完成与循环日志。
         private readonly bool logBehaviorFlow;
 
@@ -52,13 +55,16 @@ namespace BehaviorEditor
         /// 播放指定行为；会先停止旧行为并创建本次播放专用的轨道执行器。
         /// </summary>
         /// <param name="clip">待播放行为；为 null 时停止当前行为。</param>
-        public void Play(BehaviorClip clip)
+        /// <param name="ownerContext">宿主 GAS 能力上下文（注入执行上下文供效果段访问能力）；允许为 null。</param>
+        public void Play(BehaviorClip clip, AbilityOwnerContext ownerContext = null)
         {
             if (clip == null)
             {
                 Stop();
                 return;
             }
+
+            this.ownerContext = ownerContext;
 
             // 验证全局播放配置，并跳过同一循环行为的重复请求。
             BehaviorPlaybackSettings playbackSettings = clip.playbackSettings;
@@ -184,7 +190,8 @@ namespace BehaviorEditor
             // 上下文只提供各轨道共享的宿主信息与播放速度。
             var context = new BehaviorExecutionContext(
                 ownerGameObject,
-                CurrentPlaybackSettings != null ? CurrentPlaybackSettings.speedMultiplier : 1f);
+                CurrentPlaybackSettings != null ? CurrentPlaybackSettings.speedMultiplier : 1f,
+                ownerContext);
             for (int index = 0; index < clip.trackData.Count; index++)
             {
                 IBehaviorTrackExecutor trackExecutor = clip.trackData[index]?.CreateExecutor(context);

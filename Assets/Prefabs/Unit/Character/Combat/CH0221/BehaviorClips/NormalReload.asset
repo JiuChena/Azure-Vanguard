@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4729dab1b065fe941aa6d4f9dd582add, type: 3}
+  m_Name: NormalReload
+  m_EditorClassIdentifier: 
+  trackData:
+  - rid: 8829553822955733004
+  - rid: 8829553822955733005
+  playbackSettings:
+    duration: 2.3333333
+    wrapMode: 1
+    speedMultiplier: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8829553822955733004
+      type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        segments:
+        - authoringTrackName: Animation Track
+          clip: {fileID: 8093123221682778968, guid: a0b07bfa45501de46836234f6ef6f7e8,
+            type: 3}
+          crossFadeDuration: 0
+          layer: 0
+          startTime: 0
+        logPlayback: 0
+    - rid: 8829553822955733005
+      type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        tracks:
+        - trackName: Audio Track
+          targetPath: 
+          volume: 1
+          stereoPan: 0
+          spatialBlend: 0
+          segments:
+          - clip: {fileID: 8300000, guid: ba745406377156a489e82c289b24f93a, type: 3}
+            start: 0
+            duration: 1.5450340136054421
+            clipIn: 0
+            timeScale: 1
+            loop: 0
+            volume: 1
+            mixInDuration: 0
+            mixOutDuration: 0
+            mixInCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            mixOutCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4

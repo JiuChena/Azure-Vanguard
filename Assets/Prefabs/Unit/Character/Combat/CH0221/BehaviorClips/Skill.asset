@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4729dab1b065fe941aa6d4f9dd582add, type: 3}
+  m_Name: Skill
+  m_EditorClassIdentifier: 
+  trackData:
+  - rid: 8829553951888900133
+  - rid: 8829553951888900134
+  - rid: 8829553951888900135
+  playbackSettings:
+    duration: 5.3333335
+    wrapMode: 2
+    speedMultiplier: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8829553951888900133
+      type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        segments:
+        - authoringTrackName: Animation Track
+          clip: {fileID: 1024647471114208794, guid: a0b07bfa45501de46836234f6ef6f7e8,
+            type: 3}
+          crossFadeDuration: 0
+          layer: 0
+          startTime: 0
+        logPlayback: 0
+    - rid: 8829553951888900134
+      type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        tracks:
+        - trackName: Audio Track
+          targetPath: 
+          volume: 1
+          stereoPan: 0
+          spatialBlend: 0
+          segments:
+          - clip: {fileID: 8300000, guid: 6f76b6e714b22aa4199507eaa6c9e811, type: 3}
+            start: 0.15
+            duration: 2.620136054421769
+            clipIn: 0
+            timeScale: 1
+            loop: 0
+            volume: 1
+            mixInDuration: 0
+            mixOutDuration: 0
+            mixInCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            mixOutCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+          - clip: {fileID: 8300000, guid: 4dec08f7135e8ee43a17c977676882ad, type: 3}
+            start: 3
+            duration: 1.7239002267573695
+            clipIn: 0
+            timeScale: 1
+            loop: 0
+            volume: 1
+            mixInDuration: 0
+            mixOutDuration: 0
+            mixInCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            mixOutCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+    - rid: 8829553951888900135
+      type: {class: EventTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 10
+        events:
+        - authoringTrackName: BuffSelect
+          time: 0
+          referenceBone: 
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: c49671f9dccf4b44d9ee62c8d2433994, type: 2}
+        - authoringTrackName: Heal
+          time: 0
+          referenceBone: 
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: c974e95316aa0bb408dfb5ed4accb500, type: 2}
+        logEvents: 0

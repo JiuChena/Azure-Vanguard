@@ -99,6 +99,11 @@ Shader "GTS/General Toony Shader"
         _TransparencyMap("透明度贴图", 2D) = "white" {}
         [Enum(R,0,G,1,B,2,A,3)] _TransparencyChannel("透明度通道", Float) = 3
         _Transparency("透明度", Range(0, 1)) = 1
+
+        [Space(8)]
+        //幽灵预览（部署拖放）：整体半透明 = 漫反射最终出图的 a 通道统一乘系数；开关 _GHOST_ON
+        [Toggle(_GHOST_ON)] _GhostOn("幽灵预览开关", Float) = 0
+        _GhostAlpha("幽灵透明度系数", Range(0, 1)) = 0.5
     }
     SubShader
     {
@@ -285,6 +290,7 @@ Shader "GTS/General Toony Shader"
             float _Transparency;
             half4 _TransparencyMap_ST;
             float _TransparencyChannel;
+            float _GhostAlpha;
             CBUFFER_END
 
             sampler2D _Albedo;
@@ -588,6 +594,11 @@ Shader "GTS/General Toony Shader"
 
                 //总对比度：作用于最终片元结果，以0.5灰为轴拉伸（1=不变，>1增强，<1减弱）
                 litColorFinal.rgb = lerp(half3(0.5, 0.5, 0.5), litColorFinal.rgb, _Contrast);
+
+                //幽灵预览板块：最终 a 通道统一乘系数（开关 _GHOST_ON；配合 Blend SrcAlpha/OneMinusSrcAlpha 即整体半透明）
+                #ifdef _GHOST_ON
+                litColorFinal.a *= _GhostAlpha;
+                #endif
 
                 return litColorFinal;
             }

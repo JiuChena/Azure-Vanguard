@@ -420,12 +420,12 @@ public class CombatSelectPanel : PanelBase
     }
 
     /// <summary>
-    /// 关卡进入按钮点击处理。
+    /// 关卡进入按钮点击处理：先编队后战斗——打开战备面板，由战备面板战斗按钮进战斗测试场景。
     /// </summary>
     private void OnStageEnterClicked(StageDisplayInfo stage)
     {
         Debug.Log($"[CombatSelectPanel] 进入关卡: {stage.StageName} (ID={stage.StageId})");
-        EventCenter.Instance.SetEventTrigger(EventNames.NoticeRequested, $"Selected: {stage.StageName}");
+        PanelManager.Instance.OpenPanel<FormationPanel>(UIPath.FORMATIONPANEL, UILayer.Mid);
     }
 
     #endregion

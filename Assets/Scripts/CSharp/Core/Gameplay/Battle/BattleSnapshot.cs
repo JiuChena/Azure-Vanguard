@@ -23,7 +23,7 @@ namespace Framework.Gameplay.Battle
         // 点数余额
         public int Points { get; set; }
 
-        // 当前波下标（1 基，对齐 WaveRow.WaveIndex；0 = 未开始）
+        // 当前波号（1 基）
         public int WaveIndex { get; set; }
 
         // 全部波次已生成完

@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 1bb74d38d12a99a44bc924574bdbb8b6
   m_currentHash:
     serializedVersion: 2
-    Hash: b0a4f0f868eb8b8f68c15c9eed876e10
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -52,6 +52,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1ff5b2b165d790f458ab163a19bfa3a7, type: 2}
   - {fileID: 11400000, guid: 008c9f90094f0584689442647637286a, type: 2}
   - {fileID: 11400000, guid: 0529d07c60a89084f84e7806edd40046, type: 2}
+  - {fileID: 11400000, guid: ad5c480d4887c3d43828fd4648798bcf, type: 2}
   - {fileID: 11400000, guid: 92f470c309787964c98cffd9ef37b8f1, type: 2}
   - {fileID: 11400000, guid: 485fb7df503a07345b9379ef9c71dd0e, type: 2}
   - {fileID: 11400000, guid: ce5924a964bfb50409ba15e5bc9990b6, type: 2}
@@ -110,6 +111,7 @@ MonoBehaviour:
     - Panels
     - AvatarSet
     - DataTable
+    - Combat
     - Non-Combat
     - UnitConfig
     - Atlas

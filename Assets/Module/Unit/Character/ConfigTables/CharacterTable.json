@@ -16,12 +16,17 @@
       "atkInterval": 1.1,
       "range": 5.5,
       "moveSpeed": 3.2,
+      "rotateSpeed": 360,
+      "rotateNode": "",
       "normalAtkId": 22101,
       "skillEId": 22102,
       "skillQId": 22103,
       "talentIds": "22111,22112",
       "bonusIds": "22121,22122,22123,22124",
-      "tags": "SubDPS,Buffer,Healer,Indoor[Feeling_0],Outdoor[Feeling_3],Street[Feeling_3]"
+      "tags": "SubDPS,Buffer,Healer,Indoor[Feeling_0],Outdoor[Feeling_3],Street[Feeling_3]",
+      "bulletSpread": 0.2,
+      "headNode": "Bip001 Head",
+      "maxEnergy": 80
     },
     {
       "id": "CH0209",
@@ -37,12 +42,17 @@
       "atkInterval": 1.5,
       "range": 1.5,
       "moveSpeed": 3,
+      "rotateSpeed": 360,
+      "rotateNode": "",
       "normalAtkId": 20901,
       "skillEId": 20902,
       "skillQId": 20903,
       "talentIds": "20911,20912",
       "bonusIds": "20921,20922,20923,20924",
-      "tags": "MainDPS,Indoor[Feeling_1],Outdoor[Feeling_1],Street[Feeling_1]"
+      "tags": "MainDPS,Indoor[Feeling_1],Outdoor[Feeling_1],Street[Feeling_1]",
+      "bulletSpread": 0.2,
+      "headNode": "Bip001 Head",
+      "maxEnergy": 80
     }
   ]
 }

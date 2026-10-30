@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Framework.Gameplay.Abilities.Stat;
 using Framework.Gameplay.Unit;
 using UnityEngine;
 
@@ -108,6 +109,9 @@ namespace Framework.Gameplay.Progression
     /// 武器白值与装备平面词条在等级系数之后、百分比乘区之前并入基数（原神式口径）；
     /// 暴击/充能效率/伤害加成/治疗加成走加法区（基础常量 + Σ同键加成，武器主属性/bonus 节点/装备百分比词条同区）。
     /// 属性加成只认本角色 bonusIds 列出的 bonus 节点；武器贡献与装备贡献不在此列，直接计入。
+    /// 结算拆三段（2026-10-20 stat 能力接入）：白值合成 <see cref="BuildWhiteBase"/>、加成收集
+    /// <see cref="CollectBonusModifiers"/>（产出 StatModifier 条目）、组合 <see cref="ComputeStats"/>——
+    /// 公式走 StatMath 单一真源，stat 链与本类结果必须逐值一致；老 <see cref="Calculate"/> 组合三段保持行为不变。
     /// </summary>
     public static class CharacterStatsCalculator
     {
@@ -152,117 +156,149 @@ namespace Framework.Gameplay.Progression
             WeaponStatContribution weapon = default, TrinketStatContribution trinkets = default, int star = 1)
         {
             if (row == null) throw new ArgumentNullException(nameof(row));
-            if (unlockedNodeIds == null) unlockedNodeIds = Array.Empty<int>();
+            return ComputeStats(
+                BuildWhiteBase(row, levelMult, weapon, trinkets),
+                CollectBonusModifiers(row, unlockedNodeIds ?? Array.Empty<int>(), nodeLookup, weapon, trinkets));
+        }
 
-            // 汇总已解锁 bonus 节点的加成（外来节点与 talent 节点不计入）
-            int[] ownedBonusIds = row.BonusIdList;
-            double hpPct = 0.0, atkPct = 0.0, defPct = 0.0;
-            double critRate = BaseCritRate, critDmg = BaseCritDmg;
-            double energyRecharge = BaseEnergyRecharge, dmgBonus = BaseDamageBonus, healBonus = BaseHealBonus;
-
-            foreach (int nodeId in unlockedNodeIds)
-            {
-                // 属性加成只认本角色 bonusIds 列出的节点
-                if (Array.IndexOf(ownedBonusIds, nodeId) < 0) continue;
-
-                UnlockNodeRow node = nodeLookup?.Invoke(nodeId);
-                if (node == null || node.Type != UnlockNodeRow.NodeTypes.Bonus) continue;
-
-                AccumulateBonus(node.EffectKey, node.EffectValue,
-                    ref hpPct, ref atkPct, ref defPct,
-                    ref critRate, ref critDmg, ref energyRecharge, ref dmgBonus, ref healBonus, nodeId);
-            }
-
-            // default 载荷不走构造函数、数组为 null（无武器/未拥有时服务层返回 default），归一为空数组防 NRE
-            string[] weaponBonusKeys = weapon.BonusKeys ?? Array.Empty<string>();
-            float[] weaponBonusValues = weapon.BonusValues ?? Array.Empty<float>();
-
-            // 武器主属性：与 bonus 节点同键表、同加法区，不受 bonusIds 归属过滤
-            for (int i = 0; i < weaponBonusKeys.Length && i < weaponBonusValues.Length; i++)
-            {
-                AccumulateBonus(weaponBonusKeys[i], weaponBonusValues[i],
-                    ref hpPct, ref atkPct, ref defPct,
-                    ref critRate, ref critDmg, ref energyRecharge, ref dmgBonus, ref healBonus, -1);
-            }
+        /// <summary>
+        /// 白值合成出口（stat 能力 base 源）：角色基础 × 等级系数 + 武器白值 + 装备平面词条
+        /// （原神式口径：数字型贡献全部并入基数段），另带暴击/暴伤/充能/伤加/疗加的基础常量。
+        /// </summary>
+        public static Dictionary<StatType, float> BuildWhiteBase(CharacterRow row, float levelMult,
+            WeaponStatContribution weapon, TrinketStatContribution trinkets)
+        {
+            if (row == null) throw new ArgumentNullException(nameof(row));
 
             // default 载荷不走构造函数、数组为 null（无装备/未穿时服务层返回 default），归一为空数组防 NRE
             string[] trinketKeys = trinkets.Keys ?? Array.Empty<string>();
             float[] trinketValues = trinkets.Values ?? Array.Empty<float>();
 
-            // 装备词条按键路由：平面键（atk/hp/def）并入基数（同武器白值口径），
-            // 百分比键走加法区（同武器主属性口径），均不受 bonusIds 归属过滤
+            // 装备平面词条（atk/hp/def）并入基数（同武器白值口径）
             double trinketHpFlat = 0.0, trinketAtkFlat = 0.0, trinketDefFlat = 0.0;
             for (int i = 0; i < trinketKeys.Length && i < trinketValues.Length; i++)
             {
                 switch (trinketKeys[i])
                 {
-                    case WeaponRow.BaseStatTypes.Hp:
-                        trinketHpFlat += trinketValues[i];
-                        break;
-                    case WeaponRow.BaseStatTypes.Atk:
-                        trinketAtkFlat += trinketValues[i];
-                        break;
-                    case WeaponRow.BaseStatTypes.Def:
-                        trinketDefFlat += trinketValues[i];
-                        break;
-                    default:
-                        AccumulateBonus(trinketKeys[i], trinketValues[i],
-                            ref hpPct, ref atkPct, ref defPct,
-                            ref critRate, ref critDmg, ref energyRecharge, ref dmgBonus, ref healBonus, -1);
-                        break;
+                    case WeaponRow.BaseStatTypes.Hp: trinketHpFlat += trinketValues[i]; break;
+                    case WeaponRow.BaseStatTypes.Atk: trinketAtkFlat += trinketValues[i]; break;
+                    case WeaponRow.BaseStatTypes.Def: trinketDefFlat += trinketValues[i]; break;
                 }
             }
 
-            // 武器白值与装备平面词条在等级系数之后、百分比乘区之前并入基数（原神式口径）
+            // 武器白值在等级系数之后并入基数（原神式口径）
             bool hasWeapon = weapon.HasWeapon;
             double hpBase = row.Hp * (double)levelMult + (hasWeapon && weapon.WhiteType == WeaponRow.BaseStatTypes.Hp ? weapon.WhiteValue : 0) + trinketHpFlat;
             double atkBase = row.Atk * (double)levelMult + (hasWeapon && weapon.WhiteType == WeaponRow.BaseStatTypes.Atk ? weapon.WhiteValue : 0) + trinketAtkFlat;
             double defBase = row.Def * (double)levelMult + (hasWeapon && weapon.WhiteType == WeaponRow.BaseStatTypes.Def ? weapon.WhiteValue : 0) + trinketDefFlat;
 
-            // 星级乘区恒为 1（v1 拍板：战斗恒传 star=1，乘区表随抽卡系统接入）
-            // 结算用 double 累积，落账时向下取整（整型属性取整，比率属性原样带出）
-            return new CharacterStats(
-                FloorToInt(hpBase * (1.0 + hpPct)),
-                FloorToInt(atkBase * (1.0 + atkPct)),
-                FloorToInt(defBase * (1.0 + defPct)),
-                (float)critRate,
-                (float)critDmg,
-                (float)energyRecharge,
-                (float)dmgBonus,
-                (float)healBonus);
+            return new Dictionary<StatType, float>
+            {
+                [StatType.MaxHp] = (float)hpBase,
+                [StatType.Atk] = (float)atkBase,
+                [StatType.Def] = (float)defBase,
+                [StatType.CritRate] = BaseCritRate,
+                [StatType.CritDmg] = BaseCritDmg,
+                [StatType.EnergyRecharge] = BaseEnergyRecharge,
+                [StatType.DamageBonus] = BaseDamageBonus,
+                [StatType.HealBonus] = BaseHealBonus,
+            };
         }
 
         /// <summary>
-        /// 按属性键累加一条加成到对应加法区；未知键报错跳过（nodeId 仅用于日志定位，武器贡献传 -1）。
+        /// 加成收集出口（stat 能力初始 modifier 源）：bonus 节点（本角色 bonusIds 归属过滤）、武器主属性、
+        /// 装备百分比词条依序产出条目（加法区求和与旧实现同序，保证逐值一致）；
+        /// 装备平面词条不在此列（并入白值段）。全部条目为 PercentAdd/Flat，Mul 区战斗内词条接入后启用。
         /// </summary>
-        private static void AccumulateBonus(string effectKey, float value,
-            ref double hpPct, ref double atkPct, ref double defPct,
-            ref double critRate, ref double critDmg, ref double energyRecharge,
-            ref double dmgBonus, ref double healBonus, int nodeId)
+        public static List<StatModifier> CollectBonusModifiers(CharacterRow row, IReadOnlyCollection<int> unlockedNodeIds,
+            Func<int, UnlockNodeRow> nodeLookup, WeaponStatContribution weapon, TrinketStatContribution trinkets)
+        {
+            if (row == null) throw new ArgumentNullException(nameof(row));
+            var modifiers = new List<StatModifier>();
+
+            // bonus 节点：属性加成只认本角色 bonusIds 列出的节点（外来节点与 talent 节点不计入）
+            int[] ownedBonusIds = row.BonusIdList;
+            foreach (int nodeId in unlockedNodeIds ?? (IReadOnlyCollection<int>)Array.Empty<int>())
+            {
+                if (Array.IndexOf(ownedBonusIds, nodeId) < 0) continue;
+                UnlockNodeRow node = nodeLookup?.Invoke(nodeId);
+                if (node == null || node.Type != UnlockNodeRow.NodeTypes.Bonus) continue;
+                if (!MapEffectKey(node.EffectKey, out StatType type, out StatModifier.ModifierType kind))
+                {
+                    Debug.LogWarning($"未知属性加成键 '{node.EffectKey}'（来源节点 {nodeId}），已跳过");
+                    continue;
+                }
+                modifiers.Add(new StatModifier($"node_{nodeId}", type, kind, node.EffectValue));
+            }
+
+            // 武器主属性：与 bonus 节点同键表、同加法区，不受 bonusIds 归属过滤
+            string[] weaponBonusKeys = weapon.BonusKeys ?? Array.Empty<string>();
+            float[] weaponBonusValues = weapon.BonusValues ?? Array.Empty<float>();
+            for (int i = 0; i < weaponBonusKeys.Length && i < weaponBonusValues.Length; i++)
+            {
+                if (!MapEffectKey(weaponBonusKeys[i], out StatType type, out StatModifier.ModifierType kind))
+                {
+                    Debug.LogWarning($"未知属性加成键 '{weaponBonusKeys[i]}'（来源：武器主属性），已跳过");
+                    continue;
+                }
+                modifiers.Add(new StatModifier("weapon_main", type, kind, weaponBonusValues[i]));
+            }
+
+            // 装备词条按键路由：平面键（atk/hp/def）并入白值段不在此列，百分比键走加法区；
+            // 均不受 bonusIds 归属过滤
+            string[] trinketKeys = trinkets.Keys ?? Array.Empty<string>();
+            float[] trinketValues = trinkets.Values ?? Array.Empty<float>();
+            for (int i = 0; i < trinketKeys.Length && i < trinketValues.Length; i++)
+            {
+                if (trinketKeys[i] == WeaponRow.BaseStatTypes.Hp || trinketKeys[i] == WeaponRow.BaseStatTypes.Atk
+                    || trinketKeys[i] == WeaponRow.BaseStatTypes.Def) continue;
+                if (!MapEffectKey(trinketKeys[i], out StatType type, out StatModifier.ModifierType kind))
+                {
+                    Debug.LogWarning($"未知属性加成键 '{trinketKeys[i]}'（来源：装备词条），已跳过");
+                    continue;
+                }
+                modifiers.Add(new StatModifier("trinkets", type, kind, trinketValues[i]));
+            }
+            return modifiers;
+        }
+
+        /// <summary>组合结算：白值 + 加成条目 → CharacterStats；公式走 StatMath 单一真源（与 stat 链共用）。</summary>
+        private static CharacterStats ComputeStats(Dictionary<StatType, float> whiteBase, List<StatModifier> modifiers)
+        {
+            // 星级乘区恒为 1（v1 拍板：战斗恒传 star=1，乘区表随抽卡系统接入）
+            // 结算 double 累积，整型三项向下取整（比率属性原样带出）
+            return new CharacterStats(
+                StatMath.FloorToInt(StatMath.Evaluate(whiteBase[StatType.MaxHp], modifiers, StatType.MaxHp)),
+                StatMath.FloorToInt(StatMath.Evaluate(whiteBase[StatType.Atk], modifiers, StatType.Atk)),
+                StatMath.FloorToInt(StatMath.Evaluate(whiteBase[StatType.Def], modifiers, StatType.Def)),
+                (float)StatMath.Evaluate(whiteBase[StatType.CritRate], modifiers, StatType.CritRate),
+                (float)StatMath.Evaluate(whiteBase[StatType.CritDmg], modifiers, StatType.CritDmg),
+                (float)StatMath.Evaluate(whiteBase[StatType.EnergyRecharge], modifiers, StatType.EnergyRecharge),
+                (float)StatMath.Evaluate(whiteBase[StatType.DamageBonus], modifiers, StatType.DamageBonus),
+                (float)StatMath.Evaluate(whiteBase[StatType.HealBonus], modifiers, StatType.HealBonus));
+        }
+
+        /// <summary>
+        /// 养成加成键 → 属性条目映射：hp/atk/def 百分比走 PercentAdd 乘区；暴击/暴伤/充能/伤加/疗加
+        /// 走 Flat 加法区（基础常量同区直加，非乘区——与旧口径逐值一致）。未知键返回 false 由调用方跳过。
+        /// </summary>
+        private static bool MapEffectKey(string effectKey, out StatType type, out StatModifier.ModifierType kind)
         {
             switch (effectKey)
             {
-                case EffectKeyHpPct: hpPct += value; break;
-                case EffectKeyAtkPct: atkPct += value; break;
-                case EffectKeyDefPct: defPct += value; break;
-                case EffectKeyCritRate: critRate += value; break;
-                case EffectKeyCritDmg: critDmg += value; break;
-                case EffectKeyEnergyRecharge: energyRecharge += value; break;
-                case EffectKeyDmgBonus: dmgBonus += value; break;
-                case EffectKeyHealBonus: healBonus += value; break;
+                case EffectKeyHpPct: type = StatType.MaxHp; kind = StatModifier.ModifierType.PercentAdd; return true;
+                case EffectKeyAtkPct: type = StatType.Atk; kind = StatModifier.ModifierType.PercentAdd; return true;
+                case EffectKeyDefPct: type = StatType.Def; kind = StatModifier.ModifierType.PercentAdd; return true;
+                case EffectKeyCritRate: type = StatType.CritRate; kind = StatModifier.ModifierType.Flat; return true;
+                case EffectKeyCritDmg: type = StatType.CritDmg; kind = StatModifier.ModifierType.Flat; return true;
+                case EffectKeyEnergyRecharge: type = StatType.EnergyRecharge; kind = StatModifier.ModifierType.Flat; return true;
+                case EffectKeyDmgBonus: type = StatType.DamageBonus; kind = StatModifier.ModifierType.Flat; return true;
+                case EffectKeyHealBonus: type = StatType.HealBonus; kind = StatModifier.ModifierType.Flat; return true;
                 default:
-                    Debug.LogWarning($"未知属性加成键 '{effectKey}'（来源节点 {nodeId}），已跳过");
-                    break;
+                    type = default;
+                    kind = default;
+                    return false;
             }
-        }
-
-        /// <summary>
-        /// 浮点结算后向下取整：加微小容差抵消 float 表示误差（如表值 1.15 在 float 中略小于真值），
-        /// 避免策划口径的整数值因表示误差掉 1 点。
-        /// </summary>
-        private static int FloorToInt(double value)
-        {
-            return (int)Math.Floor(value + Math.Abs(value) * 1e-6 + 1e-4);
         }
     }
 }

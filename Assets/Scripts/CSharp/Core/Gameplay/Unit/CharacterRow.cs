@@ -65,6 +65,22 @@ namespace Framework.Gameplay.Unit
         [Key("moveSpeed")]
         public float MoveSpeed;
 
+        // 攻击转向速度（度/秒；攻击面向目标时的固定转速，0 = 不转向）
+        [Key("rotateSpeed")]
+        public float RotateSpeed;
+
+        // 攻击转向节点路径（空 = 转自身 root；非空 = transform.Find 相对路径，如坦克炮塔节点）
+        [Key("rotateNode")]
+        public string RotateNode;
+
+        // 子弹锁头 XYZ 散射半径（米；枪械精度差异配置项，0 = 精准锁头，目标点不加随机偏移）
+        [Key("bulletSpread")]
+        public float BulletSpread;
+
+        // 头部骨骼节点（prefab 内骨骼名或相对路径；子弹锁头与攻击转向取目标 head 世界位用，空 = 未配）
+        [Key("headNode")]
+        public string HeadNode;
+
         // 普攻技能 id（SkillTable 主键）
         [Key("normalAtkId")]
         public int NormalAtkId;
@@ -76,6 +92,10 @@ namespace Framework.Gameplay.Unit
         // 爆发技能 Q 的技能 id（SkillTable 主键）
         [Key("skillQId")]
         public int SkillQId;
+
+        // 能量上限（每角色不同；Q 大招施放消耗的能量门槛，CH0221=80）
+        [Key("maxEnergy")]
+        public int MaxEnergy;
 
         // 天赋节点 id，逗号分隔多值（UnlockNodeTable 主键）
         [Key("talentIds")]

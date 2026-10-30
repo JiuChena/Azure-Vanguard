@@ -4,6 +4,8 @@ namespace Framework.Gameplay.Abilities
     public enum BetterHSMRegistrationId
     {
         CH0221Test,
-        CH0221TestHierarchical
+        CH0221TestHierarchical,
+        CharacterCombat,
+        EnemyMelee
     }
 }

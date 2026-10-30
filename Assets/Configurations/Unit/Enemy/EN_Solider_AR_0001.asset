@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7e301ed25b67a645badf6c9c1f0c2f1, type: 3}
+  m_Name: EN_Solider_AR_0001
+  m_EditorClassIdentifier: 
+  unitId: EN_Solider_AR_0001
+  unitName: AR Soldier
+  behaviorClips:
+  - {fileID: 11400000, guid: acb52d5a31c1de0479ee3f4bf16954dd, type: 2}
+  - {fileID: 11400000, guid: 2ab01ed0e80633c448acc87e097bb80d, type: 2}
+  - {fileID: 11400000, guid: 22df56a04017d2d4dbcf79c495629a67, type: 2}
+  - {fileID: 11400000, guid: 2c34335f7deb99b40956cce626129033, type: 2}
+  - {fileID: 11400000, guid: 3541bb60593a77e44aad709485485c00, type: 2}
+  - {fileID: 11400000, guid: 42ac24c8d39fd784388a2d432f4474bd, type: 2}
+  - {fileID: 11400000, guid: 6bb5ddec0216ddf468e85899a12476fb, type: 2}

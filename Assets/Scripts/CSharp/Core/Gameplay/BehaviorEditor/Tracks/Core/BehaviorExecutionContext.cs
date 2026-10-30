@@ -1,3 +1,4 @@
+using Framework.Gameplay.Abilities;
 using UnityEngine;
 
 namespace BehaviorEditor
@@ -7,6 +8,9 @@ namespace BehaviorEditor
     /// </summary>
     public sealed class BehaviorExecutionContext
     {
+        /// <summary>宿主 GAS 能力上下文（技能方案第 0 步：BHSM 能力创建 data 时注入，效果段直接访问能力）。</summary>
+        public AbilityOwnerContext OwnerContext { get; }
+
         /// <summary>行为宿主对象。</summary>
         public GameObject OwnerGameObject { get; }
         /// <summary>行为宿主变换。</summary>
@@ -21,13 +25,16 @@ namespace BehaviorEditor
         /// </summary>
         /// <param name="ownerGameObject">执行行为的宿主对象；允许为 null。</param>
         /// <param name="playbackSpeed">当前行为全局播放速度倍率；小于等于零时钳制为最小正值。</param>
-        public BehaviorExecutionContext(GameObject ownerGameObject, float playbackSpeed)
+        /// <param name="ownerContext">宿主 GAS 能力上下文；允许为 null（非 GAS 宿主播放时缺省）。</param>
+        public BehaviorExecutionContext(GameObject ownerGameObject, float playbackSpeed,
+            AbilityOwnerContext ownerContext = null)
         {
             // 缓存所有轨道都可共享的宿主信息。
             OwnerGameObject = ownerGameObject;
             OwnerTransform = ownerGameObject != null ? ownerGameObject.transform : null;
             PlaybackSpeed = Mathf.Max(0.01f, playbackSpeed);
             TransformResolver = new BehaviorTransformResolver(OwnerTransform, OwnerGameObject);
+            OwnerContext = ownerContext;
         }
     }
 }

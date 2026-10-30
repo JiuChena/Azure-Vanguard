@@ -12,31 +12,34 @@
       "effectIds": "2210101",
       "desc": "Deals {rate:percent} ATK as sonic damage to a target enemy, plus {atkadd} bonus damage",
       "params": "{rate:1.0:0.08, atkadd:50:20}",
-      "icon": "NormalAttack"
+      "icon": "NormalAttack",
+      "energyGain": 1
     },
     {
       "skillId": 22102,
-      "name": "Chord Wave",
+      "name": "Healing Chord",
       "type": "e",
       "maxLevel": 10,
-      "cooldown": 8,
+      "cooldown": 20,
       "cost": 2,
-      "effectIds": "2210201,2210202",
-      "desc": "Expands a sonic wave around the user, dealing {rate:percent} ATK damage to enemies in range and slowing their movement by {slow:percent} for {slowtime} seconds",
-      "params": "{rate:1.5:0.12, slow:0.4:0.03, slowtime:2.5:0}",
-      "icon": "CH0221_Skill"
+      "effectIds": "2210201,2210202,2210203,2210204",
+      "desc": "Heals the caster and the ally with the lowest HP for {heal:percent} of the caster's Max HP, scaled by Energy Recharge, then randomly grants the whole team one of these buffs for {dur} seconds: +{atkup:percent} ATK, +{critdmg:percent} Crit DMG, or +{critrate:percent} Crit Rate.",
+      "params": "{heal:0.15:0.01, dur:10:0, atkup:0.20:0.01, critdmg:0.10:0.01, critrate:0.05:0.005}",
+      "icon": "CH0221_Skill",
+      "energyGain": 10
     },
     {
       "skillId": 22103,
-      "name": "Finale",
+      "name": "Resonance",
       "type": "burst",
       "maxLevel": 10,
-      "cooldown": 25,
+      "cooldown": 20,
       "cost": 6,
-      "effectIds": "2210301,2210302",
-      "desc": "Plays the finale, dealing {rate:percent} ATK damage to enemies in a large area and healing the whole team for {healrate:percent} of their Max HP",
-      "params": "{rate:3.2:0.25, healrate:0.15:0.01}",
-      "icon": "CH0221_EX"
+      "effectIds": "2210301,2210303",
+      "desc": "Begins a performance, spreading rhythm from the caster for {dur} seconds. Allies within range gain +{critrate:percent} Crit Rate and +{critdmg:percent} Crit DMG. When an ally's HP drops below {threshold:percent}, heals all allies below {threshold:percent} HP for {heal:percent} of the caster's Max HP, up to once every 5 seconds. Requires {energy} Energy to cast.",
+      "params": "{dur:12:0, critrate:0.10:0.005, critdmg:0.30:0.01, threshold:0.5:0, heal:0.06:0.006, energy:80:0}",
+      "icon": "CH0221_EX",
+      "energyGain": 0
     },
     {
       "skillId": 20901,
@@ -48,19 +51,21 @@
       "effectIds": "2090101",
       "desc": "Deals {rate:percent} ATK as shield bash damage to a target enemy, plus {atkadd} bonus damage",
       "params": "{rate:1.0:0.08, atkadd:50:20}",
-      "icon": "NormalAttack"
+      "icon": "NormalAttack",
+      "energyGain": 1
     },
     {
       "skillId": 20902,
       "name": "Bulwark Field",
       "type": "e",
       "maxLevel": 10,
-      "cooldown": 8,
+      "cooldown": 20,
       "cost": 2,
       "effectIds": "2090201,2090202",
       "desc": "Deploys a shield field, dealing {rate:percent} ATK damage to nearby enemies and slowing their movement by {slow:percent} for {slowtime} seconds",
       "params": "{rate:1.2:0.1, slow:0.3:0.02, slowtime:2:0}",
-      "icon": "CH0209_Skill"
+      "icon": "CH0209_Skill",
+      "energyGain": 10
     },
     {
       "skillId": 20903,
@@ -72,19 +77,21 @@
       "effectIds": "2090301,2090302",
       "desc": "Enters a guarding stance, restoring {healrate:percent} of Max HP and striking nearby enemies for {rate:percent} ATK damage",
       "params": "{healrate:0.25:0.01, rate:1.5:0.15}",
-      "icon": "CH0209_EX"
+      "icon": "CH0209_EX",
+      "energyGain": 0
     },
     {
       "skillId": 22104,
-      "name": "Perfect Pitch",
+      "name": "Harmony",
       "type": "talent",
       "maxLevel": 10,
       "cooldown": 0,
       "cost": 0,
       "effectIds": "",
-      "desc": "Raises own ATK by {atkup:percent} when entering combat",
-      "params": "{atkup:0.04:0.01}",
-      "icon": "CH0221_Talent"
+      "desc": "While on the battlefield, all allies gain +{energy:percent} Energy Recharge and +{damage:percent} Damage Bonus.",
+      "params": "{energy:0.05:0, damage:0.10:0.01}",
+      "icon": "CH0221_Talent",
+      "energyGain": 0
     },
     {
       "skillId": 20904,
@@ -96,7 +103,8 @@
       "effectIds": "",
       "desc": "Raises own DEF by {defup:percent} when HP falls below {threshold:percent}",
       "params": "{threshold:0.5:0, defup:0.15:0.02}",
-      "icon": "CH0209_Talent"
+      "icon": "CH0209_Talent",
+      "energyGain": 0
     },
     {
       "skillId": 90101,
@@ -108,7 +116,8 @@
       "effectIds": "9010101",
       "desc": "Deals {rate:percent} ATK plus {atkadd} as melee damage to a target enemy",
       "params": "{rate:1.0:0.08, atkadd:30:15}",
-      "icon": "NormalAttack"
+      "icon": "NormalAttack",
+      "energyGain": 1
     }
   ]
 }

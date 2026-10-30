@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4729dab1b065fe941aa6d4f9dd582add, type: 3}
+  m_Name: CrouchAttacking
+  m_EditorClassIdentifier: 
+  trackData:
+  - rid: 8829553951888900109
+  - rid: 8829553951888900110
+  - rid: 8829553951888900111
+  playbackSettings:
+    duration: 1.3333334
+    wrapMode: 2
+    speedMultiplier: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 8829553951888900109
+      type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        segments:
+        - authoringTrackName: Animation Track
+          clip: {fileID: 5192541888008987080, guid: a0b07bfa45501de46836234f6ef6f7e8,
+            type: 3}
+          crossFadeDuration: 0
+          layer: 0
+          startTime: 0
+        - authoringTrackName: Animation Track
+          clip: {fileID: 4503526553173316197, guid: a0b07bfa45501de46836234f6ef6f7e8,
+            type: 3}
+          crossFadeDuration: 0
+          layer: 0
+          startTime: 0.6666667
+        logPlayback: 0
+    - rid: 8829553951888900110
+      type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 0
+        tracks:
+        - trackName: Audio Track
+          targetPath: 
+          volume: 1
+          stereoPan: 0
+          spatialBlend: 0
+          segments:
+          - clip: {fileID: 8300000, guid: 84014c7fbbfc7da4faf12d012fd871b5, type: 3}
+            start: 0
+            duration: 0.6414965986394557
+            clipIn: 0
+            timeScale: 1
+            loop: 0
+            volume: 1
+            mixInDuration: 0
+            mixOutDuration: 0
+            mixInCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+            mixOutCurve:
+              serializedVersion: 2
+              m_Curve:
+              - serializedVersion: 3
+                time: 0
+                value: 1
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              - serializedVersion: 3
+                time: 1
+                value: 0
+                inSlope: 0
+                outSlope: 0
+                tangentMode: 0
+                weightedMode: 0
+                inWeight: 0
+                outWeight: 0
+              m_PreInfinity: 2
+              m_PostInfinity: 2
+              m_RotationOrder: 4
+    - rid: 8829553951888900111
+      type: {class: EventTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 10
+        events:
+        - authoringTrackName: BulletCreate
+          time: 0.083333336
+          referenceBone: CH0221/bone_root/Bip001/Bip001_Weapon/fire_01
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: 7d78ad74efafc2640b64f5d7444f1c3d, type: 2}
+        - authoringTrackName: BulletCreate
+          time: 0.18333334
+          referenceBone: CH0221/bone_root/Bip001/Bip001_Weapon/fire_01
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: 7d78ad74efafc2640b64f5d7444f1c3d, type: 2}
+        - authoringTrackName: BulletCreate
+          time: 0.33333334
+          referenceBone: CH0221/bone_root/Bip001/Bip001_Weapon/fire_01
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: 7d78ad74efafc2640b64f5d7444f1c3d, type: 2}
+        logEvents: 0

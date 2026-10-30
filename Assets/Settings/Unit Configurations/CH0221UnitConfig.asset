@@ -12,14 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8d6db5bc16d0724cb13cd64a7e099f2, type: 3}
   m_Name: CH0221UnitConfig
   m_EditorClassIdentifier: 
-  unitId: 221
+  unitId: CH0221
+  unitName: 
   behaviorClips:
-    keys:
-    - Idle
-    - Move
-    values:
-    - {fileID: 0}
-    - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   dataTables:
   - {fileID: 4900000, guid: 5fe637c219abaa44f813053c448fffb7, type: 3}
   - {fileID: 4900000, guid: b0fba601722a07b4296d0d19417285cc, type: 3}

@@ -55,6 +55,10 @@ namespace Framework.Gameplay.Unit
         [Key("effectIds")]
         public string EffectIds;
 
+        // 能量回复量（普攻行=命中回能 / E·EX 行=施放回能；配 0 不回能——表驱动能量经济 2026-10-28）
+        [Key("energyGain")]
+        public int EnergyGain;
+
         // 技能描述文本
         [Key("desc")]
         public string Desc;

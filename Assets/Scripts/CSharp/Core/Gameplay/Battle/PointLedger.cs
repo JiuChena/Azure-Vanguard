@@ -13,6 +13,9 @@ namespace Framework.Gameplay.Battle
         // 当前点数
         public int Current { get; private set; }
 
+        /// <summary>距下次供给的秒数（已到顶恒 0；HUD 补给倒计时用）。</summary>
+        public float SecondsToNextSupply => Current >= Cap ? 0f : supplyInterval - supplyTimer;
+
         // 点数上限（时间供给封顶）
         public int Cap { get; }
 
