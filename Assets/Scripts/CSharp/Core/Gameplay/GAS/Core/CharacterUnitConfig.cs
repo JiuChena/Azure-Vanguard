@@ -4,7 +4,7 @@ namespace Framework.Gameplay.Abilities
 {
     /// <summary>
     /// 角色单位配置：UnitConfig 基类 + 角色独有的数据表引用。
-    /// dataTables 收拢角色养成共享表（CharacterTable/LevelTable/SkillTable/SkillEffectTable/UnlockNodeTable），
+    /// dataTables 收拢角色养成共享表（CharacterTable/CharacterLevelTable/CharacterSkillTable/SkillEffectTable/UnlockNodeTable），
     /// breakthroughTable 是角色独有的突破表（敌人无养成不引用）；
     /// 表名一律取资产名（TextAsset.name），运行时按名注入 DataTableManager 缓存全队共享。
     /// </summary>
@@ -13,7 +13,7 @@ namespace Framework.Gameplay.Abilities
     {
         [Header("角色养成数据表")]
         //共享养成表 .bytes 引用；资源生命周期跟本资产走，反序列化结果由 DataTableManager 按表名缓存
-        [Tooltip("养成共享表（CharacterTable/LevelTable/SkillTable/SkillEffectTable/UnlockNodeTable 的 .bytes），表名 = 资产名")]
+        [Tooltip("养成共享表（CharacterTable/CharacterLevelTable/CharacterSkillTable/SkillEffectTable/UnlockNodeTable 的 .bytes），表名 = 资产名")]
         [SerializeField] private TextAsset[] dataTables;
 
         [Header("突破数据表")]

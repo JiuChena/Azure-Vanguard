@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: EX
   m_EditorClassIdentifier: 
   trackData:
-  - rid: 8829553822955732998
-  - rid: 8829553822955732999
-  - rid: 8829553822955733000
+  - rid: 2207089303273340948
+  - rid: 2207089303273340949
+  - rid: 2207089303273340950
+  - rid: 2207089303273340951
   playbackSettings:
     duration: 6.166667
     wrapMode: 1
@@ -23,7 +24,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8829553822955732998
+    - rid: 2207089303273340948
       type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -35,7 +36,7 @@ MonoBehaviour:
           layer: 0
           startTime: 0
         logPlayback: 0
-    - rid: 8829553822955732999
+    - rid: 2207089303273340949
       type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -52,7 +53,7 @@ MonoBehaviour:
             clipIn: 1.6666666666666652
             timeScale: 1
             loop: 0
-            volume: 0.15
+            volume: 0.5
             mixInDuration: 0
             mixOutDuration: 0
             mixInCurve:
@@ -115,7 +116,7 @@ MonoBehaviour:
             clipIn: 0
             timeScale: 1
             loop: 0
-            volume: 0.1
+            volume: 0.5
             mixInDuration: 0
             mixOutDuration: 0
             mixInCurve:
@@ -166,7 +167,7 @@ MonoBehaviour:
               m_PreInfinity: 2
               m_PostInfinity: 2
               m_RotationOrder: 4
-    - rid: 8829553822955733000
+    - rid: 2207089303273340950
       type: {class: ActivationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: -100
@@ -180,4 +181,24 @@ MonoBehaviour:
           targetPath: EX_Root/FX_Local_DM/CFXR3 Hit Misc C
           postPlaybackState: 3
           intervals:
-          - {x: 0, y: 1}
+          - {x: 0.1, y: 0.6}
+    - rid: 2207089303273340951
+      type: {class: EventTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 10
+        events:
+        - authoringTrackName: Buff
+          time: 0
+          referenceBone: 
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: 981b5039625b0fd41ba3607644835273, type: 2}
+        - authoringTrackName: Heal
+          time: 0
+          referenceBone: 
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: 2274c0654727242419eb0bf5cf0f67ab, type: 2}
+        logEvents: 0

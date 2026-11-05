@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Talent
   m_EditorClassIdentifier: 
   trackData:
-  - rid: 8829553822955733011
-  - rid: 8829553822955733012
-  - rid: 8829553822955733013
+  - rid: 2207089303273340952
+  - rid: 2207089303273340953
+  - rid: 2207089303273340954
+  - rid: 2207089303273340955
   playbackSettings:
     duration: 1.5
     wrapMode: 1
@@ -23,7 +24,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 8829553822955733011
+    - rid: 2207089303273340952
       type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -31,11 +32,11 @@ MonoBehaviour:
         - authoringTrackName: Animation Track
           clip: {fileID: -5979131190045853971, guid: a0b07bfa45501de46836234f6ef6f7e8,
             type: 3}
-          crossFadeDuration: 0
+          crossFadeDuration: 0.2
           layer: 0
           startTime: 0
         logPlayback: 0
-    - rid: 8829553822955733012
+    - rid: 2207089303273340953
       type: {class: ActivationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: -100
@@ -45,7 +46,7 @@ MonoBehaviour:
           postPlaybackState: 3
           intervals:
           - {x: 0.9166667, y: 1.5}
-    - rid: 8829553822955733013
+    - rid: 2207089303273340954
       type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -113,3 +114,16 @@ MonoBehaviour:
               m_PreInfinity: 2
               m_PostInfinity: 2
               m_RotationOrder: 4
+    - rid: 2207089303273340955
+      type: {class: EventTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: 10
+        events:
+        - authoringTrackName: Behavior Timeline Event Track
+          time: 0.9166667
+          referenceBone: 
+          positionOffset: {x: 0, y: 0, z: 0}
+          rotationOffset: {x: 0, y: 0, z: 0}
+          scaleOffset: {x: 1, y: 1, z: 1}
+          execute: {fileID: 11400000, guid: f6f404f9d2a481941b4dad7deeb8e1ab, type: 2}
+        logEvents: 0

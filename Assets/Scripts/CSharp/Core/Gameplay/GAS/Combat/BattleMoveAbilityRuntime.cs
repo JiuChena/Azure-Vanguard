@@ -50,11 +50,11 @@ namespace Framework.Gameplay.Abilities
             // 依赖惰性就绪：② 注册数据与 HSM 初始化前整能力空转。
             if (_unit == null && !TryAcquireDependencies()) return;
 
-            // 攻击面向：攻击期（非 Move 态）且配置了转速时，把转向节点向目标插值步进。
-            // 目标位置 = 守点或攻击单位 ③ 位置；无目标/目标出表/战场面未注册本帧不转。
-            // 在移动分支之前执行：攻击期不移动，两分支互斥，顺序无关紧要。
+            // 攻击面向（2026-11-06）：仅 AttackStart / Attacking（ICombatAttackFacingState）允许转向；
+            // AttackEnd/Skill/Talent/Idle/Move 不转。目标位置 = 守点或攻击单位 ③ 位置；
+            // 无目标/目标出表/战场面未注册本帧不转。转速来源 = BattleUnitStats.RotateSpeed（表已不配，代码默认）。
             if (_unit.Stats.RotateSpeed > 0f
-                && !ShouldMove()
+                && _hsmData.AbilityContext.CurrentState is ICombatAttackFacingState
                 && _unit.HasAttackIntent
                 && _worldData != null
                 && TryGetAttackTargetPosition(out Vector3 targetPos))
@@ -167,6 +167,17 @@ namespace Framework.Gameplay.Abilities
                     return true;
                 }
                 targetPos = _worldData.Controller.GuardPointPosition;
+                return true;
+            }
+            // 实例目标优先（敌人同 UnitId 多实例）；仅 id 的旧夹具保留兼容
+            if (_unit.TargetUnit != null)
+            {
+                if (FieldUnitRegistry.TryGetHead(_unit.TargetUnit, out Transform instanceHead))
+                {
+                    targetPos = instanceHead.position;
+                    return true;
+                }
+                targetPos = _unit.TargetUnit.Position;
                 return true;
             }
             if (_unit.TargetUnitId != null)

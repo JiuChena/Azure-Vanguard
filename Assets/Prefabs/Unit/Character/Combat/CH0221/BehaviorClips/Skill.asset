@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: Skill
   m_EditorClassIdentifier: 
   trackData:
-  - rid: 8829553951888900133
-  - rid: 8829553951888900134
-  - rid: 8829553951888900135
+  - rid: 2207089303273340928
+  - rid: 2207089303273340929
+  - rid: 2207089303273340930
+  - rid: 2207089303273340931
   playbackSettings:
     duration: 5.3333335
-    wrapMode: 2
+    wrapMode: 1
     speedMultiplier: 1
   references:
     version: 2
     RefIds:
-    - rid: 8829553951888900133
+    - rid: 2207089303273340928
       type: {class: AnimationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -35,7 +36,7 @@ MonoBehaviour:
           layer: 0
           startTime: 0
         logPlayback: 0
-    - rid: 8829553951888900134
+    - rid: 2207089303273340929
       type: {class: AudioTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 0
@@ -160,7 +161,32 @@ MonoBehaviour:
               m_PreInfinity: 2
               m_PostInfinity: 2
               m_RotationOrder: 4
-    - rid: 8829553951888900135
+    - rid: 2207089303273340930
+      type: {class: ActivationTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
+      data:
+        executionOrder: -100
+        tracks:
+        - trackName: Activation Track
+          targetPath: EX_Root/FX_Local_DM/CFXR2 Pickup Magic Star
+          postPlaybackState: 3
+          intervals:
+          - {x: 0, y: 1}
+        - trackName: Activation Track (1)
+          targetPath: bone_root/prop_root/Bone_Semla/Bone_Semla_bite/Star
+          postPlaybackState: 3
+          intervals:
+          - {x: 0.33333334, y: 1.3333334}
+        - trackName: Activation Track (2)
+          targetPath: EX_Root/FX_Local_DM/CH0221_StageRhythm_Small
+          postPlaybackState: 3
+          intervals:
+          - {x: 3.3, y: 3.8}
+        - trackName: Activation Track (3)
+          targetPath: EX_Root/FX_Local_DM/Level_up
+          postPlaybackState: 3
+          intervals:
+          - {x: 2.5833333, y: 4.7239003}
+    - rid: 2207089303273340931
       type: {class: EventTrackData, ns: BehaviorEditor, asm: Assembly-CSharp}
       data:
         executionOrder: 10
@@ -171,12 +197,12 @@ MonoBehaviour:
           positionOffset: {x: 0, y: 0, z: 0}
           rotationOffset: {x: 0, y: 0, z: 0}
           scaleOffset: {x: 1, y: 1, z: 1}
-          execute: {fileID: 11400000, guid: c49671f9dccf4b44d9ee62c8d2433994, type: 2}
+          execute: {fileID: 11400000, guid: 56e00e8e0b9024f4aa7ea234149722a5, type: 2}
         - authoringTrackName: Heal
-          time: 0
+          time: 3.45
           referenceBone: 
           positionOffset: {x: 0, y: 0, z: 0}
           rotationOffset: {x: 0, y: 0, z: 0}
           scaleOffset: {x: 1, y: 1, z: 1}
-          execute: {fileID: 11400000, guid: c974e95316aa0bb408dfb5ed4accb500, type: 2}
+          execute: {fileID: 11400000, guid: de5551edd2ff34d49ad232a6138f9d1c, type: 2}
         logEvents: 0

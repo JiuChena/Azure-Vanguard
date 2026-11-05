@@ -9,7 +9,7 @@ namespace Framework.Gameplay.Battle
     /// 一行 = 一个波次内一个出怪点的时间点排程；同波次多出怪点 = 多行（同 waveId）。
     /// StageTable.waveIds（分号序列）引用波次 id（waveId 列）驱动波次推进顺序；行主键 = id 列。
     /// T 列格式：`30[EN_Solider_AR_0001:2,EN0002:5]` = 本波次第 30 秒依次创建 2 个 1 级 EN_Solider_AR_0001、5 个 1 级 EN0002；
-    /// 敌人 id 可带等级后缀 `EN_Solider_AR_0001@10`（10 级，缺省 1 级；等级成长 = EnemyRow 1 级基准 × LevelTable.multiplier）
+    /// 敌人 id 可带等级后缀 `EN_Solider_AR_0001@10`（10 级，缺省 1 级；等级成长 = EnemyRow 1 级基准 × CharacterLevelTable.multiplier）
     /// （创建间隔在 CombatManager 配置，表只定时刻/数量/等级）。
     /// </summary>
     [MessagePackObject]

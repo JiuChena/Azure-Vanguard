@@ -30,6 +30,12 @@ namespace Framework.Gameplay.Battle
         // 能量账户 = BattleUnitState.Energy（静态 EnergyManager 统一入账，无实例状态）。
         public SkillCooldownManager Cooldowns { get; } = new SkillCooldownManager();
 
+        // 天赋全场效果容器（光环/追奏等被动效果；随本控制器生命周期）
+        public TalentEffectContainer Talents { get; }
+
+        // 战斗随机源（伤害暴击/天赋概率；验证脚本可注入固定种子/序列）
+        public System.Random Rng { get; }
+
         private readonly List<BattleUnitState> units = new List<BattleUnitState>();
         private readonly BattleDataPack data;
         private readonly BattleOutcomeEvaluator evaluator;
@@ -45,11 +51,13 @@ namespace Framework.Gameplay.Battle
         public event Action<int> PointsChanged;              // 点数变化（当前值）
         public event Action<int> WaveChanged;                // 波次推进（1 基波号）
         public event Action<BattleOutcome> OutcomeDecided;   // 胜负判定（只发一次）
+        public event Action<BattleDamageEvent> DamageDealt;  // 伤害结算（天赋/表现/HUD）
 
         public BattleController(GuardPointState guardPoint, Vector3 guardPosition,
             PointLedger ledger, IBattleWaveDriver waves, BattleDataPack data,
-            BattleOutcomeEvaluator evaluator)
+            BattleOutcomeEvaluator evaluator, System.Random rng = null)
         {
+            Rng = rng ?? new System.Random();
             GuardPoint = guardPoint ?? throw new ArgumentNullException(nameof(guardPoint));
             Ledger = ledger ?? throw new ArgumentNullException(nameof(ledger));
             Waves = waves ?? throw new ArgumentNullException(nameof(waves));
@@ -60,8 +68,24 @@ namespace Framework.Gameplay.Battle
             evalContext.Units = units;
             evalContext.GuardPoint = guardPoint;
 
+            // 天赋全场效果容器（订阅出生/倒地/复活/伤害事件）；静态光环先清，避免上一场/上一测试残留
+            TalentAura.Clear();
+            Talents = new TalentEffectContainer(this);
+
             // 快照基线（Points/Wave/守点先行落位，后续刷新只报真实差值）
             RefreshSnapshot();
+        }
+
+        /// <summary>广播一次伤害结算事件（BattleDamage 唯一调用）。</summary>
+        internal void RaiseDamageDealt(BattleDamageEvent e)
+        {
+            DamageDealt?.Invoke(e);
+        }
+
+        /// <summary>战斗结束清理：释放天赋效果与事件订阅。</summary>
+        public void Dispose()
+        {
+            Talents?.Dispose();
         }
 
         public GuardPointState GuardPoint { get; }
@@ -230,6 +254,7 @@ namespace Framework.Gameplay.Battle
                         GuardPoint.TakeDamage(unit.Stats.GuardPointDamage);
                         Cooldowns.Unregister(unit);
                         units.RemoveAt(i);
+                        ClearTargetReferences(unit);
                         EnemyRemoved?.Invoke(unit);
                     }
                 }
@@ -244,7 +269,7 @@ namespace Framework.Gameplay.Battle
                 if (unit.Camp == BattleCamp.Character)
                 {
                     unit.Vital = UnitVitalState.Downed;
-                    unit.TargetUnitId = null;
+                    unit.ClearCombatTarget();
                     unit.TargetIsGuardPoint = false;
                     UnitDowned?.Invoke(unit);
                 }
@@ -258,6 +283,7 @@ namespace Framework.Gameplay.Battle
                         if (killGain > 0) EnergyManager.Add(FindUnit(unit.LastHitBy), killGain);
                     }
                     units.RemoveAt(i);
+                    ClearTargetReferences(unit);
                     EnemyRemoved?.Invoke(unit);
                 }
             }
@@ -276,6 +302,25 @@ namespace Framework.Gameplay.Battle
 
         // 敌人生成（IBattleWaveDriver 回调；位置 = 波次表出怪点，路线 = 波次行配给路点序列）。
         // UnitId 保持纯 id（身份/索敌/视图地址），等级进 StatsKey（数据缓存键 id@等级）
+        // 单位出表/倒地后清掉全场指向它的索敌引用（敌人同 UnitId 多实例，实例引用优先）
+        private void ClearTargetReferences(BattleUnitState removed)
+        {
+            if (removed == null) return;
+            for (int i = 0; i < units.Count; i++)
+            {
+                BattleUnitState other = units[i];
+                if (other == null || other == removed) continue;
+                if (other.TargetUnit == removed)
+                {
+                    other.ClearCombatTarget();
+                }
+                else if (other.TargetUnit == null && other.TargetUnitId == removed.UnitId)
+                {
+                    other.TargetUnitId = null;
+                }
+            }
+        }
+
         private void SpawnEnemyInternal(string enemyId, int level, Vector3 position, IReadOnlyList<Vector3> route)
         {
             string statsKey = BattleDataModule.EnemyCacheKey(enemyId, level);

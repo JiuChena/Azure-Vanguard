@@ -16,3 +16,5 @@ MonoBehaviour:
     type: 3}
   resourceAddress: 
   speedOverride: 0
+  aimAtTarget: 1
+  hitEffect: {fileID: 11400000, guid: 9aaf19af48a784a489947ceabb93b1a1, type: 2}

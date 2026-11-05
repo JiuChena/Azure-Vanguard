@@ -52,6 +52,11 @@ namespace Framework.Gameplay.Battle
         protected Collider[] ignoredColliders;
         // 发射者单位（命中回能归属；Init 由生成方传入，null = 无攻击者不回能）
         private BattleUnitState attacker;
+        // 命中效果 SO（2026-11-04：命中时按实际目标结算伤害/效果；空 = 只做表现）
+        private EffectMethodExecuteSO hitEffect;
+        // 发射者 GAS 上下文与战场（命中效果执行用；Init 传入）
+        private AbilityOwnerContext ownerContext;
+        private BattleController controller;
 
         // 是否已初始化并允许飞行；防止出池激活后 Init 前的空跑
         private bool armed;
@@ -74,7 +79,8 @@ namespace Framework.Gameplay.Battle
         /// <param name="speedOverride">飞行速度覆盖，单位：米/秒；非正数时使用预制体默认速度。</param>
         /// <param name="shooter">发射者单位（命中回能归属）；可为 null 表示无攻击者。</param>
         public void Init(Vector3 direction, Collider[] ownerColliders, float speedOverride = 0f,
-            BattleUnitState shooter = null)
+            BattleUnitState shooter = null, EffectMethodExecuteSO hitEffect = null,
+            AbilityOwnerContext ownerContext = null, BattleController controller = null)
         {
             // 方向归一化；零向量回退正前方，避免除零与原地不动
             Vector3 normalized = direction.normalized;
@@ -82,6 +88,9 @@ namespace Framework.Gameplay.Battle
             ignoredColliders = ownerColliders;
             currentSpeed = speedOverride > 0f ? speedOverride : moveSpeed;
             attacker = shooter;
+            this.hitEffect = hitEffect;
+            this.ownerContext = ownerContext;
+            this.controller = controller;
 
             // 防御性复位：覆盖出池可能残留的上一轮状态
             recycled = false;
@@ -162,14 +171,19 @@ namespace Framework.Gameplay.Battle
                 // 已回收（不可穿透子类命中即回收）则终止本帧剩余命中的派发
                 if (recycled) break;
                 if (IsIgnored(hitBuffer[i].collider)) continue;
+                BattleUnitState target = ResolveHitUnit(hitBuffer[i]);
                 // 命中回能（表驱动 2026-10-28：攻击者普攻技能行 energyGain，配 0 不回能）+ 击杀归属
                 if (attacker != null && attacker.IsAlive && attacker.MaxEnergy > 0)
                 {
                     int hitGain = attacker.Stats.NormalAtkId > 0
                         && BattleDataModule.TryGetSkillEnergyGain(attacker.Stats.NormalAtkId, out int gain) ? gain : 0;
                     if (hitGain > 0) EnergyManager.Add(attacker, hitGain);
-                    BattleUnitState target = ResolveHitUnit(hitBuffer[i]);
                     if (target != null) target.LastHitBy = attacker.UnitId; // 击杀归属（模拟层 Step 死亡扫描用）
+                }
+                // 命中效果（2026-11-04）：把实际命中单位作为显式目标结算伤害/效果
+                if (hitEffect != null && target != null && attacker != null)
+                {
+                    hitEffect.ExecuteHit(ownerContext, attacker, controller, target);
                 }
                 OnBulletHit(hitBuffer[i]);
             }

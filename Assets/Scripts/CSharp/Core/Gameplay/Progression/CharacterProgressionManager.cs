@@ -88,47 +88,39 @@ namespace Framework.Gameplay.Progression
             EventCenter.Instance.SetEventTrigger(EventNames.NoticeRequested, message);
         }
 
-        // 本级所需经验公式：ExpToNext = BaseExpPerLevel × level^ExpCurvePower，向上取整（2026-10-06 拍板，常数单点可调）
-        private const double BaseExpPerLevel = 80.0;
-
-        // 经验曲线幂次
-        private const double ExpCurvePower = 1.5;
-
         // 表名（DataTableManager 缓存键，与 ConfigTables 地址一致）
         private const string TableNameCharacter = "CharacterTable";
-        private const string TableNameLevel = "LevelTable";
+        private const string TableNameCharacterLevel = "CharacterLevelTable";
         private const string TableNameBreakthrough = "BreakthroughTable";
         private const string TableNameUnlockNode = "UnlockNodeTable";
         private const string TableNameWeapon = "WeaponTable";
         private const string TableNameWeaponLevel = "WeaponLevelTable";
         private const string TableNameItem = "ItemTable";
-        private const string TableNameUpgradeCost = "UpgradeCostTable";
-        private const string TableNameSkillLevel = "SkillLevelTable";
+        private const string TableNameCharacterSkillLevel = "CharacterSkillLevelTable";
 
         private static CharacterProgressionManager instance;
         public static CharacterProgressionManager Instance => instance ??= new CharacterProgressionManager();
 
-        // 九张养成表：EnsureTablesAsync 后可用（加载失败为 null，下次操作自动重试）
-        // 角色表、武器表与物品表主键为字符串 id（CH0221 / 技能书 1011）；其余六表主键为 int
+        // 八张养成表：EnsureTablesAsync 后可用（加载失败为 null，下次操作自动重试）
+        // 角色表、武器表与物品表主键为字符串 id（CH0221 / 技能书 1011）；其余五表主键为 int
         private DataTable<CharacterRow, string> characterTable;
-        private DataTable<LevelRow, int> levelTable;
+        private DataTable<CharacterLevelRow, int> levelTable;
         private DataTable<BreakthroughRow, int> breakthroughTable;
         private DataTable<UnlockNodeRow, int> unlockNodeTable;
         private DataTable<WeaponRow, string> weaponTable;
         private DataTable<WeaponLevelRow, int> weaponLevelTable;
         private DataTable<ItemRow, string> itemTable;
-        private DataTable<UpgradeCostRow, int> upgradeCostTable;
-        private DataTable<SkillLevelRow, int> skillLevelTable;
+        private DataTable<CharacterSkillLevelRow, int> skillLevelTable;
 
         private CharacterProgressionManager() { }
 
         #region 表接入
 
         /// <summary>
-        /// 确保九张养成表已加载；LoadTableAsync 命中缓存时直接短路，重复调用无代价。
+        /// 确保八张养成表已加载；LoadTableAsync 命中缓存时直接短路，重复调用无代价。
         /// 同步查询（GetLevelCap / GetUpgradeCost）或养成 UI 首次展示前 await 一次。
         /// </summary>
-        /// <returns>九张表全部就绪返回 true；任一加载失败返回 false（失败详情由 DataTableManager 报错定位）。</returns>
+        /// <returns>八张表全部就绪返回 true；任一加载失败返回 false（失败详情由 DataTableManager 报错定位）。</returns>
         public async Task<bool> EnsureReadyAsync()
         {
             return await EnsureTablesAsync();
@@ -160,11 +152,11 @@ namespace Framework.Gameplay.Progression
         #region 升级结算
 
         /// <summary>
-        /// 本级所需经验：从 level 升到 level+1 所需，= 80 × level^1.5 向上取整（2026-10-06 拍板）。
+        /// 本级所需经验：从 level 升到 level+1 所需（2026-11-02 起以 CharacterLevelTable.expToNext 为准）。
         /// 养成 UI 的经验进度条也用它取分母。
         /// </summary>
         /// <param name="level">当前等级（1 起）。</param>
-        /// <returns>升到下一级所需经验；参数非法返回 0 并报错。</returns>
+        /// <returns>升到下一级所需经验；表未加载/参数非法/行缺失返回 0 并报错。</returns>
         public static int ExpToNext(int level)
         {
             if (level < 1)
@@ -173,7 +165,18 @@ namespace Framework.Gameplay.Progression
                 return 0;
             }
 
-            return (int)Math.Ceiling(BaseExpPerLevel * Math.Pow(level, ExpCurvePower));
+            DataTable<CharacterLevelRow, int> table = Instance.levelTable;
+            if (table == null)
+            {
+                Debug.LogError("角色等级表未加载，请先 await EnsureReadyAsync()");
+                return 0;
+            }
+            if (!table.TryGet(level, out CharacterLevelRow row))
+            {
+                Debug.LogError($"角色等级表无等级 {level} 的行");
+                return 0;
+            }
+            return row.ExpToNext;
         }
 
         /// <summary>
@@ -330,10 +333,10 @@ namespace Framework.Gameplay.Progression
 
         /// <summary>
         /// 下一级技能升级的消耗清单（展示用，只读不扣）：目标 = 当前等级 + 1，已满级返回空数组。
-        /// 全部技能（普攻/天赋/E/Q）共用 SkillLevelTable（行 id = 目标等级）。
+        /// 全部技能（普攻/天赋/E/Q）共用 CharacterSkillLevelTable（行 id = 目标等级）。
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
-        /// <param name="skillType">技能类型（SkillRow.SkillTypes 取值）。</param>
+        /// <param name="skillType">技能类型（CharacterSkillRow.SkillTypes 取值）。</param>
         /// <returns>下一级消耗；表未就绪、未拥有、无该技能行或已满级返回空数组（定位失败报错）。</returns>
         public async Task<ItemCost[]> GetNextSkillLevelCostAsync(string unitId, string skillType)
         {
@@ -344,14 +347,14 @@ namespace Framework.Gameplay.Progression
                 Debug.LogError($"技能升级消耗查询失败：角色未拥有 unitId={unitId}");
                 return Array.Empty<ItemCost>();
             }
-            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out SkillRow row))
+            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out CharacterSkillRow row))
             {
                 Debug.LogError($"技能升级消耗查询失败：SkillTable 无该类型技能 unitId={unitId}, skillType={skillType}");
                 return Array.Empty<ItemCost>();
             }
 
             if (EntrySkillLevel(entry, row.Type) >= row.MaxLevel) return Array.Empty<ItemCost>();
-            if (!skillLevelTable.TryGet(EntrySkillLevel(entry, row.Type) + 1, out SkillLevelRow costRow))
+            if (!skillLevelTable.TryGet(EntrySkillLevel(entry, row.Type) + 1, out CharacterSkillLevelRow costRow))
             {
                 return Array.Empty<ItemCost>();
             }
@@ -363,7 +366,7 @@ namespace Framework.Gameplay.Progression
         /// 事务内整体扣耗 + 等级落账。失败不扣耗弹 Notice；成功经仓库广播回流刷新。
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
-        /// <param name="skillType">技能类型（SkillRow.SkillTypes 取值）。</param>
+        /// <param name="skillType">技能类型（CharacterSkillRow.SkillTypes 取值）。</param>
         /// <returns>成功返回 true；表未就绪、未拥有、无技能行、已满级、表缺行或材料不足返回 false 且不扣耗。</returns>
         public async Task<bool> SkillLevelUpAsync(string unitId, string skillType)
         {
@@ -374,7 +377,7 @@ namespace Framework.Gameplay.Progression
                 Debug.LogError($"技能升级失败：角色未拥有 unitId={unitId}");
                 return false;
             }
-            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out SkillRow row))
+            if (!SkillDataLibrary.TryGetSkillRow(unitId, skillType, out CharacterSkillRow row))
             {
                 Debug.LogError($"技能升级失败：SkillTable 无该类型技能 unitId={unitId}, skillType={skillType}");
                 return false;
@@ -388,7 +391,7 @@ namespace Framework.Gameplay.Progression
             }
 
             // SkillLevelTable 行 = 目标等级（2..10 连号），缺行属于配表错误，报错拒绝
-            if (!skillLevelTable.TryGet(level + 1, out SkillLevelRow costRow))
+            if (!skillLevelTable.TryGet(level + 1, out CharacterSkillLevelRow costRow))
             {
                 Debug.LogError($"技能升级失败：SkillLevelTable 缺目标等级 {level + 1} 的行（unitId={unitId}, skillType={skillType}）");
                 return false;
@@ -427,9 +430,9 @@ namespace Framework.Gameplay.Progression
         {
             switch (skillType)
             {
-                case SkillRow.SkillTypes.E: return entry.skillLevelE;
-                case SkillRow.SkillTypes.Burst: return entry.skillLevelQ;
-                case SkillRow.SkillTypes.Talent: return entry.skillLevelTalent;
+                case CharacterSkillRow.SkillTypes.E: return entry.skillLevelE;
+                case CharacterSkillRow.SkillTypes.Burst: return entry.skillLevelQ;
+                case CharacterSkillRow.SkillTypes.Talent: return entry.skillLevelTalent;
                 default: return entry.skillLevelNormal;
             }
         }
@@ -439,13 +442,13 @@ namespace Framework.Gameplay.Progression
         {
             switch (skillType)
             {
-                case SkillRow.SkillTypes.E:
+                case CharacterSkillRow.SkillTypes.E:
                     CharacterWarehouseManager.Instance.SetSkillLevelE(unitId, level);
                     break;
-                case SkillRow.SkillTypes.Burst:
+                case CharacterSkillRow.SkillTypes.Burst:
                     CharacterWarehouseManager.Instance.SetSkillLevelQ(unitId, level);
                     break;
-                case SkillRow.SkillTypes.Talent:
+                case CharacterSkillRow.SkillTypes.Talent:
                     CharacterWarehouseManager.Instance.SetSkillLevelTalent(unitId, level);
                     break;
                 default:
@@ -665,11 +668,11 @@ namespace Framework.Gameplay.Progression
                 if (budget < required) break;
 
                 // 本级消耗对账：任一物品的累计需求超过持有即停（升级消耗行 L = L → L+1）
-                if (upgradeCostTable != null)
+                if (levelTable != null)
                 {
-                    if (!upgradeCostTable.TryGet(target, out UpgradeCostRow costRow))
+                    if (!levelTable.TryGet(target, out CharacterLevelRow costRow))
                     {
-                        Debug.LogError($"填充计划：升级消耗表无等级 {target} 的行，该级消耗按 0 处理（unitId={unitId}）");
+                        Debug.LogError($"填充计划：角色等级表无等级 {target} 的行，该级消耗按 0 处理（unitId={unitId}）");
                     }
                     else
                     {
@@ -739,18 +742,18 @@ namespace Framework.Gameplay.Progression
         public ItemCost[] GetUpgradeCost(int fromLevel, int toLevel)
         {
             if (fromLevel >= toLevel) return Array.Empty<ItemCost>();
-            if (upgradeCostTable == null)
+            if (levelTable == null)
             {
-                Debug.LogError("升级消耗表未加载，请先 await EnsureReadyAsync()");
+                Debug.LogError("角色等级表未加载，请先 await EnsureReadyAsync()");
                 return Array.Empty<ItemCost>();
             }
 
             Dictionary<string, long> merged = new Dictionary<string, long>();
             for (int lvl = fromLevel; lvl < toLevel; lvl++)
             {
-                if (!upgradeCostTable.TryGet(lvl, out UpgradeCostRow row))
+                if (!levelTable.TryGet(lvl, out CharacterLevelRow row))
                 {
-                    Debug.LogError($"升级消耗表无等级 {lvl} 的行（聚合 {fromLevel}→{toLevel}），该级消耗按 0 处理");
+                    Debug.LogError($"角色等级表无等级 {lvl} 的行（聚合 {fromLevel}→{toLevel}），该级消耗按 0 处理");
                     continue;
                 }
                 foreach (ItemCost cost in row.CostList)
@@ -1005,8 +1008,8 @@ namespace Framework.Gameplay.Progression
 
             // 等级系数：脏档越界时按 1.0 兜底并报错（正常结算下等级恒在表范围内）
             float mult = 1f;
-            if (levelTable.TryGet(entry.level, out LevelRow levelRow)) mult = levelRow.Multiplier;
-            else Debug.LogError($"属性结算：LevelTable 无等级 {entry.level} 的行，系数按 1.0 兜底（unitId={unitId}）");
+            if (levelTable.TryGet(entry.level, out CharacterLevelRow levelRow)) mult = levelRow.Multiplier;
+            else Debug.LogError($"属性结算：CharacterLevelTable 无等级 {entry.level} 的行，系数按 1.0 兜底（unitId={unitId}）");
 
             // 武器贡献解析失败时返回无武器载荷，角色侧属性照常结算
             WeaponStatContribution weapon = await GetWeaponContributionAsync(unitId);
@@ -1021,24 +1024,22 @@ namespace Framework.Gameplay.Progression
 
         #region Private
 
-        /// <summary>确保九张养成表已加载并缓存到字段；某张失败为 null 时下次调用自动重试。</summary>
+        /// <summary>确保八张养成表已加载并缓存到字段；某张失败为 null 时下次调用自动重试。</summary>
         private async Task<bool> EnsureTablesAsync()
         {
             characterTable = await DataTableManager.Instance.LoadTableAsync<CharacterRow, string>(TableNameCharacter);
-            levelTable = await DataTableManager.Instance.LoadTableAsync<LevelRow, int>(TableNameLevel);
+            levelTable = await DataTableManager.Instance.LoadTableAsync<CharacterLevelRow, int>(TableNameCharacterLevel);
             breakthroughTable = await DataTableManager.Instance.LoadTableAsync<BreakthroughRow, int>(TableNameBreakthrough);
             unlockNodeTable = await DataTableManager.Instance.LoadTableAsync<UnlockNodeRow, int>(TableNameUnlockNode);
             weaponTable = await DataTableManager.Instance.LoadTableAsync<WeaponRow, string>(TableNameWeapon);
             weaponLevelTable = await DataTableManager.Instance.LoadTableAsync<WeaponLevelRow, int>(TableNameWeaponLevel);
             itemTable = await DataTableManager.Instance.LoadTableAsync<ItemRow, string>(TableNameItem);
-            upgradeCostTable = await DataTableManager.Instance.LoadTableAsync<UpgradeCostRow, int>(TableNameUpgradeCost);
-            skillLevelTable = await DataTableManager.Instance.LoadTableAsync<SkillLevelRow, int>(TableNameSkillLevel);
+            skillLevelTable = await DataTableManager.Instance.LoadTableAsync<CharacterSkillLevelRow, int>(TableNameCharacterSkillLevel);
 
             return characterTable != null && levelTable != null
                 && breakthroughTable != null && unlockNodeTable != null
                 && weaponTable != null && weaponLevelTable != null
-                && itemTable != null && upgradeCostTable != null
-                && skillLevelTable != null;
+                && itemTable != null && skillLevelTable != null;
         }
 
         /// <summary>节点查询委托：表未命中返回 null，由计算器跳过该节点。</summary>

@@ -68,14 +68,30 @@ namespace Framework.Gameplay.Battle
         // 移动目的地意图（⑤ Move 指令/敌人 AI 写，②寻路执行）
         public Vector3 MoveDestination;
 
-        // 攻击目标：单位 id（null = 无单位目标）
+        // 攻击目标实例（2026-11-04：敌人同 UnitId 多实例，索敌/锁头必须按实例引用，不能只认 id）
+        public BattleUnitState TargetUnit;
+
+        // 攻击目标单位 id（展示/兼容；可能被同类型多实例共用，逻辑优先 TargetUnit）
         public string TargetUnitId;
 
-        // 攻击目标为守点（守点单一，bool 足够；与 TargetUnitId 互斥）
+        // 攻击目标为守点（守点单一，bool 足够；与 TargetUnit 互斥）
         public bool TargetIsGuardPoint;
 
-        // 是否有攻击意图
-        public bool HasAttackIntent => TargetUnitId != null || TargetIsGuardPoint;
+        // 是否请求播放一次天赋（2026-11-05：表现桥在 Behavior 就绪后置位；HSM Talent 态进入时消费清空）
+        public bool WantTalent;
+
+        /// <summary>清空当前动作的目标引用（攻击/技能结束、目标死亡/出表时调用）。</summary>
+        public void ClearCombatTarget()
+        {
+            TargetUnit = null;
+            TargetUnitId = null;
+        }
+
+        // 是否有攻击意图（实例存活优先；仅 id 的旧夹具仍兼容）
+        public bool HasAttackIntent =>
+            (TargetUnit != null && TargetUnit.IsAlive && TargetUnit.Hp > 0)
+            || TargetIsGuardPoint
+            || (!string.IsNullOrEmpty(TargetUnitId) && TargetUnit == null);
 
         // ---- 停走距离抖动（基准 = 索敌范围 range 列；出生时 ③ 采样，战斗内不变） ----
 

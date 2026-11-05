@@ -11,8 +11,8 @@ namespace Framework.Gameplay.Abilities.Buff
     public interface IBuff
     {
         /// <summary>
-        /// Buff 标识（BuffTable 主键，全局唯一）：注册时宿主据此登记 <c>_byBuffId</c> 索引，
-        /// 展示侧按它查 BuffDataLibrary 元数据（名称/描述/图标）；叠层同 id 共用。
+        /// Buff 标识（效果行主键 SkillEffectTable.effectId，全局唯一）：注册时宿主据此登记
+        /// <c>_byBuffId</c> 索引，展示侧按它查 SkillEffectTable 效果行（名称/描述/图标）；叠层同 id 共用。
         /// </summary>
         int BuffId { get; }
 

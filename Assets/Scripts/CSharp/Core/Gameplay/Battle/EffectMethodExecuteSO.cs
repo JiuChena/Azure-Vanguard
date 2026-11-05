@@ -45,6 +45,34 @@ namespace Framework.Gameplay.Battle
             method(ctx);
         }
 
+        /// <summary>
+        /// 命中回调入口（2026-11-04 用户拍板）：子弹命中时由 CombatBullet 调用，传入实际命中目标；
+        /// 复用同一套 effectKey 三层字典，只是上下文带显式 Target。
+        /// </summary>
+        public void ExecuteHit(AbilityOwnerContext ownerContext, BattleUnitState caster,
+            BattleController controller, BattleUnitState target)
+        {
+            if (ownerContext == null || caster == null || string.IsNullOrEmpty(effectKey)) return;
+
+            BetterHSMEntityCategory category = caster.Camp == BattleCamp.Enemy
+                ? BetterHSMEntityCategory.Enemy
+                : BetterHSMEntityCategory.Character;
+            var ctx = new SkillEffectContext
+            {
+                Caster = caster,
+                Controller = controller,
+                OwnerContext = ownerContext,
+                Target = target,
+            };
+
+            if (!EffectMethodRegistry.TryGet(category, caster.UnitId, effectKey, out EffectMethodRegistry.EffectMethod method))
+            {
+                Debug.LogWarning($"[EffectMethod] 未注册效果函数 {category}/{caster.UnitId}/{effectKey}（命中），跳过。");
+                return;
+            }
+            method(ctx);
+        }
+
         private BattleController ResolveController(BehaviorEventContext context)
         {
             if (context.OwnerContext != null

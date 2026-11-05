@@ -29,6 +29,10 @@ namespace Framework.Gameplay.Battle
             "关闭则沿事件旋转正前方直线飞（不索敌）")]
         [SerializeField] private bool aimAtTarget = true;
 
+        [Header("命中效果")]
+        [Tooltip("子弹命中时执行的效果 SO（如 CH0221_NormalAttack.asset）；空 = 命中只做表现不回血")]
+        [SerializeField] private EffectMethodExecuteSO hitEffect;
+
         // 标签约束路径的租约缓存：资源地址 → 已获取的预制体租约；v1 常驻不释放，保证池内存量实例引用不因资源卸载失效
         private readonly Dictionary<string, ResourceLease<GameObject>> leaseCache = new Dictionary<string, ResourceLease<GameObject>>();
 
@@ -140,7 +144,11 @@ namespace Framework.Gameplay.Battle
             {
                 shooter = shooterData.Unit;
             }
-            bullet.Init(flightDirection, ownerColliders, speedOverride, shooter);
+            BattleController controller = context.OwnerContext != null
+                && context.OwnerContext.TryGet(AbilityRuntimeDataType.BattleWorld, out BattleWorldRuntimeData worldData)
+                    ? worldData.Controller
+                    : null;
+            bullet.Init(flightDirection, ownerColliders, speedOverride, shooter, hitEffect, context.OwnerContext, controller);
         }
 
         /// <summary>
@@ -162,6 +170,12 @@ namespace Framework.Gameplay.Battle
                         && FieldUnitRegistry.TryGetHead(FieldUnitRegistry.GuardPointKey, out Transform guardHead))
                     {
                         return BattleAimMath.ResolveDirection(context.Position, guardHead.position, unit.Stats.BulletSpread);
+                    }
+                    // 实例目标优先（敌人同 UnitId 多实例）；仅 id 的旧夹具保留兼容
+                    if (unit.TargetUnit != null
+                        && FieldUnitRegistry.TryGetHead(unit.TargetUnit, out Transform instanceHead))
+                    {
+                        return BattleAimMath.ResolveDirection(context.Position, instanceHead.position, unit.Stats.BulletSpread);
                     }
                     if (unit.TargetUnitId != null
                         && FieldUnitRegistry.TryGetHead(unit.TargetUnitId, out Transform targetHead))

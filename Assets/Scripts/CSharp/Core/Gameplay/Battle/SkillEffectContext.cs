@@ -13,5 +13,8 @@ namespace Framework.Gameplay.Battle
 
         /// <summary>施放者 GAS（buff 应用等能力访问；ExecuteContext.OwnerContext）。</summary>
         public AbilityOwnerContext OwnerContext;
+
+        /// <summary>显式目标（2026-11-04 命中结算：子弹命中回调传入实际命中单位；空 = 按施放者当前目标解析）。</summary>
+        public BattleUnitState Target;
     }
 }

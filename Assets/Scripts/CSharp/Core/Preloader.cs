@@ -125,8 +125,7 @@ public class Preloader : MonoBehaviour
             (string table, Func<Task> load)[] warmups =
             {
                 ("ItemTable", () => DataTableManager.Instance.LoadTableAsync<ItemRow, string>("ItemTable")),
-                ("UpgradeCostTable", () => DataTableManager.Instance.LoadTableAsync<UpgradeCostRow, int>("UpgradeCostTable")),
-                ("LevelTable", () => DataTableManager.Instance.LoadTableAsync<LevelRow, int>("LevelTable")),
+                ("CharacterLevelTable", () => DataTableManager.Instance.LoadTableAsync<CharacterLevelRow, int>("CharacterLevelTable")),
                 ("CharacterTable", () => DataTableManager.Instance.LoadTableAsync<CharacterRow, string>("CharacterTable")),
                 ("WeaponTable", () => DataTableManager.Instance.LoadTableAsync<WeaponRow, string>("WeaponTable")),
                 ("BreakthroughTable", () => DataTableManager.Instance.LoadTableAsync<BreakthroughRow, int>("BreakthroughTable")),
@@ -134,8 +133,8 @@ public class Preloader : MonoBehaviour
                 ("WeaponLevelTable", () => DataTableManager.Instance.LoadTableAsync<WeaponLevelRow, int>("WeaponLevelTable")),
                 ("TrinketTable", () => DataTableManager.Instance.LoadTableAsync<TrinketRow, string>("TrinketTable")),
                 ("EnsembleTable", () => DataTableManager.Instance.LoadTableAsync<EnsembleRow, string>("EnsembleTable")),
-                ("SkillTable", () => DataTableManager.Instance.LoadTableAsync<SkillRow, int>("SkillTable")),
-                ("SkillLevelTable", () => DataTableManager.Instance.LoadTableAsync<SkillLevelRow, int>("SkillLevelTable")),
+                ("CharacterSkillTable", () => DataTableManager.Instance.LoadTableAsync<CharacterSkillRow, int>("CharacterSkillTable")),
+                ("CharacterSkillLevelTable", () => DataTableManager.Instance.LoadTableAsync<CharacterSkillLevelRow, int>("CharacterSkillLevelTable")),
                 ("SkillEffectTable", () => DataTableManager.Instance.LoadTableAsync<SkillEffectRow, int>("SkillEffectTable")),
                 ("EnemyTable", () => DataTableManager.Instance.LoadTableAsync<EnemyRow, string>("EnemyTable")),
                 ("WaveTable", () => DataTableManager.Instance.LoadTableAsync<WaveRow, string>("WaveTable")),

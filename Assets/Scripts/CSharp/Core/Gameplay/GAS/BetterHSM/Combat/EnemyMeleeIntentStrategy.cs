@@ -41,6 +41,7 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
                 BattleUnitState blocker = FindPathBlocker(unit, destination, context);
                 if (blocker != null)
                 {
+                    unit.TargetUnit = blocker;
                     unit.TargetUnitId = blocker.UnitId;
                     unit.TargetIsGuardPoint = false;
                     return;
@@ -52,6 +53,7 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             // 无任何攻击目标：清攻击意图，路线制机动——从 RouteIndex 起找第一个未抵达路点为目的地
             // （②按直线段逐帧逼近），抵达即前移索引：进度单调不减，途中遇敌停走/目标死亡后从当前路点
             // 继续、永不开倒车；路线走完转守点；无路线（波次行未配 routeId）兜底直奔守点；关卡无守点时原地驻守
+            unit.TargetUnit = null;
             unit.TargetUnitId = null;
             unit.TargetIsGuardPoint = false;
             IReadOnlyList<Vector3> route = unit.Route;

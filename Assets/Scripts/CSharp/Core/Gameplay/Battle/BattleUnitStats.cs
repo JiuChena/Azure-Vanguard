@@ -2,7 +2,7 @@ namespace Framework.Gameplay.Battle
 {
     /// <summary>
     /// 战斗单位数值（①数据层→③模拟层的统一形状）：模拟层与 BattleMath 只认此结构，
-    /// 角色源 = CalculateStatsAsync + CharacterRow 装配，敌人源 = EnemyRow 1 级基准 × LevelTable.multiplier 折算。
+    /// 角色源 = CalculateStatsAsync + CharacterRow 装配，敌人源 = EnemyRow 1 级基准 × CharacterLevelTable.multiplier 折算。
     /// 进战斗时由 BattleDataModule 装配并缓存，战斗内零 async、零表 IO。
     /// 养成侧的 EnergyRecharge/DamageBonus/HealBonus 首切片不进战斗（无技能无治疗），切片 2 再扩。
     /// </summary>
@@ -59,14 +59,23 @@ namespace Framework.Gameplay.Battle
         // 充能效率（回能乘区系数，1.0 = 100%；装配自角色养成 CharacterStats.EnergyRecharge，敌人恒 1）
         public readonly float EnergyRecharge;
 
-        // 小技能 E 的技能 id（SkillTable 主键；敌人无技能恒 0）
+        // 小技能 E 的技能 id（CharacterSkillTable 主键；敌人无技能恒 0）
         public readonly int SkillEId;
 
-        // 爆发技能 Q 的技能 id（SkillTable 主键；敌人无技能恒 0）
+        // 爆发技能 Q 的技能 id（CharacterSkillTable 主键；敌人无技能恒 0）
         public readonly int SkillQId;
 
-        // 普攻技能 id（SkillTable 主键；子弹命中回能读普攻行 energyGain 用）
+        // 普攻技能 id（CharacterSkillTable 主键；子弹命中回能读普攻行 energyGain 用）
         public readonly int NormalAtkId;
+
+        // 伤害加成（加法区，0 = 无加成；装配自 CharacterStats.DamageBonus，追奏/普攻伤害结算消费）
+        public readonly float DamageBonus;
+
+        // 治疗加成（加法区，0 = 无加成；预留，当前治疗链未消费）
+        public readonly float HealBonus;
+
+        // 索敌策略（Nearest / LowestHP / Middle；空 = Nearest；角色表 targetingPolicy 列）
+        public readonly string TargetingPolicy;
 
         /// <summary>全字段构造（装配出口唯一入口，防漏字段）；转向/锁头/侧偏/阻挡半径/守点消耗/能量/技能字段带默认值，未配时不生效。</summary>
         public BattleUnitStats(int maxHp, int atk, int def, float critRate, float critDmg,
@@ -74,7 +83,8 @@ namespace Framework.Gameplay.Battle
             float rotateSpeed = 0f, string rotateNode = null,
             float bulletSpread = 0f, string headNode = null, float stopLateralOffset = 0f,
             float blockRadius = 0.8f, int guardPointDamage = 0, int maxEnergy = 0,
-            float energyRecharge = 1f, int skillEId = 0, int skillQId = 0, int normalAtkId = 0)
+            float energyRecharge = 1f, int skillEId = 0, int skillQId = 0, int normalAtkId = 0,
+            float damageBonus = 0f, float healBonus = 0f, string targetingPolicy = null)
         {
             MaxHp = maxHp;
             Atk = atk;
@@ -96,6 +106,9 @@ namespace Framework.Gameplay.Battle
             SkillEId = skillEId;
             SkillQId = skillQId;
             NormalAtkId = normalAtkId;
+            DamageBonus = damageBonus;
+            HealBonus = healBonus;
+            TargetingPolicy = targetingPolicy;
         }
     }
 }

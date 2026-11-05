@@ -24,7 +24,7 @@ namespace Framework.Gameplay.Battle
             for (int i = 0; i < Units.Count; i++)
             {
                 BattleUnitState unit = Units[i];
-                if (unit.Camp == enemyCamp && unit.IsAlive) yield return unit;
+                if (unit.Camp == enemyCamp && unit.IsAlive && unit.Hp > 0) yield return unit;
             }
         }
 

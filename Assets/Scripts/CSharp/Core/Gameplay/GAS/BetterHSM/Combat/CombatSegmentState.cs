@@ -41,7 +41,13 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             SegmentFinished = false;
             _lastNormalized = 0f;
             _passedFinish = false;
+            OnRoundBegin();
             if (!string.IsNullOrEmpty(Key)) Context.PlayBehavior(Key);
+        }
+
+        /// <summary>每轮开始（首次进入 / 循环段回绕重播）在播 clip 前调用；子类可在此索敌。</summary>
+        protected virtual void OnRoundBegin()
+        {
         }
 
         /// <summary>离开分段：停止 BE 行为播放。</summary>
@@ -84,6 +90,7 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
                 {
                     // Once 段每轮重播 / Loop 段整圈回绕重播（幂等）：节拍与音频按完整一轮。
                     SegmentFinished = false;
+                    OnRoundBegin();
                     if (!string.IsNullOrEmpty(Key)) Context.PlayBehavior(Key);
                 }
                 else

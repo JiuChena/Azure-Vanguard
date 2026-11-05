@@ -85,7 +85,7 @@ namespace Framework.Gameplay.Player
         }
 
         /// <summary>
-        /// 设置角色等级；上限由养成层按 LevelTable 控制，此处只做下限防御。
+        /// 设置角色等级；上限由养成层按 CharacterLevelTable 控制，此处只做下限防御。
         /// </summary>
         /// <param name="unitId">单位 ID。</param>
         /// <param name="level">目标等级，必须不小于 1。</param>

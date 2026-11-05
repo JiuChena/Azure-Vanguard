@@ -219,13 +219,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1988374082295142555}
+  - component: {fileID: 2266009293803453429}
   m_Layer: 5
   m_Name: EffectItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1988374082295142555
 RectTransform:
   m_ObjectHideFlags: 0
@@ -250,6 +251,21 @@ RectTransform:
   m_AnchoredPosition: {x: 400, y: -120}
   m_SizeDelta: {x: 760, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2266009293803453429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3804212219702874394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3152749eae2f14f459a8657d9f100dd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buffIcon: {fileID: 4870977223482080073}
+  buffName: {fileID: 3657758932306189034}
+  buffDesc: {fileID: 6660138413431643331}
 --- !u!1 &3884079712581064189
 GameObject:
   m_ObjectHideFlags: 0

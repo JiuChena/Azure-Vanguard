@@ -48,11 +48,8 @@ namespace Framework.Gameplay.Unit
         [Key("moveSpeed")]
         public float MoveSpeed;
 
-        // 攻击转向速度（度/秒；攻击面向目标时的固定转速，0 = 不转向）
-        [Key("rotateSpeed")]
-        public float RotateSpeed;
-
-        // 攻击转向节点路径（空 = 转自身 root；非空 = transform.Find 相对路径，如坦克炮塔节点）
+        // 攻击转向节点路径（空 = 转自身 root；非空 = transform.Find 相对路径，如坦克炮塔节点）；
+        // 转向速率不再配表（2026-11-05：沿用现有攻击转向链路，代码默认转速）
         [Key("rotateNode")]
         public string RotateNode;
 

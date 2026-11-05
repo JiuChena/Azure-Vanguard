@@ -49,12 +49,15 @@ namespace BehaviorEditor
 
         public bool Initialize(Animator targetAnimator)
         {
+            // 2026-11-05：每次 BehaviorClip 起播都会重新 Initialize；当前状态槽记录必须跨 clip 保留，
+            // 否则新 clip 会再次请求同一个 L{n}_Segment_0，CrossFade 到同一状态不产生过渡（硬切）。
+            bool animatorChanged = !ReferenceEquals(animator, targetAnimator);
             animator = targetAnimator;
             initialized = false;
             bindingMap.Clear();
             placeholderClipNames.Clear();
             missingSlots.Clear();
-            activeStateHashByLayer.Clear();
+            if (animatorChanged) activeStateHashByLayer.Clear();
             slotRuntimeInfoCache.Clear();
             stateHashCache.Clear();
 
@@ -70,11 +73,18 @@ namespace BehaviorEditor
                 return false;
             }
 
-            overrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
-            if (overrideController == null)
+            // 已是 OverrideController 时直接复用，避免每次起播重新赋值控制器（可能触发状态机重置）
+            AnimatorOverrideController existingOverride =
+                animator.runtimeAnimatorController as AnimatorOverrideController;
+            if (existingOverride != null)
+            {
+                overrideController = existingOverride;
+            }
+            else
+            {
                 overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
-
-            animator.runtimeAnimatorController = overrideController;
+                animator.runtimeAnimatorController = overrideController;
+            }
 
             overridesBuffer.Clear();
             overrideController.GetOverrides(overridesBuffer);

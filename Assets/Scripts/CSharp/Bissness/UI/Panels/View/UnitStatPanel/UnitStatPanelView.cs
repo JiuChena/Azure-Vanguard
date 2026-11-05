@@ -238,15 +238,15 @@ public class UnitStatPanelView : MonoBehaviour
         }
     }
 
-    // 行节点名 → 技能表槽位类型（与 SkillRow.SkillTypes 约定一致；本项目命名 EX = burst/Q）
+    // 行节点名 → 技能表槽位类型（与 CharacterSkillRow.SkillTypes 约定一致；本项目命名 EX = burst/Q）
     private static string SkillTypeForRow(string rowName)
     {
         switch (rowName)
         {
-            case "Talent": return Framework.Gameplay.Unit.SkillRow.SkillTypes.Talent;
-            case "Skill": return Framework.Gameplay.Unit.SkillRow.SkillTypes.E;
-            case "EX": return Framework.Gameplay.Unit.SkillRow.SkillTypes.Burst;
-            default: return Framework.Gameplay.Unit.SkillRow.SkillTypes.Normal;
+            case "Talent": return Framework.Gameplay.Unit.CharacterSkillRow.SkillTypes.Talent;
+            case "Skill": return Framework.Gameplay.Unit.CharacterSkillRow.SkillTypes.E;
+            case "EX": return Framework.Gameplay.Unit.CharacterSkillRow.SkillTypes.Burst;
+            default: return Framework.Gameplay.Unit.CharacterSkillRow.SkillTypes.Normal;
         }
     }
 
@@ -298,7 +298,7 @@ public class UnitStatPanelView : MonoBehaviour
         [Tooltip("技能图标（Icon）")]
         [SerializeField] internal Image skillIcon;
 
-        [Tooltip("槽位类型（SkillRow.SkillTypes：normal/e/burst/talent）")]
+        [Tooltip("槽位类型（CharacterSkillRow.SkillTypes：normal/e/burst/talent）")]
         [SerializeField] internal string skillType;
 
         /// <summary>技能行根节点（行显隐用）。</summary>
@@ -313,54 +313,8 @@ public class UnitStatPanelView : MonoBehaviour
         /// <summary>技能图标。</summary>
         public Image SkillIcon => skillIcon;
 
-        /// <summary>槽位类型（SkillRow.SkillTypes）。</summary>
+        /// <summary>槽位类型（CharacterSkillRow.SkillTypes）。</summary>
         public string SkillType => skillType;
     }
 
-    /// <summary>
-    /// 绑定一条 buff 动态行（Control 池化克隆行后调用）：
-    /// 按模板节点路径取组件，路径缺失抛异常（模板结构是装配契约，缺即装配错误）。
-    /// </summary>
-    /// <param name="rowRoot">克隆出的行根节点（EffectItem 实例）。</param>
-    /// <returns>该行的节点绑定。</returns>
-    public EffectRowBinding BindEffectRow(GameObject rowRoot)
-    {
-        Transform t = rowRoot.transform;
-        return new EffectRowBinding
-        {
-            rowRoot = rowRoot,
-            buffIcon = FindComponent<Image>(t, "Icon"),
-            buffName = FindComponent<TMP_Text>(t, "EffectName"),
-            buffDesc = FindComponent<TMP_Text>(t, "EffectDescription/Viewport/Content"),
-        };
-    }
-
-    /// <summary>一条 buff 动态行的节点绑定（行根 + 图标 + 名称 + 描述）。</summary>
-    [Serializable]
-    public sealed class EffectRowBinding
-    {
-        [Tooltip("buff 行根节点（回池/显隐用）")]
-        [SerializeField] internal GameObject rowRoot;
-
-        [Tooltip("buff 图标（Icon）")]
-        [SerializeField] internal Image buffIcon;
-
-        [Tooltip("buff 名称（EffectName）")]
-        [SerializeField] internal TMP_Text buffName;
-
-        [Tooltip("buff 描述（EffectDescription/Viewport/Content）")]
-        [SerializeField] internal TMP_Text buffDesc;
-
-        /// <summary>buff 行根节点（回池用）。</summary>
-        public GameObject RowRoot => rowRoot;
-
-        /// <summary>buff 图标。</summary>
-        public Image BuffIcon => buffIcon;
-
-        /// <summary>buff 名称。</summary>
-        public TMP_Text BuffName => buffName;
-
-        /// <summary>buff 描述。</summary>
-        public TMP_Text BuffDesc => buffDesc;
-    }
 }

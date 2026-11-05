@@ -56,6 +56,8 @@ namespace BehaviorEditor
         /// </summary>
         /// <param name="clip">待播放行为；为 null 时停止当前行为。</param>
         /// <param name="ownerContext">宿主 GAS 能力上下文（注入执行上下文供效果段访问能力）；允许为 null。</param>
+        /// <remarks>项目硬约束（2026-11-05）：角色战斗 BehaviorClip 只能由 BHSM 状态（经 BehaviorAbilityRuntimeData.Play）播放；
+        /// CombatManager/MonoBehaviour/其他系统禁止直接调用本方法播放角色战斗 clip。验证脚本测试夹具除外。</remarks>
         public void Play(BehaviorClip clip, AbilityOwnerContext ownerContext = null)
         {
             if (clip == null)

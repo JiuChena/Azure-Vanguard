@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Gear;
 using Framework.Gameplay.Abilities;
+using Framework.Gameplay.Abilities.Buff;
 using Framework.Gameplay.Battle;
 using Framework.Gameplay.Player;
 using Framework.Gameplay.Unit;
@@ -407,15 +408,73 @@ public sealed class CombatManager : MonoBehaviour, IBattleWaveDriver
         Debug.Log($"[CombatManager] 模拟暂停：{SimulationPaused}");
     }
 
+    // 天赋视图桥：等待 GAS 的 Buff/Behavior 能力就绪后挂展示 buff / 播天赋 clip（异步就绪，逐帧重试）
+    private readonly Dictionary<BattleUnitState, GameplayAbilitySystem> pendingTalentViews =
+        new Dictionary<BattleUnitState, GameplayAbilitySystem>();
+    private readonly Dictionary<BattleUnitState, GameplayAbilitySystem> pendingTalentClips =
+        new Dictionary<BattleUnitState, GameplayAbilitySystem>();
+    private readonly HashSet<BattleUnitState> talentClipPlayed = new HashSet<BattleUnitState>();
+
     // 每帧推进模拟（暂停或胜负已定不调 Step）。
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F5)) ToggleHsmDebugPanel();
 
+        TrySyncTalentViews();
+
         if (!SimulationPaused && controller != null && controller.Outcome == BattleOutcome.Ongoing)
         {
             controller.Step(Time.deltaTime);
         }
+    }
+
+    // 天赋视图就绪同步：Buff 键就绪 → 挂展示 buff；Behavior 键就绪且是 CH0221 → 播一次天赋 clip
+    private void TrySyncTalentViews()
+    {
+        if (controller == null) return;
+
+        List<BattleUnitState> done = null;
+        foreach (KeyValuePair<BattleUnitState, GameplayAbilitySystem> pair in pendingTalentViews)
+        {
+            BattleUnitState unit = pair.Key;
+            GameplayAbilitySystem gas = pair.Value;
+            if (unit == null || gas == null || gas.OwnerContext == null)
+            {
+                (done ??= new List<BattleUnitState>()).Add(unit);
+                continue;
+            }
+
+            if (gas.OwnerContext.TryGet(AbilityRuntimeDataType.Buff, out BuffRuntimeData buffData))
+            {
+                controller.Talents?.AttachView(unit, buffData);
+                (done ??= new List<BattleUnitState>()).Add(unit);
+            }
+        }
+        if (done != null)
+        {
+            for (int i = 0; i < done.Count; i++) pendingTalentViews.Remove(done[i]);
+        }
+
+        done = null;
+        foreach (KeyValuePair<BattleUnitState, GameplayAbilitySystem> pair in pendingTalentClips)
+        {
+            BattleUnitState unit = pair.Key;
+            GameplayAbilitySystem gas = pair.Value;
+            if (unit == null || gas == null || gas.OwnerContext == null || talentClipPlayed.Contains(unit))
+            {
+                (done ??= new List<BattleUnitState>()).Add(unit);
+                continue;
+            }
+            if (unit.UnitId != "CH0221") continue;
+            // Behavior 就绪后置一次性请求，由 HSM Talent 态播放并消费（不在表现层直接 Play，避免绕过完成度门控）
+            if (!gas.OwnerContext.TryGet(AbilityRuntimeDataType.Behavior, out BehaviorAbilityRuntimeData _)) continue;
+
+            talentClipPlayed.Add(unit);
+            unit.WantTalent = true;
+            (done ??= new List<BattleUnitState>()).Add(unit);
+        }
+        if (done == null) return;
+        for (int i = 0; i < done.Count; i++) pendingTalentClips.Remove(done[i]);
     }
 
     /// <summary>F1 切换 HSM 状态调试面板（GetPanel 探测 → 开/关；打开层 Top）。</summary>
@@ -441,7 +500,11 @@ public sealed class CombatManager : MonoBehaviour, IBattleWaveDriver
         {
             controller.UnitSpawned -= HandleUnitSpawned;
             controller.EnemyRemoved -= HandleEnemyRemoved;
+            controller.Dispose();
         }
+        pendingTalentViews.Clear();
+        pendingTalentClips.Clear();
+        talentClipPlayed.Clear();
         foreach (ResourceLease<GameObject> lease in viewPrefabLeases.Values)
         {
             lease?.Dispose();
@@ -924,6 +987,10 @@ public sealed class CombatManager : MonoBehaviour, IBattleWaveDriver
 
         gas.OwnerContext.Register(AbilityRuntimeDataType.BattleUnit, new BattleUnitRuntimeData(unit));
         gas.OwnerContext.Register(AbilityRuntimeDataType.BattleWorld, worldData);
+        // 天赋展示/表现桥：Buff/Behavior 能力异步就绪后由 Update 逐帧补挂/补播
+        pendingTalentViews[unit] = gas;
+        pendingTalentClips[unit] = gas;
+        talentClipPlayed.Remove(unit);
         // stat 数据由 prefab 能力列表上的 StatAbility 提供（能力就绪时自建自注册），②桥不代管——
         // 此处再注册会与能力注册撞重复键，勿补。
         views[unit] = view;
@@ -993,7 +1060,7 @@ public sealed class CombatManager : MonoBehaviour, IBattleWaveDriver
     // 敌人死亡出表：销毁对应视图 + 注销场内注册表（角色 Downed 不走此事件，留场）。
     private void HandleEnemyRemoved(BattleUnitState unit)
     {
-        FieldUnitRegistry.Unregister(unit.UnitId);
+        FieldUnitRegistry.Unregister(unit);
         if (!views.TryGetValue(unit, out GameObject view))
         {
             // 视图仍在首载等待期：登记后视图就位即销毁

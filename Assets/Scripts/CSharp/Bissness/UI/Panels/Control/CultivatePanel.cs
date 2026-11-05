@@ -107,7 +107,7 @@ public class CultivatePanel : PanelBase
     //消耗图标缓存：itemId → sprite（IconLibrary 失败不入缓存，下次重试）
     private readonly Dictionary<string, Sprite> costIconCache = new Dictionary<string, Sprite>();
 
-    //技能图标缓存：SkillRow.icon 地址 → sprite（Sprite-Character-Skill-Icon 组；失败不入缓存，下次重试）
+    //技能图标缓存：CharacterSkillRow.icon 地址 → sprite（Sprite-Character-Skill-Icon 组；失败不入缓存，下次重试）
     private readonly Dictionary<string, Sprite> skillIconCache = new Dictionary<string, Sprite>();
 
     //标签图集加载任务（去重并发；成功后常驻复用，失败清空下次刷新重试）
@@ -133,11 +133,11 @@ public class CultivatePanel : PanelBase
     //加载竞态令牌：连点切角/关板后，旧加载结果按令牌失效直接归还
     private int modelLoadToken;
 
-    //技能格下标 → 技能类型（SkillRow.SkillTypes 取值；与 Abilities 子节点顺序对齐 普攻/天赋/E/Q）
-    private static readonly string[] AbilitySlotTypes = { SkillRow.SkillTypes.Normal, SkillRow.SkillTypes.Talent, SkillRow.SkillTypes.E, SkillRow.SkillTypes.Burst };
+    //技能格下标 → 技能类型（CharacterSkillRow.SkillTypes 取值；与 Abilities 子节点顺序对齐 普攻/天赋/E/Q）
+    private static readonly string[] AbilitySlotTypes = { CharacterSkillRow.SkillTypes.Normal, CharacterSkillRow.SkillTypes.Talent, CharacterSkillRow.SkillTypes.E, CharacterSkillRow.SkillTypes.Burst };
 
     //技能格当前行缓存（下标对齐技能格；无行 = null，对应格隐藏）
-    private SkillRow[] abilityRows = Array.Empty<SkillRow>();
+    private CharacterSkillRow[] abilityRows = Array.Empty<CharacterSkillRow>();
 
     //当前详情展示的技能格下标（-1 = 未展示；刷新时原选中仍有效则保持）
     private int abilityDetailIndex = -1;
@@ -1008,11 +1008,11 @@ public class CultivatePanel : PanelBase
         if (!model.HasData || model.UnitId != unitId) return;
 
         //行缓存对齐技能格：类型定位不到行（表缺该类技能）的格隐藏
-        if (abilityRows.Length != toggles.Length) abilityRows = new SkillRow[toggles.Length];
+        if (abilityRows.Length != toggles.Length) abilityRows = new CharacterSkillRow[toggles.Length];
         for (int i = 0; i < toggles.Length; i++)
         {
-            SkillRow row = i < AbilitySlotTypes.Length
-                && SkillDataLibrary.TryGetSkillRow(unitId, AbilitySlotTypes[i], out SkillRow found) ? found : null;
+            CharacterSkillRow row = i < AbilitySlotTypes.Length
+                && SkillDataLibrary.TryGetSkillRow(unitId, AbilitySlotTypes[i], out CharacterSkillRow found) ? found : null;
             abilityRows[i] = row;
             if (toggles[i] != null) toggles[i].gameObject.SetActive(row != null);
         }
@@ -1055,7 +1055,7 @@ public class CultivatePanel : PanelBase
         //升级区跟随选中格刷新（消耗查询异步；切角/切格竞态由刷新方法内部令牌校验丢弃）
         _ = RefreshSkillUpgradeSectionAsync();
 
-        SkillRow row = index >= 0 && index < abilityRows.Length ? abilityRows[index] : null;
+        CharacterSkillRow row = index >= 0 && index < abilityRows.Length ? abilityRows[index] : null;
         if (row == null)
         {
             if (page.nameText != null) page.nameText.text = string.Empty;
@@ -1070,7 +1070,7 @@ public class CultivatePanel : PanelBase
     }
 
     /// <summary>
-    /// 技能图标加载落显（SkillRow.icon → Sprite-Character-Skill-Icon 组内地址，带缓存）；
+    /// 技能图标加载落显（CharacterSkillRow.icon → Sprite-Character-Skill-Icon 组内地址，带缓存）；
     /// 回包校验角色未切换且该格行未变（切角/切格竞态丢弃），isDetail 的详情图标还要求仍停在原格；
     /// 未登记/加载失败保留默认图，下次重试。
     /// </summary>
@@ -1100,9 +1100,9 @@ public class CultivatePanel : PanelBase
         if (model.Entry == null) return 1;
         switch (skillType)
         {
-            case SkillRow.SkillTypes.E: return model.Entry.skillLevelE;
-            case SkillRow.SkillTypes.Burst: return model.Entry.skillLevelQ;
-            case SkillRow.SkillTypes.Talent: return model.Entry.skillLevelTalent;
+            case CharacterSkillRow.SkillTypes.E: return model.Entry.skillLevelE;
+            case CharacterSkillRow.SkillTypes.Burst: return model.Entry.skillLevelQ;
+            case CharacterSkillRow.SkillTypes.Talent: return model.Entry.skillLevelTalent;
             default: return model.Entry.skillLevelNormal;
         }
     }

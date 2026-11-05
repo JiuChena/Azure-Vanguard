@@ -17,13 +17,19 @@ namespace Framework.Gameplay.Battle
         // 注册表：单位 id → 场内信息（角色/敌人同形，主键 id）。
         private static readonly Dictionary<string, FieldUnitInfo> infos = new Dictionary<string, FieldUnitInfo>();
 
+        // 实例注册表（2026-11-04）：敌人同 UnitId 多实例，锁头/取 GAS 必须按实例查，不能只认 id。
+        private static readonly Dictionary<BattleUnitState, FieldUnitInfo> byUnit =
+            new Dictionary<BattleUnitState, FieldUnitInfo>();
+
         /// <summary>登记场内单位（出生/部署时调用）。</summary>
         /// <param name="unitId">单位 id（身份/索敌键）。</param>
         /// <param name="unit">单位模拟状态；不允许为 null。</param>
         /// <param name="headNode">解析好的头部骨骼；未配/解析失败可为 null。</param>
         public static void Register(string unitId, BattleUnitState unit, Transform headNode)
         {
-            infos[unitId] = new FieldUnitInfo(unit, headNode);
+            var info = new FieldUnitInfo(unit, headNode);
+            infos[unitId] = info;
+            if (unit != null) byUnit[unit] = info;
         }
 
         /// <summary>登记守点（战斗启动时调用）；以守点自身 Transform 作"头部"。</summary>
@@ -37,13 +43,30 @@ namespace Framework.Gameplay.Battle
         /// <param name="unitId">单位 id。</param>
         public static void Unregister(string unitId)
         {
-            if (unitId != null) infos.Remove(unitId);
+            if (unitId == null) return;
+            if (infos.TryGetValue(unitId, out FieldUnitInfo info))
+            {
+                infos.Remove(unitId);
+                if (info.Unit != null) byUnit.Remove(info.Unit);
+            }
+        }
+
+        /// <summary>按实例注销（敌人同 UnitId 多实例时不会误删其他实例）。</summary>
+        public static void Unregister(BattleUnitState unit)
+        {
+            if (unit == null) return;
+            byUnit.Remove(unit);
+            if (infos.TryGetValue(unit.UnitId, out FieldUnitInfo info) && ReferenceEquals(info.Unit, unit))
+            {
+                infos.Remove(unit.UnitId);
+            }
         }
 
         /// <summary>战斗拆除全清（守点一并清）。</summary>
         public static void Clear()
         {
             infos.Clear();
+            byUnit.Clear();
         }
 
         /// <summary>取目标头部 Transform：已登记、单位存活（守点恒活）、head 未销毁才返回 true。</summary>
@@ -56,7 +79,17 @@ namespace Framework.Gameplay.Battle
             if (unitId == null || !infos.TryGetValue(unitId, out FieldUnitInfo info)) return false;
             if (info.HeadNode == null) return false;
             BattleUnitState unit = info.Unit;
-            if (unit != null && !unit.IsAlive) return false;
+            if (unit != null && (!unit.IsAlive || unit.Hp <= 0)) return false;
+            head = info.HeadNode;
+            return true;
+        }
+
+        /// <summary>按实例取目标头部（敌人同 UnitId 多实例时必须用本重载）。</summary>
+        public static bool TryGetHead(BattleUnitState unit, out Transform head)
+        {
+            head = null;
+            if (unit == null || !unit.IsAlive || unit.Hp <= 0) return false;
+            if (!byUnit.TryGetValue(unit, out FieldUnitInfo info) || info.HeadNode == null) return false;
             head = info.HeadNode;
             return true;
         }

@@ -70,7 +70,7 @@ namespace Framework.Gameplay.Abilities.Buff
         }
 
         /// <summary>按 buffId 查首个注册实例（叠层首实例）。</summary>
-        /// <param name="buffId">BuffTable 主键。</param>
+        /// <param name="buffId">效果行主键（SkillEffectTable.effectId）。</param>
         /// <param name="buff">命中的首实例；未注册该 id 时为 null。</param>
         /// <returns>命中返回 true。</returns>
         public bool TryGetBuffByBuffId(int buffId, out IBuff buff)

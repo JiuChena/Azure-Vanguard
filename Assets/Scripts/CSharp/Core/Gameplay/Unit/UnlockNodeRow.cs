@@ -38,6 +38,10 @@ namespace Framework.Gameplay.Unit
         [Key("effectValue")]
         public float EffectValue;
 
+        // 天赋行为参数（2026-11-04）：{键:初值:成长} 逗号分隔；talent 行用，bonus 行留空
+        [Key("params")]
+        public string Params;
+
         // 独立解锁消耗 itemId:count 逗号分隔；空 = 随突破解锁
         [Key("cost")]
         public string Cost;
@@ -49,6 +53,21 @@ namespace Framework.Gameplay.Unit
         /// <summary>解析后的独立解锁消耗；空列返回空数组（即随突破解锁）。</summary>
         [IgnoreMember]
         public ItemCost[] CostList => ItemCost.ParseList(Cost);
+
+        /// <summary>解析后的天赋行为参数；空列返回空数组。</summary>
+        [IgnoreMember]
+        public SkillParam[] ParamList => SkillParam.ParseList(Params);
+
+        /// <summary>按等级读取天赋参数值（键缺失返回 0）。</summary>
+        public float GetParamValue(string key, int level)
+        {
+            SkillParam[] list = ParamList;
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (list[i].Key == key) return list[i].GetValue(level);
+            }
+            return 0f;
+        }
 
         /// <summary>是否随突破解锁（独立消耗列为空）。</summary>
         [IgnoreMember]

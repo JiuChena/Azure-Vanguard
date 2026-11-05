@@ -8,6 +8,7 @@ updated: 2026-10-14
 
 > BetterHSM 状态类 + Registration 工厂骨架。流程见 [[02-流程SOP/SOP-新加状态机方案]]；分层语义与硬约束见 [[04-模块/GAS-能力与状态机]]；先例：`GAS/BetterHSM/Test/CH0221/CH0221TestHierarchicalRegistration.cs`。
 > **命名空间 `Core.Gear`**——漏 using 高发（BetterHsmSmoke 曾 CS0246 全红）。
+> **硬约束（2026-11-05）**：角色战斗 BehaviorClip 只能由 BHSM 状态 `OnEnter` 通过 `Context.PlayBehavior(BehaviorKey)` 播放；外部（CombatManager/MonoBehaviour/其他系统）**禁止**直接 `BehaviorExecutor.Play` / `BehaviorAbilityRuntimeData.Play`。一次性 clip（Talent 等）同样必须建状态 + 完成度门禁，禁止外部定时器补播/回 Idle。验证脚本夹具除外。
 
 ## 状态类骨架
 
@@ -35,7 +36,7 @@ public sealed class SIdle : MyStateBase
     public const string BehaviorKey = "Idle";           // 对齐 UnitConfig.behaviorClips 键
     public SIdle() : base("Idle") { }
 
-    public override void OnEnter(MyContext ctx) { /* Play(BehaviorKey) 由桥接层做 */ }
+    public override void OnEnter(MyContext ctx) { /* 行为键由状态 OnEnter 经 Context.PlayBehavior(BehaviorKey) 播放；禁止外部直接 Play */ }
     public override void OnUpdate(MyContext ctx) { }
     public override void OnExit(MyContext ctx) { }
     public override bool Interrupt(MyContext ctx) => false;   // virtual 默认 false，按需覆写

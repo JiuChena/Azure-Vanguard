@@ -15,6 +15,7 @@ updated: 2026-10-14
 - BetterHSM 在 `Assets/Scripts/CSharp/Core/Gameplay/GAS/BetterHSM/`，**命名空间 `Core.Gear`**（漏 using 高发）
 - 分层语义速记：状态树 root→leaf 激活链；**层级即优先序**（父层先评）；切换 = LCA 级联；复合状态无 OnUpdate、不可为边目标/初始状态；门控默认关（`EnableInterruptGating` + `MarkDirty`）
 - **硬约束：框架按状态类型唯一注册**——同一 HSM 内每个节点必须是独立 C# 类，两个节点不能共用一个状态类
+- **硬约束（2026-11-05）：角色战斗 BehaviorClip 必须经 BHSM 状态播放**——状态 `OnEnter` 调 `Context.PlayBehavior(BehaviorKey)`；**禁止**在 `CombatManager` / MonoBehaviour / 其他系统直接调 `BehaviorExecutor.Play` / `BehaviorAbilityRuntimeData.Play` 播放角色战斗 clip。一次性 clip（如进场 `Talent`）也必须建 HSM 状态（Once）+ 完成度门禁，不能用外部定时器补播/回 Idle。验证脚本测试夹具除外
 
 ## 流程总览
 

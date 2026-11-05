@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using Core.Gear;
 using Framework.Gameplay.Abilities;
 using Framework.Gameplay.Abilities.BetterHSM.Combat;
+using Framework.Gameplay.Abilities.Buff;
+using Framework.Gameplay.Abilities.Stat;
 using Framework.Gameplay.Battle;
+using Framework.Gameplay.Unit;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -169,10 +173,62 @@ public class HsmDebugPanel : PanelBase
               + $"Dest={Format(selectedUnit.MoveDestination)} Target={(string.IsNullOrEmpty(selectedUnit.TargetUnitId) ? "-" : selectedUnit.TargetUnitId)}\n"
               + $"GuardPt={selectedUnit.TargetIsGuardPoint} Pos={Format(selectedUnit.Position)}"
             : "HSM context not ready";
-        WriteText(view.paramsText, paramsText);
+        // 追加：状态数据（Stat final）+ Buff 数据（名称/加成/剩余/总时长）
+        WriteText(view.paramsText, $"{paramsText}\n{BuildStatText(gas)}\n{BuildBuffText(gas)}");
 
         WriteText(view.transitionLogText,
             transitionLog.Count > 0 ? string.Join("\n", transitionLog) : string.Empty);
+    }
+
+    // 状态数据：Stat 能力 final 快照（定宽分列对齐，名称左对齐 + 数值右对齐 + 项间间隔）
+    private static string BuildStatText(GameplayAbilitySystem gas)
+    {
+        if (gas?.OwnerContext == null
+            || !gas.OwnerContext.TryGet(AbilityRuntimeDataType.Stat, out StatRuntimeData stat))
+        {
+            return "Stat: not ready";
+        }
+        return "Stat:\n"
+            + $"  {"HP",-6}{Final(stat, StatType.MaxHp),7:F0}({stat.GetBase(StatType.MaxHp),-0:F0})   {"ATK",-5}{Final(stat, StatType.Atk),7:F0}({stat.GetBase(StatType.Atk),-0:F0})\n"
+            + $"  {"DEF",-6}{Final(stat, StatType.Def),7:F0}({stat.GetBase(StatType.Def),-0:F0})   {"CR",-5}{Final(stat, StatType.CritRate),7:P1}({stat.GetBase(StatType.CritRate),-0:P1})\n"
+            + $"  {"CD",-6}{Final(stat, StatType.CritDmg),7:P1}({stat.GetBase(StatType.CritDmg),-0:P1})   {"SPD",-5}{Final(stat, StatType.MoveSpeed),7:F1}({stat.GetBase(StatType.MoveSpeed),-0:F1})\n"
+            + $"  {"RNG",-6}{Final(stat, StatType.Range),7:F1}({stat.GetBase(StatType.Range),-0:F1})   {"Ener",-5}{Final(stat, StatType.EnergyRecharge),7:F2}({stat.GetBase(StatType.EnergyRecharge),-0:F2})";
+    }
+
+    private static float Final(StatRuntimeData stat, StatType type)
+        => stat.TryGetFinal(type, out float v) ? v : 0f;
+
+    // Buff 数据：BuffRuntimeData 全部 buff（名称/属性加成/剩余/总时长）
+    private static string BuildBuffText(GameplayAbilitySystem gas)
+    {
+        if (gas?.OwnerContext == null
+            || !gas.OwnerContext.TryGet(AbilityRuntimeDataType.Buff, out BuffRuntimeData buffData))
+        {
+            return "Buff: not ready";
+        }
+        if (buffData.BuffCount == 0) return "Buff: none";
+
+        var sb = new StringBuilder($"Buff {buffData.BuffCount}:");
+        foreach (IBuff buff in buffData.Buffs)
+        {
+            string name = BattleDataModule.TryGetSkillEffect(buff.BuffId, out SkillEffectRow row) ? row.Name : $"#{buff.BuffId}";
+            if (buff is StatBuff statBuff)
+            {
+                var attrs = new StringBuilder();
+                foreach ((StatType type, float value) in statBuff.Attributes)
+                {
+                    attrs.Append($"{type}+{value:F2} ");
+                }
+                string remain = statBuff.RemainingTime < 0f ? "inf" : $"{statBuff.RemainingTime:F1}s";
+                string total = statBuff.Duration <= 0f ? "inf" : $"{statBuff.Duration:F1}s";
+                sb.Append($"\n  {name,-18}({buff.BuffId})  {attrs,-26}rem {remain}/{total}");
+            }
+            else
+            {
+                sb.Append($"\n  {name}({buff.BuffId})");
+            }
+        }
+        return sb.ToString();
     }
 
     // 文本写入节流：内容未变不重写（TMP 重建开销）

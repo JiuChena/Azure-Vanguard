@@ -13,6 +13,13 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
         /// <inheritdoc/>
         protected override string Key => BehaviorKey;
 
+        /// <summary>离开收招段：清空攻击目标（目标生命周期 = 整条攻击链）。</summary>
+        public override void OnExit()
+        {
+            base.OnExit();
+            Context.ClearCombatTarget();
+        }
+
         /// <summary>创建收招段（Once）。</summary>
         public CombatAttackEndState() : base(false) { }
     }

@@ -21,8 +21,9 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
         /// <summary>进入技能态：播放对应技能 clip + 施放结算（重设 CD / Q 消耗满能量 / 锁定 CastingSkillId）。</summary>
         public override void OnEnter()
         {
-            base.OnEnter();
+            // 先结算（写 CastingSkillId/能量/CD），再播 clip——保证 clip t=0 的 EventSO 能读到当前技能
             Context.StartSkillCast(Context.PendingSkillSlot);
+            base.OnEnter();
         }
 
         /// <summary>离开技能态：清除释放锁定（效果执行器只在该技能播放窗口读 CastingSkillId）。</summary>
@@ -30,6 +31,7 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
         {
             base.OnExit();
             Context.StopCastingSkill();
+            Context.ClearCombatTarget();
         }
 
         /// <summary>创建技能态（Once 单段）。</summary>

@@ -15,8 +15,23 @@ MonoBehaviour:
   unitId: CH0221
   unitName: 
   behaviorClips:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: cd92f2c0e07f0cd45b520c73120cc911, type: 2}
+  - {fileID: 11400000, guid: 75e91613d4c901b4c98b1b07a398d077, type: 2}
+  - {fileID: 11400000, guid: c7b397938f67fc3419bb700d34039ea1, type: 2}
+  - {fileID: 11400000, guid: 2fd4a393c80a47c4e9b627d33e293acc, type: 2}
+  - {fileID: 11400000, guid: a2a729cc147d5a043b8d34303c4e8abb, type: 2}
+  - {fileID: 11400000, guid: 2881bb29169af7549baa57324175013b, type: 2}
+  - {fileID: 11400000, guid: c028bd53a5996fc49bc160f0ef88eccb, type: 2}
+  - {fileID: 11400000, guid: 32e37bfe390a0a344b1a2858ea0c042b, type: 2}
+  - {fileID: 11400000, guid: 27b842a9fc363064fa059f5058ce9697, type: 2}
+  - {fileID: 11400000, guid: 691d1641926c9214ba97277742171f27, type: 2}
+  - {fileID: 11400000, guid: c8413ffbf405c324c85646a6c3472d34, type: 2}
+  - {fileID: 11400000, guid: bcbcbdd61a4adc14d8edbf5e0abd619a, type: 2}
+  - {fileID: 11400000, guid: 28c0753a06034514283e8fedf9eb5625, type: 2}
+  - {fileID: 11400000, guid: 93ae8867b3c7a4d4cbf427bbfa3019d8, type: 2}
+  - {fileID: 11400000, guid: 4b335a1a9c111994aa68f2e5fa8fdcdf, type: 2}
+  - {fileID: 11400000, guid: 93120516fae70ca46b162741624226aa, type: 2}
+  - {fileID: 11400000, guid: be1206baf0a46ad429c8b0e9735eb904, type: 2}
   dataTables:
   - {fileID: 4900000, guid: 5fe637c219abaa44f813053c448fffb7, type: 3}
   - {fileID: 4900000, guid: b0fba601722a07b4296d0d19417285cc, type: 3}

@@ -7,7 +7,8 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
     /// 转出放行按 80% 口径（2026-10-20 拍板）：圈内进度过八成即计一轮完成，收招不再死等整圈
     /// （音频在片段开头触发，等待整圈会拖节奏）；留守续播节拍仍按整圈回绕。</summary>
     /// <typeparam name="TContext">所属单位的战斗状态上下文类型。</typeparam>
-    public class CombatAttackingState<TContext> : CombatSegmentState<TContext> where TContext : CombatStateContext
+    public class CombatAttackingState<TContext> : CombatSegmentState<TContext>, ICombatAttackFacingState
+        where TContext : CombatStateContext
     {
         /// <summary>本状态对应的 BE 行为键；与 UnitConfig 行为列表中的 clip 资产名对齐（Normal 前缀=站姿）。</summary>
         public const string BehaviorKey = "NormalAttacking";
@@ -17,6 +18,16 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
 
         /// <summary>循环攻击段一轮完成阈值：进度过八成即放行转出（音频每圈开头触发，收招等待期缩短）。</summary>
         protected override float LoopFinishProgress => 0.8f;
+
+        /// <summary>每轮开始重选最近目标（用户口径：每轮重选；仅本状态与 AttackStart 索敌）。</summary>
+        protected override void OnRoundBegin() => Context.AcquireAttackTarget();
+
+        /// <summary>离开循环段即清目标（目标生命周期只覆盖 AttackStart/Attacking）。</summary>
+        public override void OnExit()
+        {
+            base.OnExit();
+            Context.ClearCombatTarget();
+        }
 
         /// <summary>创建循环段（按轮完成检测，兼容 Once/Loop 两种 wrap 配置）。</summary>
         public CombatAttackingState() : base(true) { }

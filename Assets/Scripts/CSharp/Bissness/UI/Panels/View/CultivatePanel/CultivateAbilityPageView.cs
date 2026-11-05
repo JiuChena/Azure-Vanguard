@@ -21,7 +21,7 @@ public class CultivateAbilityPageView : MonoBehaviour
     public Button upgradeButton;
 
     [Header("详情区")]
-    //技能图标（Content/Container/IconContainer/Icon 的 Image，随选中格换图；SkillRow.icon → SkillIcon 组地址）
+    //技能图标（Content/Container/IconContainer/Icon 的 Image，随选中格换图；CharacterSkillRow.icon → SkillIcon 组地址）
     public Image detailIcon;
 
     //技能名与等级文本（Content/Container/Name；等级段富文本色随预制体静态样例）

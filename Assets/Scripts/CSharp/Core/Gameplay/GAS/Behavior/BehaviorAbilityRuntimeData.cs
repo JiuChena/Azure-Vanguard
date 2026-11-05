@@ -37,6 +37,8 @@ namespace Framework.Gameplay.Abilities
         /// 按叶子状态键播放对应 BE 行为；未配置单位表或键未命中时记录错误并忽略本次请求。
         /// </summary>
         /// <param name="behaviorKey">叶子状态类中声明的 BehaviorKey 常量。</param>
+        /// <remarks>项目硬约束（2026-11-05）：仅供 BHSM 状态经 CombatStateContext.PlayBehavior 调用；
+        /// 外部系统禁止直接播放角色战斗 BehaviorClip（一次性 clip 也必须建 HSM 状态 + 完成度门禁）。</remarks>
         public void Play(string behaviorKey)
         {
             if (string.IsNullOrEmpty(behaviorKey))

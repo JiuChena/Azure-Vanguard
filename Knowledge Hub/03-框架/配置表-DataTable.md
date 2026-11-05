@@ -50,7 +50,7 @@ updated: 2026-10-14
 | 模块目录 | 表 |
 |---|---|
 | `Assets/Module/Items/` | ItemTable |
-| `Assets/Module/Unit/Character/` | CharacterTable、LevelTable、SkillTable、SkillEffectTable、SkillLevelTable、UnlockNodeTable、BreakthroughTable、UpgradeCostTable |
+| `Assets/Module/Unit/Character/` | CharacterTable、CharacterLevelTable（含升级经验/消耗）、CharacterSkillTable、SkillEffectTable、CharacterSkillLevelTable、UnlockNodeTable、BreakthroughTable |
 | `Assets/Module/Unit/Trinket/` | TrinketTable、EnsembleTable |
 | `Assets/Module/Unit/Weapon/` | WeaponTable、WeaponLevelTable |
 

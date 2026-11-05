@@ -7,7 +7,6 @@ using Framework.Gameplay.Abilities;
 using Framework.Gameplay.Abilities.Buff;
 using Framework.Gameplay.Abilities.Display;
 using Framework.Gameplay.Battle;
-using Framework.Gameplay.Buff;
 using Framework.Gameplay.Player;
 using Framework.Gameplay.Unit;
 using TMPro;
@@ -35,8 +34,8 @@ using UnityEngine.UI;
 ///   （定位文本 = Archetype ?? Profession + Tag 图集 Tag_Small_* 图标；标签 = CHTagView 池化，
 ///   敌人 v1 无角色表行整块隐藏 + 清空标签）；
 /// - EffectPage buff 行：同 Display 路径读 Buff 键 → BuffRuntimeData.Buffs（逐帧 BuildEffectSignature
-///   签名门控 reconcile）→ BuffDataLibrary 查 BuffTable 元数据 + IconLibrary 异步图标，行池化克隆
-///   EffectRowTemplate；表未加载先 fire-and-forget，就绪后签名含「表已加载」位触发重渲染。
+///   签名门控 reconcile）→ BattleDataModule 查 SkillEffectTable 效果行（name/desc/icon）+ IconLibrary
+///   异步图标，行池化克隆 EffectRowTemplate；表由战斗预热加载（PreloadAsync 已覆盖）。
 /// </summary>
 public class UnitStatPanel : MonoBehaviour
 {
@@ -77,14 +76,11 @@ public class UnitStatPanel : MonoBehaviour
     // 行颜色是否已捕获
     private readonly bool[] rowColorsCaptured = new bool[7];
 
-    // 已渲染的 Effect 页签名（当前 active buffs 的 BuffId 序列含叠层 + 表加载位；变化才 reconcile）
+    // 已渲染的 Effect 页签名（当前 active buffs 的 BuffId 序列含叠层；变化才 reconcile）
     private string lastEffectSignature;
 
-    // Buff 表已加载位（EnsureLoadedAsync 完成后置位；签名含该位，就绪后触发一次重渲染）
-    private bool effectTableLoaded;
-
-    // 池化中的 buff 行绑定（reconcile 回池用）
-    private readonly List<UnitStatPanelView.EffectRowBinding> effectRows = new List<UnitStatPanelView.EffectRowBinding>();
+    // 池化中的 buff 行绑定（EffectItemView，EffectItem 预制体挂的 ItemView）
+    private readonly List<EffectItemView> effectRows = new List<EffectItemView>();
 
     // Buff 行模板缺失告警只报一次
     private bool effectTemplateWarned;
@@ -345,16 +341,9 @@ public class UnitStatPanel : MonoBehaviour
         if (!gas.OwnerContext.TryGet(AbilityRuntimeDataType.Buff, out BuffRuntimeData buffData)) return;
 
         string signature = BuildEffectSignature(buffData);
-        if (!effectTableLoaded) signature += "|pending";
         if (lastEffectSignature == signature) return;
         lastEffectSignature = signature;
-
-        if (!effectTableLoaded)
-        {
-            _ = EnsureEffectTableAsync();
-            return;
-        }
-        _ = RefreshEffectRowsAsync(buffData, signature);
+        RefreshEffectRows(buffData, signature);
     }
 
     // 签名 = 当前 active buffs 的 BuffId 序列含叠层（如 "1,3,3,5"）；空列表 = 空串
@@ -371,18 +360,10 @@ public class UnitStatPanel : MonoBehaviour
         return sb.ToString();
     }
 
-    // Buff 表加载（fire-and-forget）：完成后置位——签名位翻转触发 reconcile；
-    // 表失败（null）也置位（一行只尝试一次，行渲染时 TryGetBuffRow 未命中则留空）
-    private async Task EnsureEffectTableAsync()
-    {
-        await BuffDataLibrary.EnsureLoadedAsync();
-        effectTableLoaded = true;
-    }
-
     // 重渲染 buff 行：先回池现有行 → 无 buff 直接清空 → 模板缺失告警一次 → 池化克隆 + 填元数据
-    private async Task RefreshEffectRowsAsync(BuffRuntimeData buffData, string signature)
+    // 效果数据查 SkillEffectTable（一条 effect 自带 name/icon/desc；BuffTable 已于 2026-11-01 删除）
+    private void RefreshEffectRows(BuffRuntimeData buffData, string signature)
     {
-        await BuffDataLibrary.EnsureLoadedAsync();
         if (lastEffectSignature != signature) return; // 竞态弃写（面板打开期战斗已暂停，防御性）
 
         ClearEffectRows();
@@ -405,19 +386,36 @@ public class UnitStatPanel : MonoBehaviour
         {
             GameObject clone = ObjectsPool.Instance.Get(template, content);
             if (clone == null) continue;
-            // 挂载后归一变换（池的 Instantiate 在无父状态克隆会放大尺度；与技能/标签行同口径）
-            clone.transform.localScale = Vector3.one;
-            clone.transform.localPosition = Vector3.zero;
+            // 挂载后归一变换：Item 模板 pivot 在中心（0.5,0.5），直接 localPosition=0 会让中心贴父左上、
+            // 整体偏移出界；改为左上锚定 + pivot 左上 + 行序纵向堆叠（Effect 页 Content 左上布局）
+            RectTransform rt = clone.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                rt.localScale = Vector3.one;
+                rt.anchorMin = new Vector2(0f, 1f);
+                rt.anchorMax = new Vector2(0f, 1f);
+                rt.pivot = new Vector2(0f, 1f);
+                rt.anchoredPosition = new Vector2(0f, -effectRows.Count * rt.sizeDelta.y);
+                // z 轴归零：池化克隆 + SetParent(worldPositionStays) 后 z 漂到 -8000，UI 应同一平面
+                Vector3 localPos = rt.localPosition;
+                localPos.z = 0f;
+                rt.localPosition = localPos;
+            }
+            else
+            {
+                clone.transform.localScale = Vector3.one;
+                clone.transform.localPosition = Vector3.zero;
+            }
 
-            UnitStatPanelView.EffectRowBinding row = view.BindEffectRow(clone);
+            EffectItemView row = clone.GetComponent<EffectItemView>();
             if (row == null) continue;
             effectRows.Add(row);
 
-            bool found = BuffDataLibrary.TryGetBuffRow(buff.BuffId, out BuffRow buffRow);
-            WriteText(row.BuffName, found ? buffRow.Name : $"#{buff.BuffId}");
-            WriteText(row.BuffDesc, found ? buffRow.Desc : string.Empty);
-            if (!found || string.IsNullOrEmpty(buffRow.Icon)) continue;
-            LoadEffectIconAsync(row, buffRow.Icon, signature);
+            bool found = BattleDataModule.TryGetSkillEffect(buff.BuffId, out SkillEffectRow effectRow);
+            WriteText(row.buffName, found ? effectRow.Name : $"#{buff.BuffId}");
+            WriteText(row.buffDesc, found ? effectRow.Desc : string.Empty);
+            if (!found || string.IsNullOrEmpty(effectRow.Icon)) continue;
+            LoadEffectIconAsync(row, effectRow.Icon, signature);
         }
     }
 
@@ -426,7 +424,7 @@ public class UnitStatPanel : MonoBehaviour
     {
         for (int i = 0; i < effectRows.Count; i++)
         {
-            GameObject rowRoot = effectRows[i].RowRoot;
+            GameObject rowRoot = effectRows[i].gameObject;
             if (rowRoot != null) ObjectsPool.Instance.Put(rowRoot);
         }
         effectRows.Clear();
@@ -445,13 +443,21 @@ public class UnitStatPanel : MonoBehaviour
     }
 
     // Buff 图标异步加载（失败保留默认图）；回包时签名已变（行已回池/重渲染）则丢弃
-    private async void LoadEffectIconAsync(UnitStatPanelView.EffectRowBinding row, string icon, string signature)
+    private async void LoadEffectIconAsync(EffectItemView row, string icon, string signature)
     {
-        if (string.IsNullOrEmpty(icon) || row.BuffIcon == null) return;
-        Sprite sprite = await IconLibrary.GetAsync(icon);
-        if (sprite != null && row.BuffIcon != null && lastEffectSignature == signature)
+        if (string.IsNullOrEmpty(icon) || row.buffIcon == null) return;
+        Sprite sprite;
+        try
         {
-            row.BuffIcon.sprite = sprite;
+            sprite = await IconLibrary.GetAsync(icon);
+        }
+        catch (System.Exception)
+        {
+            return; // icon 资产未配（Addressables 无 Location）→ 静默跳过，保留默认图
+        }
+        if (sprite != null && row.buffIcon != null && lastEffectSignature == signature)
+        {
+            row.buffIcon.sprite = sprite;
         }
     }
 
@@ -528,7 +534,7 @@ public class UnitStatPanel : MonoBehaviour
             UnitStatPanelView.SkillRowBinding row = view.SkillRows[i];
             if (row == null) continue;
 
-            if (!SkillDataLibrary.TryGetSkillRow(unit.UnitId, row.SkillType, out SkillRow skillRow))
+            if (!SkillDataLibrary.TryGetSkillRow(unit.UnitId, row.SkillType, out CharacterSkillRow skillRow))
             {
                 if (row.RowRoot != null && row.RowRoot.activeSelf) row.RowRoot.SetActive(false);
                 continue;
@@ -552,7 +558,7 @@ public class UnitStatPanel : MonoBehaviour
         }
     }
 
-    // 技能等级：角色走仓库养成条目（SkillLevelTable 对应等级），无条目/敌人回退 1
+    // 技能等级：角色走仓库养成条目（CharacterSkillLevelTable 对应等级），无条目/敌人回退 1
     private static int SkillLevelForType(string unitId, string skillType)
     {
         int level = 1;
@@ -560,9 +566,9 @@ public class UnitStatPanel : MonoBehaviour
         {
             switch (skillType)
             {
-                case SkillRow.SkillTypes.E: level = entry.skillLevelE; break;
-                case SkillRow.SkillTypes.Burst: level = entry.skillLevelQ; break;
-                case SkillRow.SkillTypes.Talent: level = entry.skillLevelTalent; break;
+                case CharacterSkillRow.SkillTypes.E: level = entry.skillLevelE; break;
+                case CharacterSkillRow.SkillTypes.Burst: level = entry.skillLevelQ; break;
+                case CharacterSkillRow.SkillTypes.Talent: level = entry.skillLevelTalent; break;
                 default: level = entry.skillLevelNormal; break;
             }
         }

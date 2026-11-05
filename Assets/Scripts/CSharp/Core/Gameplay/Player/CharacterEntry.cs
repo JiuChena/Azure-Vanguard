@@ -16,7 +16,7 @@ namespace Framework.Gameplay.Player
         [Key(0)]
         public string unitId;
 
-        // 角色等级，下限 1；上限由养成层按 LevelTable 控制，仓库只做下限防御
+        // 角色等级，下限 1；上限由养成层按 CharacterLevelTable 控制，仓库只做下限防御
         [Key(1)]
         public int level = 1;
 

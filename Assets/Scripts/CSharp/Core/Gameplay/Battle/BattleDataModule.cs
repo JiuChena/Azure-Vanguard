@@ -19,14 +19,17 @@ namespace Framework.Gameplay.Battle
     /// </summary>
     public static class BattleDataModule
     {
+        // 移动/攻击朝向默认转速（2026-11-05：rotateSpeed 已移出 Character/Enemy 表，沿用现有攻击转向链路）
+        private const float DefaultMoveRotateSpeed = 360f;
+
         /// <summary>
         /// 普攻解析包：倍率与固定加成已按等级折算完毕，BattleMath 直接消费；
         /// Skill/Effect 行引用保留给切片 2（多效果/描述展示）。
         /// </summary>
         public readonly struct NormalAttackData
         {
-            // 普攻技能行（SkillTable）
-            public readonly SkillRow Skill;
+            // 普攻技能行（CharacterSkillTable）
+            public readonly CharacterSkillRow Skill;
 
             // 普攻效果行（SkillEffectTable；首切片普攻取首效果）
             public readonly SkillEffectRow Effect;
@@ -37,10 +40,10 @@ namespace Framework.Gameplay.Battle
             // 攻击力倍率 = Effect.GetValueAtLevel(Level)
             public readonly float Rate;
 
-            // 固定伤害加成 = SkillRow.params 的 atkadd（缺键按 0）
+            // 固定伤害加成 = CharacterSkillRow.params 的 atkadd（缺键按 0）
             public readonly float AtkAdd;
 
-            public NormalAttackData(SkillRow skill, SkillEffectRow effect, int level, float rate, float atkAdd)
+            public NormalAttackData(CharacterSkillRow skill, SkillEffectRow effect, int level, float rate, float atkAdd)
             {
                 Skill = skill;
                 Effect = effect;
@@ -56,9 +59,9 @@ namespace Framework.Gameplay.Battle
         // 敌人表缓存
         private static DataTable<EnemyRow, string> enemyTable;
 
-        // 等级成长表缓存（敌人等级乘区数据源；v1 与角色共用 LevelTable 曲线，
+        // 等级成长表缓存（敌人等级乘区数据源；v1 与角色共用 CharacterLevelTable 曲线，
         // 将来敌用独立曲线 = 本表换 EnemyLevelTable 一行 + 行类同形状）
-        private static DataTable<LevelRow, int> levelTable;
+        private static DataTable<CharacterLevelRow, int> levelTable;
 
         // 波次表缓存
         private static DataTable<WaveRow, string> waveTable;
@@ -67,10 +70,13 @@ namespace Framework.Gameplay.Battle
         private static DataTable<StageRow, string> stageTable;
 
         // 技能表缓存（角色普攻走 SkillDataLibrary 编码定位；敌人普攻按主键直查）
-        private static DataTable<SkillRow, int> skillTable;
+        private static DataTable<CharacterSkillRow, int> skillTable;
 
-        // 技能效果表缓存（SkillDataLibrary 只管 SkillTable，效果表战斗侧自管）
+        // 技能效果表缓存（SkillDataLibrary 只管 CharacterSkillTable，效果表战斗侧自管）
         private static DataTable<SkillEffectRow, int> skillEffectTable;
+
+        // 解锁节点表缓存（天赋 effectKey/params 来源，2026-11-04 天赋系统）
+        private static DataTable<UnlockNodeRow, int> unlockNodeTable;
 
         // 加载任务（并发调用共享同一次加载）
         private static Task<bool> loadTask;
@@ -104,7 +110,7 @@ namespace Framework.Gameplay.Battle
         }
 
         // 逐表加载：任一失败整批判败（保持 null，下次重试）；成功表靠 DataTableManager 缓存幂等。
-        // 注意起载顺序：SkillDataLibrary 内部同样请求 SkillTable，必须等六表直载就位后再起——
+        // 注意起载顺序：SkillDataLibrary 内部同样请求 CharacterSkillTable，必须等六表直载就位后再起——
         // Play 真异步下两路同键并发会双双穿过 DataTableManager 缓存检查（check-then-act 无去重），
         // 后完成者 Add 撞重复键；EditMode 同步表源串行完成，此竞态测不出（2026-10-17 Play 首暴）。
         private static async Task<bool> LoadAllAsync()
@@ -117,12 +123,14 @@ namespace Framework.Gameplay.Battle
                 DataTableManager.Instance.LoadTableAsync<WaveRow, string>("WaveTable");
             Task<DataTable<StageRow, string>> stageTask =
                 DataTableManager.Instance.LoadTableAsync<StageRow, string>("StageTable");
-            Task<DataTable<SkillRow, int>> skillTask =
-                DataTableManager.Instance.LoadTableAsync<SkillRow, int>("SkillTable");
+            Task<DataTable<CharacterSkillRow, int>> skillTask =
+                DataTableManager.Instance.LoadTableAsync<CharacterSkillRow, int>("CharacterSkillTable");
             Task<DataTable<SkillEffectRow, int>> effectTask =
                 DataTableManager.Instance.LoadTableAsync<SkillEffectRow, int>("SkillEffectTable");
-            Task<DataTable<LevelRow, int>> levelTask =
-                DataTableManager.Instance.LoadTableAsync<LevelRow, int>("LevelTable");
+            Task<DataTable<CharacterLevelRow, int>> levelTask =
+                DataTableManager.Instance.LoadTableAsync<CharacterLevelRow, int>("CharacterLevelTable");
+            Task<DataTable<UnlockNodeRow, int>> unlockNodeTask =
+                DataTableManager.Instance.LoadTableAsync<UnlockNodeRow, int>("UnlockNodeTable");
 
             characterTable = await characterTask;
             enemyTable = await enemyTask;
@@ -130,15 +138,17 @@ namespace Framework.Gameplay.Battle
             stageTable = await stageTask;
             skillTable = await skillTask;
             skillEffectTable = await effectTask;
-            // LevelTable 同键消费方：Preloader（启动期先行）与养成 resolver（EnsureLoaded 完成后才跑），
-            // 均与本段无同帧并发窗口，直载安全（同 SkillTable 竞态口径的手推结论）
+            // CharacterLevelTable 同键消费方：Preloader（启动期先行）与养成 resolver（EnsureLoaded 完成后才跑），
+            // 均与本段无同帧并发窗口，直载安全（同 CharacterSkillTable 竞态口径的手推结论）
             levelTable = await levelTask;
+            unlockNodeTable = await unlockNodeTask;
 
-            // 七表已入 DataTableManager 缓存，SkillDataLibrary 的 SkillTable 请求此刻命中缓存，无并发窗口
+            // 八表已入 DataTableManager 缓存，SkillDataLibrary 的 CharacterSkillTable 请求此刻命中缓存，无并发窗口
             bool skillLibraryOk = (await LoadSkillLibraryAsync()).Ok;
 
             if (characterTable == null || enemyTable == null || waveTable == null || stageTable == null
-                || skillTable == null || skillEffectTable == null || levelTable == null || !skillLibraryOk)
+                || skillTable == null || skillEffectTable == null || levelTable == null
+                || unlockNodeTable == null || !skillLibraryOk)
             {
                 Debug.LogError("[BattleData] 战斗表加载未全部就位（缺失表见上方 LogError），预热中止。");
                 loadTask = null;
@@ -152,8 +162,8 @@ namespace Framework.Gameplay.Battle
         {
             await SkillDataLibrary.EnsureLoadedAsync();
             // 就位探针：随便探一条已配普攻（CH0221），定位失败说明参数索引未建成
-            bool ok = SkillDataLibrary.TryGetSkillRow("CH0221", SkillRow.SkillTypes.Normal, out _);
-            if (!ok) Debug.LogError("[BattleData] SkillDataLibrary 未就位（SkillTable 加载失败或参数索引未建成）。");
+            bool ok = SkillDataLibrary.TryGetSkillRow("CH0221", CharacterSkillRow.SkillTypes.Normal, out _);
+            if (!ok) Debug.LogError("[BattleData] SkillDataLibrary 未就位（CharacterSkillTable 加载失败或参数索引未建成）。");
             return new SkillDataLibraryLoadGuard(ok);
         }
 
@@ -271,10 +281,10 @@ namespace Framework.Gameplay.Battle
             return false;
         }
 
-        /// <summary>取技能 CD（秒；SkillTable.cooldown 列）；未配/未加载返回 false。</summary>
+        /// <summary>取技能 CD（秒；CharacterSkillTable.cooldown 列）；未配/未加载返回 false。</summary>
         public static bool TryGetSkillCooldown(int skillId, out float cooldown)
         {
-            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row))
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out CharacterSkillRow row))
             {
                 cooldown = row.Cooldown;
                 return true;
@@ -286,7 +296,7 @@ namespace Framework.Gameplay.Battle
         /// <summary>取技能能量回复量（energyGain 列：普攻行=命中回能 / E·EX 行=施放回能；配 0 不回能）。</summary>
         public static bool TryGetSkillEnergyGain(int skillId, out int gain)
         {
-            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row))
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out CharacterSkillRow row))
             {
                 gain = row.EnergyGain;
                 return true;
@@ -307,10 +317,10 @@ namespace Framework.Gameplay.Battle
             return false;
         }
 
-        /// <summary>取技能效果 id 列表（SkillTable.effectIds 逗号分隔解析）。</summary>
+        /// <summary>取技能效果 id 列表（CharacterSkillTable.effectIds 逗号分隔解析）。</summary>
         public static bool TryGetSkillEffects(int skillId, out IReadOnlyList<int> effectIds)
         {
-            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out SkillRow row)
+            if (skillId > 0 && skillTable != null && skillTable.TryGet(skillId, out CharacterSkillRow row)
                 && !string.IsNullOrEmpty(row.EffectIds))
             {
                 string[] parts = row.EffectIds.Split(',');
@@ -323,6 +333,14 @@ namespace Framework.Gameplay.Battle
                 return list.Count > 0;
             }
             effectIds = null;
+            return false;
+        }
+
+        /// <summary>取解锁节点行（UnlockNodeTable 主键查；天赋 effectKey/params）。</summary>
+        public static bool TryGetUnlockNode(int nodeId, out UnlockNodeRow row)
+        {
+            if (unlockNodeTable != null && unlockNodeTable.TryGet(nodeId, out row)) return true;
+            row = null;
             return false;
         }
 
@@ -366,20 +384,22 @@ namespace Framework.Gameplay.Battle
             statsCache[unitId] = new BattleUnitStats(
                 stats.MaxHp, stats.Atk, stats.Def, stats.CritRate, stats.CritDmg,
                 row.MoveSpeed, row.AtkInterval, row.Range,
-                row.RotateSpeed, row.RotateNode,
+                DefaultMoveRotateSpeed, row.RotateNode,
                 row.BulletSpread, row.HeadNode, 0f,
                 maxEnergy: row.MaxEnergy, energyRecharge: stats.EnergyRecharge,
-                skillEId: row.SkillEId, skillQId: row.SkillQId, normalAtkId: row.NormalAtkId);
+                skillEId: row.SkillEId, skillQId: row.SkillQId, normalAtkId: row.NormalAtkId,
+                damageBonus: stats.DamageBonus, healBonus: stats.HealBonus,
+                targetingPolicy: row.TargetingPolicy);
 
             // stat 链装配（过渡口径）：base 直接取 CharacterStats final 八项（养成加成已折入，无独立条目），
             // 战斗专有三项取 CharacterRow；迁移批换真白值 + 节点/武器/装备 modifier 灌入后本注释作废
             statBaseCache[unitId] = CreateCharacterStatBase(stats, row);
 
-            bool found = SkillDataLibrary.TryGetSkillRow(unitId, SkillRow.SkillTypes.Normal, out SkillRow skillRow);
+            bool found = SkillDataLibrary.TryGetSkillRow(unitId, CharacterSkillRow.SkillTypes.Normal, out CharacterSkillRow skillRow);
             return CacheNormalAttack(unitId, found, skillRow, GetCharacterNormalLevel(unitId));
         }
 
-        // 装配敌人：EnemyRow（1 级基准）× LevelTable.multiplier(level) → 统一形状 + 普攻（主键直查，不走角色编码约定）
+        // 装配敌人：EnemyRow（1 级基准）× CharacterLevelTable.multiplier(level) → 统一形状 + 普攻（主键直查，不走角色编码约定）
         private static bool TryCacheEnemy(string enemyId, int level)
         {
             if (!enemyTable.TryGet(enemyId, out EnemyRow row))
@@ -387,9 +407,9 @@ namespace Framework.Gameplay.Battle
                 Debug.LogError($"[BattleData] EnemyTable 无敌人行：enemyId={enemyId}");
                 return false;
             }
-            if (!levelTable.TryGet(level, out LevelRow levelRow))
+            if (!levelTable.TryGet(level, out CharacterLevelRow levelRow))
             {
-                Debug.LogError($"[BattleData] LevelTable 无等级行：level={level}（enemyId={enemyId}），敌人装配拒绝。");
+                Debug.LogError($"[BattleData] CharacterLevelTable 无等级行：level={level}（enemyId={enemyId}），敌人装配拒绝。");
                 return false;
             }
 
@@ -402,7 +422,7 @@ namespace Framework.Gameplay.Battle
             statsCache[statsKey] = new BattleUnitStats(
                 maxHp, atk, def, row.CritRate, row.CritDmg,
                 row.MoveSpeed, row.AtkInterval, row.Range,
-                row.RotateSpeed, row.RotateNode,
+                DefaultMoveRotateSpeed, row.RotateNode,
                 row.BulletSpread, row.HeadNode, row.StopLateralOffset, row.BlockRadius, row.GuardPointDamage,
                 maxEnergy: 0, energyRecharge: 1f, normalAtkId: row.NormalAtkId);
 
@@ -410,7 +430,7 @@ namespace Framework.Gameplay.Battle
             // 空加成条目表（战斗内 buff 走 AddModifier）
             statBaseCache[statsKey] = CreateEnemyStatBase(row, maxHp, atk, def);
 
-            bool found = skillTable.TryGet(row.NormalAtkId, out SkillRow skillRow);
+            bool found = skillTable.TryGet(row.NormalAtkId, out CharacterSkillRow skillRow);
             return CacheNormalAttack(statsKey, found, skillRow, 1);
         }
 
@@ -458,7 +478,7 @@ namespace Framework.Gameplay.Battle
         }
 
         // 普攻解析：单效果假设（首切片普攻 effectIds 单值；多值取首效果并告警），atkadd 缺键按 0
-        private static bool CacheNormalAttack(string id, bool found, SkillRow skillRow, int level)
+        private static bool CacheNormalAttack(string id, bool found, CharacterSkillRow skillRow, int level)
         {
             if (!found || skillRow == null)
             {

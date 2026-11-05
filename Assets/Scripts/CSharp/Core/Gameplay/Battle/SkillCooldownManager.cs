@@ -7,7 +7,7 @@ namespace Framework.Gameplay.Battle
     /// 技能 CD 管理器（③ 模拟层，2026-10-27 技能方案）：入场角色技能 CD 统一注册，
     /// Step 节拍统一推进（暂停 = 不调 Step、倍速 = dt×scale 天然生效——资源计时禁放渲染帧链），
     /// 缩减/减免类效果由本管理器统一调配；感知层只读就绪判定。敌人无技能不注册。
-    /// E 技能 CD 取 SkillTable.Cooldown（初始就绪——可用即放）；Q 大招无 CD 靠能量门槛。
+    /// E 技能 CD 取 CharacterSkillTable.Cooldown（初始就绪——可用即放）；Q 大招无 CD 靠能量门槛。
     /// </summary>
     public sealed class SkillCooldownManager
     {
@@ -55,7 +55,7 @@ namespace Framework.Gameplay.Battle
                 || remaining <= 0f;
         }
 
-        /// <summary>技能施放后重设 CD（CD 值取 SkillTable.Cooldown，由调用方传入）。</summary>
+        /// <summary>技能施放后重设 CD（CD 值取 CharacterSkillTable.Cooldown，由调用方传入）。</summary>
         public void StartCooldown(BattleUnitState unit, int skillId, float cooldown)
         {
             if (unit == null || skillId <= 0) return;

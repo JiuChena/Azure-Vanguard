@@ -1,4 +1,5 @@
 using Framework.Gameplay.Abilities.BetterHSM.Combat;
+using Framework.Gameplay.Abilities.Buff;
 using Framework.Gameplay.Abilities.Configuration;
 using Framework.Gameplay.Battle;
 using UnityEngine;
@@ -65,23 +66,19 @@ namespace Framework.Gameplay.Abilities
             if (_unit == null && !TryAcquireDependencies()) return;
             if (_stateContext == null) return;
 
-            // 意图生产：按阵营走既有策略写 ③ 意图字段（口径与纯意图时期一致）。
-            IUnitIntentStrategy strategy = _unit.Camp == BattleCamp.Character
-                ? (IUnitIntentStrategy)_characterStrategy
-                : _enemyStrategy;
-            strategy.UpdateIntent(_unit, _intentContext);
-
             // 决策标志镜像：只比标志值不比原始数据（位置每帧变，按值比较才保门控生效）。
             float arriveSq = _configuration.MoveArriveDistance * _configuration.MoveArriveDistance;
-            bool wantAttack = _unit.HasAttackIntent;
-            bool isMoving = (_unit.MoveDestination - _unit.Position).sqrMagnitude > arriveSq;
             bool downed = _unit.IsDowned;
+            bool wantTalent = _unit.WantTalent;
 
             // 技能意图（角色侧；敌人无技能）：E CD 就绪优先（CH0221 先 E 后 Q，优先级将来可配进表），
             // E 未就绪且 Q 能量满 → Q。Q 无 CD（能量门槛由 Energy 表达，上限 = 角色表 maxEnergy）。
+            // 技能意图需 GAS Buff 能力就绪：BuffAbilityRuntime 懒就绪（等 BattleUnit+Stat），
+            // 若首帧技能先于能力就绪施放，施加 buff 会丢（ResolveBuffData 拿不到 Buff 键）——等就绪再放
+            bool buffReady = OwnerContext.TryGet(AbilityRuntimeDataType.Buff, out BuffRuntimeData _);
             bool wantSkill = false;
             SkillSlot pendingSkill = SkillSlot.None;
-            if (_unit.Camp == BattleCamp.Character && !downed)
+            if (_unit.Camp == BattleCamp.Character && !downed && buffReady)
             {
                 if (_controller != null && _unit.Stats.SkillEId > 0
                     && _controller.Cooldowns.IsReady(_unit, _unit.Stats.SkillEId))
@@ -98,16 +95,34 @@ namespace Framework.Gameplay.Abilities
                 }
             }
 
+            // 意图生产：角色只判断“有没有可打候选”（不选目标；目标由 AttackStart/Attacking 状态索敌）；
+            // 敌人仍走路径阻挡策略写目标。
+            bool wantAttack;
+            if (_unit.Camp == BattleCamp.Character)
+            {
+                wantAttack = DefaultTargetingStrategy.HasCandidate(_unit, _intentContext);
+            }
+            else
+            {
+                _enemyStrategy.UpdateIntent(_unit, _intentContext);
+                wantAttack = _unit.HasAttackIntent;
+            }
+
+            // isMoving 必须在策略之后算：敌人策略会写 MoveDestination（路由/守点），提前算会读上一帧目的地
+            bool isMoving = (_unit.MoveDestination - _unit.Position).sqrMagnitude > arriveSq;
+
             if (_stateContext.WantAttack == wantAttack
                 && _stateContext.IsMoving == isMoving
                 && _stateContext.Downed == downed
                 && _stateContext.WantSkill == wantSkill
+                && _stateContext.WantTalent == wantTalent
                 && _stateContext.PendingSkillSlot == pendingSkill) return;
 
             _stateContext.WantAttack = wantAttack;
             _stateContext.IsMoving = isMoving;
             _stateContext.Downed = downed;
             _stateContext.WantSkill = wantSkill;
+            _stateContext.WantTalent = wantTalent;
             _stateContext.PendingSkillSlot = pendingSkill;
             _gate?.MarkGatedDirty();
         }

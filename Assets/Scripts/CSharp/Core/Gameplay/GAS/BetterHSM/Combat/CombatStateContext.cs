@@ -18,6 +18,9 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
         // 当前单位所属的 GAS 上下文。
         private readonly AbilityOwnerContext _ownerContext;
 
+        // 攻击索敌策略（仅 AttackStart/Attacking 经 AcquireAttackTarget 调用；策略读 CharacterTable.targetingPolicy）
+        private readonly IUnitIntentStrategy _attackTargetingStrategy = new DefaultTargetingStrategy();
+
         /// <summary>
         /// 创建战斗状态上下文。
         /// </summary>
@@ -44,6 +47,9 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
 
         /// <summary>是否有技能意图（感知层镜像：E CD 就绪 / Q 能量满；→Skill 转移据此仲裁，技能优先于攻击）。</summary>
         public bool WantSkill;
+
+        /// <summary>是否请求播放一次天赋（感知层镜像；→Talent 转移据此仲裁，Talent 播放期间不可被 Attack/Skill/Move 打断）。</summary>
+        public bool WantTalent;
 
         /// <summary>待放技能槽位（感知层镜像时写；BHSM skill 态按此选 E/Q 前缀 clip）。</summary>
         public SkillSlot PendingSkillSlot;
@@ -97,8 +103,8 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
                 : 0f;
 
         /// <summary>
-        /// 技能施放结算（模拟层，2026-10-28 表驱动能量经济）：重设该技能 CD（SkillTable.Cooldown）+
-        /// 技能释放完回能（SkillTable.energyGain，配 0 不回能）+ Q 大招消耗满能量。
+        /// 技能施放结算（模拟层，2026-10-28 表驱动能量经济）：重设该技能 CD（CharacterSkillTable.Cooldown）+
+        /// 技能释放完回能（CharacterSkillTable.energyGain，配 0 不回能）+ Q 大招消耗满能量。
         /// </summary>
         /// <param name="slot">本次施放的技能槽位。</param>
         public void StartSkillCast(SkillSlot slot)
@@ -124,6 +130,50 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
 
             // 释放技能锁定（效果执行器经此读 effectIds；技能态结束 StopCastingSkill 清除）
             unit.CastingSkillId = skillId;
+        }
+
+        /// <summary>
+        /// 攻击索敌（2026-11-06）：仅 AttackStart / Attacking 每轮开始时调用。
+        /// 走现有 DefaultTargetingStrategy（CharacterTable.targetingPolicy）；敌人策略内部自守卫，不改敌人目标。
+        /// </summary>
+        public void AcquireAttackTarget()
+        {
+            if (!_ownerContext.TryGet(AbilityRuntimeDataType.BattleUnit, out BattleUnitRuntimeData unitData)
+                || unitData.Unit == null) return;
+            // 敌人目标由 EnemyMeleeIntentStrategy 维护，不走角色索敌链路
+            if (unitData.Unit.Camp != BattleCamp.Character) return;
+            if (!_ownerContext.TryGet(AbilityRuntimeDataType.BattleWorld, out BattleWorldRuntimeData worldData)
+                || worldData.Controller == null) return;
+
+            // 表 target 不是 single_target（self/team/AoE）→ 本招式不需要单目标，清掉目标
+            if (!SkillTargetPolicy.RequiresTarget(unitData.Unit.Stats.NormalAtkId))
+            {
+                unitData.Unit.ClearCombatTarget();
+                return;
+            }
+
+            var intent = new BattleIntentContext { Units = worldData.Controller.Units };
+            _attackTargetingStrategy.UpdateIntent(unitData.Unit, intent);
+        }
+
+        /// <summary>清空当前动作目标（攻击/技能结束；目标死亡/出表时由控制器统一调用）。</summary>
+        public void ClearCombatTarget()
+        {
+            if (_ownerContext.TryGet(AbilityRuntimeDataType.BattleUnit, out BattleUnitRuntimeData unitData)
+                && unitData.Unit != null)
+            {
+                unitData.Unit.ClearCombatTarget();
+            }
+        }
+
+        /// <summary>天赋态进入时消耗一次性请求（避免播完后再次进入）。</summary>
+        public void ConsumeTalentRequest()
+        {
+            if (_ownerContext.TryGet(AbilityRuntimeDataType.BattleUnit, out BattleUnitRuntimeData unitData)
+                && unitData.Unit != null)
+            {
+                unitData.Unit.WantTalent = false;
+            }
         }
 
         /// <summary>技能态结束清除释放锁定（效果执行器只在该技能播放窗口读 CastingSkillId）。</summary>

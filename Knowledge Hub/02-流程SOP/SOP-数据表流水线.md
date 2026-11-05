@@ -47,6 +47,15 @@ rows.json 按表头字段名/类型行写单元格；**主键幂等跳过**（�
 
 新模块的表放 `Assets/Module/<模块>/Excel/`（源）→ 同级 `ConfigTables/`（产物）；Addressables 逻辑地址统一 `ConfigTables/<表名>` 不变。**所有数据文本/表放 Module 下**，工具链 DefaultDirPairs 同步追加新目录对。
 
+### E. 表格行序规则（同角色行连续分块，2026-11-01 立规）
+
+**同一角色的行必须连续挨在一起，不可断裂混杂**——适用于按角色/单位分组的表（SkillEffectTable / CharacterSkillTable / CharacterTable 等）：
+
+- ✅ 正确：`2210101, 2210201, 2210202, 2210203, 2210204, 2210301, 2210303, 2090101, …, 9010101`
+- ❌ 错误：`2210101, 2090101, 2210201, …`（221 与 209 交错断裂）
+- **新行追加到对应角色块末尾**（不是表尾）；块内按 id 顺序排（2210101 → 2210201 → … → 2210303）
+- 整理方式：读全行 → 按目标顺序重写数据区 → 重导出（一次性脚本，用后即删）
+
 ## 导出工具细则（Tools/ExcelTableExporter）
 
 - ClosedXML 读 xlsx；直接引用 `Assets/Plugins/MessagePack/Runtime/MessagePack.dll`（两端零版本漂移）

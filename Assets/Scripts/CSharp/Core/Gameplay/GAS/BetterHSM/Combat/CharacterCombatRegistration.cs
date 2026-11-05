@@ -34,11 +34,14 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             // 技能态（2026-10-27 用户口径：按行为表现有 clip 分配状态——现有技能 clip 即 Skill/EX 单段）
             CombatSkillState<CharacterCombatStateContext> skillState = new CombatSkillState<CharacterCombatStateContext>();
 
+            // 天赋态（2026-11-05）：进场播一次 Talent clip；Once 段，播完才放行，Attack/Skill/Move 不可打断
+            CombatTalentState<CharacterCombatStateContext> talentState = new CombatTalentState<CharacterCombatStateContext>();
+
             // 注册状态节点；转移条件全部是图接线闭包，纯读上下文决策标志与分段完成度。
             StateGraphBuilder<CharacterCombatStateContext> graph = betterHsm.BeginBuild();
             graph.AddState(idleState).AddState(moveState).AddState(moveEndState)
                 .AddState(attackStartState).AddState(attackingState).AddState(attackEndState).AddState(deathState)
-                .AddState(skillState);
+                .AddState(skillState).AddState(talentState);
 
             // 倒地豁免完成度：任何状态 Downed 置位立即倒地（priority 50 最高）。
             graph.From(idleState).To(deathState, () => context.Downed, priority: 50);
@@ -48,10 +51,19 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             graph.From(attackingState).To(deathState, () => context.Downed, priority: 50);
             graph.From(attackEndState).To(deathState, () => context.Downed, priority: 50);
             graph.From(skillState).To(deathState, () => context.Downed, priority: 50);
+            graph.From(talentState).To(deathState, () => context.Downed, priority: 50);
 
             // 待机⇄移动：可随时中断（可中断状态无完成度 gate），同层平权。
             graph.From(idleState).To(moveState, () => context.IsMoving, priority: 10);
             graph.From(moveState).To(idleState, () => !context.IsMoving, priority: 10);
+
+            // 天赋入口：进场一次性请求，优先级最高（40 > 技能 30 > 攻击 20）；分段的攻击/收势等播完才进（16 > 技能 15）。
+            graph.From(idleState).To(talentState, () => context.WantTalent, priority: 40);
+            graph.From(moveState).To(talentState, () => context.WantTalent, priority: 40);
+            graph.From(moveEndState).To(talentState, () => moveEndState.SegmentFinished && context.WantTalent, priority: 16);
+            graph.From(attackStartState).To(talentState, () => attackStartState.SegmentFinished && context.WantTalent, priority: 16);
+            graph.From(attackingState).To(talentState, () => attackingState.SegmentFinished && context.WantTalent, priority: 16);
+            graph.From(attackEndState).To(talentState, () => attackEndState.SegmentFinished && context.WantTalent, priority: 16);
 
             // 攻击入口：Idle/Move 可中断直接进起手段（攻击意图优先于移动，20 > 10）。
             graph.From(idleState).To(attackStartState, () => context.WantAttack, priority: 20);
@@ -87,12 +99,16 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             graph.From(skillState).To(idleState, () => skillState.SegmentFinished && !context.IsMoving, priority: 10);
             graph.From(skillState).To(moveState, () => skillState.SegmentFinished && context.IsMoving, priority: 10);
 
+            // 天赋态：Once 单段播完回行动态（按是否移动分流）；播放期间无 Attack/Skill/Move 出边，不可打断。
+            graph.From(talentState).To(idleState, () => talentState.SegmentFinished && !context.IsMoving, priority: 10);
+            graph.From(talentState).To(moveState, () => talentState.SegmentFinished && context.IsMoving, priority: 10);
+
             // 复活回流：倒地动画播完且 Downed 解除才回 Idle，重走正常行动循环。
             graph.From(deathState).To(idleState, () => deathState.SegmentFinished && !context.Downed, priority: 10);
 
             // 启用八叶中断门控：感知能力写标志并标脏、分段状态完成自标脏后，下帧才评估本层中断。
             graph.EnableInterruptGating(idleState, moveState, moveEndState,
-                attackStartState, attackingState, attackEndState, deathState, skillState);
+                attackStartState, attackingState, attackEndState, deathState, skillState, talentState);
             graph.Build(idleState);
 
             // 门控标脏入口：感知能力写完决策标志后经此触发各门控层 MarkDirty（闭包绕开泛型擦除，随 HSM 能力销毁）。
@@ -108,6 +124,7 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
                     () => attackEndState.MarkDirty(),
                     () => deathState.MarkDirty(),
                     () => skillState.MarkDirty(),
+                    () => talentState.MarkDirty(),
                 }));
 
             return new BetterHSMAbilityContext<CharacterCombatStateContext>(context, betterHsm);

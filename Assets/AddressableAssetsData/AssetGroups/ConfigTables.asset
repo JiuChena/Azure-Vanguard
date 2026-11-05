@@ -30,7 +30,7 @@ MonoBehaviour:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3583c60945a4a84479a009542aff4e8f
-    m_Address: ConfigTables/SkillLevelTable
+    m_Address: ConfigTables/CharacterSkillLevelTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - DataTable
@@ -53,12 +53,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 69b6a40d3ae84ee4c9856427ab6ad514
-    m_Address: ConfigTables/UpgradeCostTable
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - DataTable
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6bec30ee2bb6fea4c8a6b8ea2b85c49f
     m_Address: ConfigTables/WeaponLevelTable
     m_ReadOnly: 0
@@ -72,13 +66,13 @@ MonoBehaviour:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: afb67818dd2fec441926b9f43077e531
-    m_Address: ConfigTables/SkillTable
+    m_Address: ConfigTables/CharacterSkillTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - DataTable
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b0fba601722a07b4296d0d19417285cc
-    m_Address: ConfigTables/LevelTable
+    m_Address: ConfigTables/CharacterLevelTable
     m_ReadOnly: 0
     m_SerializedLabels:
     - DataTable

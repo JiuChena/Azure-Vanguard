@@ -22,8 +22,8 @@ namespace CharacterTableSeeder
                 Directory.CreateDirectory(outDir);
 
                 WriteTable(Path.Combine(outDir, "CharacterTable.xlsx"), "CharacterTable", CharacterColumns, BuildCharacterRows());
-                WriteTable(Path.Combine(outDir, "LevelTable.xlsx"), "LevelTable", LevelColumns, BuildLevelRows());
-                WriteTable(Path.Combine(outDir, "SkillTable.xlsx"), "SkillTable", SkillColumns, BuildSkillRows());
+                WriteTable(Path.Combine(outDir, "CharacterLevelTable.xlsx"), "CharacterLevelTable", LevelColumns, BuildLevelRows());
+                WriteTable(Path.Combine(outDir, "CharacterSkillTable.xlsx"), "CharacterSkillTable", SkillColumns, BuildSkillRows());
                 WriteTable(Path.Combine(outDir, "SkillEffectTable.xlsx"), "SkillEffectTable", SkillEffectColumns, BuildSkillEffectRows());
                 WriteTable(Path.Combine(outDir, "UnlockNodeTable.xlsx"), "UnlockNodeTable", UnlockNodeColumns, BuildUnlockNodeRows());
                 WriteTable(Path.Combine(outDir, "BreakthroughTable.xlsx"), "BreakthroughTable", BreakthroughColumns, BuildBreakthroughRows());
@@ -67,6 +67,8 @@ namespace CharacterTableSeeder
         {
             ("level", "int", "等级"),
             ("multiplier", "float", "全属性成长系数"),
+            ("expToNext", "int", "升到下一级所需经验（80×L^1.5 向上取整；满级 0）"),
+            ("costItems", "string", "升到下一级消耗（itemId:count 逗号分隔；满级空）"),
         };
 
         private static readonly (string Name, string Type, string Comment)[] SkillColumns =
@@ -99,6 +101,7 @@ namespace CharacterTableSeeder
             ("type", "string", "类型：talent天赋(被动触发)/bonus属性加成"),
             ("effectKey", "string", "talent=行为逻辑键；bonus=属性名(hp_pct/atk_pct/crit_rate/crit_dmg…)"),
             ("effectValue", "float", "加成数值"),
+            ("params", "skillparams", "天赋行为参数 {键:初值:成长} 逗号分隔（talent 行用）"),
             ("cost", "string", "独立解锁消耗 itemId:count 逗号分隔；空=随突破解锁"),
             ("desc", "string", "说明"),
         };
@@ -130,7 +133,12 @@ namespace CharacterTableSeeder
             object[][] rows = new object[80][];
             for (int level = 1; level <= 80; level++)
             {
-                rows[level - 1] = new object[] { level, Math.Round(1.0 + (level - 1) * 0.05, 3) };
+                int exp = level < 80 ? (int)Math.Ceiling(80.0 * Math.Pow(level, 1.5)) : 0;
+                string cost = level < 80 ? $"Currency_CreditPoint:{500 * level}" : string.Empty;
+                rows[level - 1] = new object[]
+                {
+                    level, Math.Round(1.0 + (level - 1) * 0.05, 3), exp, cost
+                };
             }
             return rows;
         }
@@ -161,12 +169,11 @@ namespace CharacterTableSeeder
         {
             return new[]
             {
-                new object[] { 22111, "talent", "ch0221_reverb_echo", 0.3f, "1:5000,1001:2", "余音：普攻命中后30%概率附加一次额外音波伤害（effectValue=附加倍率）" },
-                new object[] { 22112, "talent", "ch0221_stage_spirit", 0.03f, "1:8000,1001:3", "舞台精神：编队内全员攻击力提升（effectValue=提升比例）" },
-                new object[] { 22121, "bonus", "atk_pct", 0.04f, "", "突破2解锁：攻击力+4%" },
-                new object[] { 22122, "bonus", "hp_pct", 0.05f, "", "突破3解锁：生命+5%" },
-                new object[] { 22123, "bonus", "crit_rate", 0.05f, "", "突破4解锁：暴击率+5%" },
-                new object[] { 22124, "bonus", "crit_dmg", 0.1f, "", "突破5解锁：暴击伤害+10%" },
+                new object[] { 22111, "talent", "ch0221_encore", 0f, "{chance:0.3:0, ratio:0.05:0}", "Currency_StarlightStone:5000,Material_UpgradeManual:2", "追奏：全队获得追奏效果；对敌人造成伤害时30%概率追加一次伤害（基础值=CH0221最大生命×充能效率×5%）" },
+                new object[] { 22121, "bonus", "atk_pct", 0.04f, "", "", "突破2解锁：攻击力+4%" },
+                new object[] { 22122, "bonus", "hp_pct", 0.05f, "", "", "突破3解锁：生命+5%" },
+                new object[] { 22123, "bonus", "crit_rate", 0.05f, "", "", "突破4解锁：暴击率+5%" },
+                new object[] { 22124, "bonus", "crit_dmg", 0.1f, "", "", "突破5解锁：暴击伤害+10%" },
             };
         }
 

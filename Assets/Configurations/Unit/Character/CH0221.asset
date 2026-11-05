@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CH0221
   m_EditorClassIdentifier: 
   unitId: CH0221
-  unitName: "\u67DA\u9E1F\u590F[\u4E50\u961F]"
+  unitName: "\u67DA\u9E1F\u590F\u3010\u4E50\u961F\u3011"
   behaviorClips:
   - {fileID: 11400000, guid: cd92f2c0e07f0cd45b520c73120cc911, type: 2}
   - {fileID: 11400000, guid: 75e91613d4c901b4c98b1b07a398d077, type: 2}
@@ -33,9 +33,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 93120516fae70ca46b162741624226aa, type: 2}
   - {fileID: 11400000, guid: be1206baf0a46ad429c8b0e9735eb904, type: 2}
   dataTables:
-  - {fileID: 4900000, guid: 10d41d612305fe347aa49ca18200779f, type: 3}
-  - {fileID: 4900000, guid: 39159231c9955c8479bbb84b504bc21a, type: 3}
-  - {fileID: 4900000, guid: 4eebcea2b7e75ab4abe861cd76651c1c, type: 3}
-  - {fileID: 4900000, guid: fca09afcb1ea9cd4aa5a7f0af3609917, type: 3}
-  - {fileID: 4900000, guid: ede27a6547b311d45a660b49a4bb5cfa, type: 3}
-  breakthroughTable: {fileID: 4900000, guid: 027aebfcd1c0d104291ca8341b5a5a67, type: 3}
+  - {fileID: 4900000, guid: 5fe637c219abaa44f813053c448fffb7, type: 3}
+  - {fileID: 4900000, guid: b0fba601722a07b4296d0d19417285cc, type: 3}
+  - {fileID: 4900000, guid: afb67818dd2fec441926b9f43077e531, type: 3}
+  - {fileID: 4900000, guid: 1e503a241ab413f4ca90b6ccbf911bc5, type: 3}
+  - {fileID: 4900000, guid: e6785269ff06d774fab650fa7017a20d, type: 3}
+  breakthroughTable: {fileID: 4900000, guid: 3bf923f8dc22b594f8b805706b113457, type: 3}

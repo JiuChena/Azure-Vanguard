@@ -42,7 +42,7 @@ unitId 一处定、六方对齐：
 - 重导出：`dotnet run --project Tools/ExcelTableExporter`（生成 `ConfigTables/*.bytes + *.json`）。
 - 每个新角色四表各加：
   - **CharacterTable** 1 行（id/name/rarity/profession/camp/cost/hp/atk/def/atkInterval/range/moveSpeed/normalAtkId/skillEId/skillQId/talentIds/bonusIds）
-  - **SkillTable** 3 行（普攻/E/Q：cd、能量消耗、效果 id 列表）
+  - **CharacterSkillTable** 3 行（普攻/E/Q：cd、能量消耗、效果 id 列表）
   - **SkillEffectTable** 每技能 1~2 行（effectType/damageType/range/ratio/growth/duration 等）
   - **UnlockNodeTable** 2 天赋 + 4 加成（type/effectKey/effectValue/cost）
 - **📐 接入前需用户给**：定位（profession/camp）、稀有度、费用、基础数值、攻速/射程/移速、技能设计（名称/CD/消耗/效果类型与数值）。
@@ -52,7 +52,7 @@ unitId 一处定、六方对齐：
 
 - `AgentScripts/SetupUnitConfigsAddressables.cs`：NameMap 追加 `(assetName, 显示名)` 一行 → 跑脚本：
   - 创建/复用 `Assets/Configurations/Unit/Character/<unitId>.asset`，写 unitId/unitName；
-  - 接 6 张表引用（CharacterTable/LevelTable/SkillTable/SkillEffectTable/UnlockNodeTable + BreakthroughTable）；
+  - 接 6 张表引用（CharacterTable/CharacterLevelTable/CharacterSkillTable/SkillEffectTable/UnlockNodeTable + BreakthroughTable）；
   - 入组 **Configuration-UnitConfig**，地址 = unitId（⚠️ 组名不是 "UnitConfigs"——2026-10-08 纠正）。
 - 显示名占位时：定名后改 NameMap 该行 + CharacterTable.name 列，重跑脚本即可（脚本幂等）。
 

@@ -1,0 +1,486 @@
+{
+  "version": 1,
+  "tableName": "CharacterLevelTable",
+  "rows": [
+    {
+      "level": 1,
+      "multiplier": 1,
+      "expToNext": 80,
+      "costItems": "Currency_CreditPoint:500"
+    },
+    {
+      "level": 2,
+      "multiplier": 1.05,
+      "expToNext": 227,
+      "costItems": "Currency_CreditPoint:1000"
+    },
+    {
+      "level": 3,
+      "multiplier": 1.1,
+      "expToNext": 416,
+      "costItems": "Currency_CreditPoint:1500"
+    },
+    {
+      "level": 4,
+      "multiplier": 1.15,
+      "expToNext": 640,
+      "costItems": "Currency_CreditPoint:2000"
+    },
+    {
+      "level": 5,
+      "multiplier": 1.2,
+      "expToNext": 895,
+      "costItems": "Currency_CreditPoint:2500"
+    },
+    {
+      "level": 6,
+      "multiplier": 1.25,
+      "expToNext": 1176,
+      "costItems": "Currency_CreditPoint:3000"
+    },
+    {
+      "level": 7,
+      "multiplier": 1.3,
+      "expToNext": 1482,
+      "costItems": "Currency_CreditPoint:3500"
+    },
+    {
+      "level": 8,
+      "multiplier": 1.35,
+      "expToNext": 1811,
+      "costItems": "Currency_CreditPoint:4000"
+    },
+    {
+      "level": 9,
+      "multiplier": 1.4,
+      "expToNext": 2160,
+      "costItems": "Currency_CreditPoint:4500"
+    },
+    {
+      "level": 10,
+      "multiplier": 1.45,
+      "expToNext": 2530,
+      "costItems": "Currency_CreditPoint:5000"
+    },
+    {
+      "level": 11,
+      "multiplier": 1.5,
+      "expToNext": 2919,
+      "costItems": "Currency_CreditPoint:5500"
+    },
+    {
+      "level": 12,
+      "multiplier": 1.55,
+      "expToNext": 3326,
+      "costItems": "Currency_CreditPoint:6000"
+    },
+    {
+      "level": 13,
+      "multiplier": 1.6,
+      "expToNext": 3750,
+      "costItems": "Currency_CreditPoint:6500"
+    },
+    {
+      "level": 14,
+      "multiplier": 1.65,
+      "expToNext": 4191,
+      "costItems": "Currency_CreditPoint:7000"
+    },
+    {
+      "level": 15,
+      "multiplier": 1.7,
+      "expToNext": 4648,
+      "costItems": "Currency_CreditPoint:7500"
+    },
+    {
+      "level": 16,
+      "multiplier": 1.75,
+      "expToNext": 5120,
+      "costItems": "Currency_CreditPoint:8000"
+    },
+    {
+      "level": 17,
+      "multiplier": 1.8,
+      "expToNext": 5608,
+      "costItems": "Currency_CreditPoint:8500"
+    },
+    {
+      "level": 18,
+      "multiplier": 1.85,
+      "expToNext": 6110,
+      "costItems": "Currency_CreditPoint:9000"
+    },
+    {
+      "level": 19,
+      "multiplier": 1.9,
+      "expToNext": 6626,
+      "costItems": "Currency_CreditPoint:9500"
+    },
+    {
+      "level": 20,
+      "multiplier": 1.95,
+      "expToNext": 7156,
+      "costItems": "Currency_CreditPoint:10000"
+    },
+    {
+      "level": 21,
+      "multiplier": 2,
+      "expToNext": 7699,
+      "costItems": "Currency_CreditPoint:10500"
+    },
+    {
+      "level": 22,
+      "multiplier": 2.05,
+      "expToNext": 8256,
+      "costItems": "Currency_CreditPoint:11000"
+    },
+    {
+      "level": 23,
+      "multiplier": 2.1,
+      "expToNext": 8825,
+      "costItems": "Currency_CreditPoint:11500"
+    },
+    {
+      "level": 24,
+      "multiplier": 2.15,
+      "expToNext": 9407,
+      "costItems": "Currency_CreditPoint:12000"
+    },
+    {
+      "level": 25,
+      "multiplier": 2.2,
+      "expToNext": 10000,
+      "costItems": "Currency_CreditPoint:12500"
+    },
+    {
+      "level": 26,
+      "multiplier": 2.25,
+      "expToNext": 10606,
+      "costItems": "Currency_CreditPoint:13000"
+    },
+    {
+      "level": 27,
+      "multiplier": 2.3,
+      "expToNext": 11224,
+      "costItems": "Currency_CreditPoint:13500"
+    },
+    {
+      "level": 28,
+      "multiplier": 2.35,
+      "expToNext": 11853,
+      "costItems": "Currency_CreditPoint:14000"
+    },
+    {
+      "level": 29,
+      "multiplier": 2.4,
+      "expToNext": 12494,
+      "costItems": "Currency_CreditPoint:14500"
+    },
+    {
+      "level": 30,
+      "multiplier": 2.45,
+      "expToNext": 13146,
+      "costItems": "Currency_CreditPoint:15000"
+    },
+    {
+      "level": 31,
+      "multiplier": 2.5,
+      "expToNext": 13809,
+      "costItems": "Currency_CreditPoint:15500"
+    },
+    {
+      "level": 32,
+      "multiplier": 2.55,
+      "expToNext": 14482,
+      "costItems": "Currency_CreditPoint:16000"
+    },
+    {
+      "level": 33,
+      "multiplier": 2.6,
+      "expToNext": 15166,
+      "costItems": "Currency_CreditPoint:16500"
+    },
+    {
+      "level": 34,
+      "multiplier": 2.65,
+      "expToNext": 15861,
+      "costItems": "Currency_CreditPoint:17000"
+    },
+    {
+      "level": 35,
+      "multiplier": 2.7,
+      "expToNext": 16566,
+      "costItems": "Currency_CreditPoint:17500"
+    },
+    {
+      "level": 36,
+      "multiplier": 2.75,
+      "expToNext": 17280,
+      "costItems": "Currency_CreditPoint:18000"
+    },
+    {
+      "level": 37,
+      "multiplier": 2.8,
+      "expToNext": 18005,
+      "costItems": "Currency_CreditPoint:18500"
+    },
+    {
+      "level": 38,
+      "multiplier": 2.85,
+      "expToNext": 18740,
+      "costItems": "Currency_CreditPoint:19000"
+    },
+    {
+      "level": 39,
+      "multiplier": 2.9,
+      "expToNext": 19485,
+      "costItems": "Currency_CreditPoint:19500"
+    },
+    {
+      "level": 40,
+      "multiplier": 2.95,
+      "expToNext": 20239,
+      "costItems": "Currency_CreditPoint:20000"
+    },
+    {
+      "level": 41,
+      "multiplier": 3,
+      "expToNext": 21003,
+      "costItems": "Currency_CreditPoint:20500"
+    },
+    {
+      "level": 42,
+      "multiplier": 3.05,
+      "expToNext": 21776,
+      "costItems": "Currency_CreditPoint:21000"
+    },
+    {
+      "level": 43,
+      "multiplier": 3.1,
+      "expToNext": 22558,
+      "costItems": "Currency_CreditPoint:21500"
+    },
+    {
+      "level": 44,
+      "multiplier": 3.15,
+      "expToNext": 23350,
+      "costItems": "Currency_CreditPoint:22000"
+    },
+    {
+      "level": 45,
+      "multiplier": 3.2,
+      "expToNext": 24150,
+      "costItems": "Currency_CreditPoint:22500"
+    },
+    {
+      "level": 46,
+      "multiplier": 3.25,
+      "expToNext": 24959,
+      "costItems": "Currency_CreditPoint:23000"
+    },
+    {
+      "level": 47,
+      "multiplier": 3.3,
+      "expToNext": 25778,
+      "costItems": "Currency_CreditPoint:23500"
+    },
+    {
+      "level": 48,
+      "multiplier": 3.35,
+      "expToNext": 26605,
+      "costItems": "Currency_CreditPoint:24000"
+    },
+    {
+      "level": 49,
+      "multiplier": 3.4,
+      "expToNext": 27440,
+      "costItems": "Currency_CreditPoint:24500"
+    },
+    {
+      "level": 50,
+      "multiplier": 3.45,
+      "expToNext": 28285,
+      "costItems": "Currency_CreditPoint:25000"
+    },
+    {
+      "level": 51,
+      "multiplier": 3.5,
+      "expToNext": 29138,
+      "costItems": "Currency_CreditPoint:25500"
+    },
+    {
+      "level": 52,
+      "multiplier": 3.55,
+      "expToNext": 29999,
+      "costItems": "Currency_CreditPoint:26000"
+    },
+    {
+      "level": 53,
+      "multiplier": 3.6,
+      "expToNext": 30868,
+      "costItems": "Currency_CreditPoint:26500"
+    },
+    {
+      "level": 54,
+      "multiplier": 3.65,
+      "expToNext": 31746,
+      "costItems": "Currency_CreditPoint:27000"
+    },
+    {
+      "level": 55,
+      "multiplier": 3.7,
+      "expToNext": 32632,
+      "costItems": "Currency_CreditPoint:27500"
+    },
+    {
+      "level": 56,
+      "multiplier": 3.75,
+      "expToNext": 33526,
+      "costItems": "Currency_CreditPoint:28000"
+    },
+    {
+      "level": 57,
+      "multiplier": 3.8,
+      "expToNext": 34428,
+      "costItems": "Currency_CreditPoint:28500"
+    },
+    {
+      "level": 58,
+      "multiplier": 3.85,
+      "expToNext": 35338,
+      "costItems": "Currency_CreditPoint:29000"
+    },
+    {
+      "level": 59,
+      "multiplier": 3.9,
+      "expToNext": 36256,
+      "costItems": "Currency_CreditPoint:29500"
+    },
+    {
+      "level": 60,
+      "multiplier": 3.95,
+      "expToNext": 37181,
+      "costItems": "Currency_CreditPoint:30000"
+    },
+    {
+      "level": 61,
+      "multiplier": 4,
+      "expToNext": 38115,
+      "costItems": "Currency_CreditPoint:30500"
+    },
+    {
+      "level": 62,
+      "multiplier": 4.05,
+      "expToNext": 39056,
+      "costItems": "Currency_CreditPoint:31000"
+    },
+    {
+      "level": 63,
+      "multiplier": 4.1,
+      "expToNext": 40004,
+      "costItems": "Currency_CreditPoint:31500"
+    },
+    {
+      "level": 64,
+      "multiplier": 4.15,
+      "expToNext": 40960,
+      "costItems": "Currency_CreditPoint:32000"
+    },
+    {
+      "level": 65,
+      "multiplier": 4.2,
+      "expToNext": 41924,
+      "costItems": "Currency_CreditPoint:32500"
+    },
+    {
+      "level": 66,
+      "multiplier": 4.25,
+      "expToNext": 42895,
+      "costItems": "Currency_CreditPoint:33000"
+    },
+    {
+      "level": 67,
+      "multiplier": 4.3,
+      "expToNext": 43874,
+      "costItems": "Currency_CreditPoint:33500"
+    },
+    {
+      "level": 68,
+      "multiplier": 4.35,
+      "expToNext": 44860,
+      "costItems": "Currency_CreditPoint:34000"
+    },
+    {
+      "level": 69,
+      "multiplier": 4.4,
+      "expToNext": 45853,
+      "costItems": "Currency_CreditPoint:34500"
+    },
+    {
+      "level": 70,
+      "multiplier": 4.45,
+      "expToNext": 46853,
+      "costItems": "Currency_CreditPoint:35000"
+    },
+    {
+      "level": 71,
+      "multiplier": 4.5,
+      "expToNext": 47861,
+      "costItems": "Currency_CreditPoint:35500"
+    },
+    {
+      "level": 72,
+      "multiplier": 4.55,
+      "expToNext": 48876,
+      "costItems": "Currency_CreditPoint:36000"
+    },
+    {
+      "level": 73,
+      "multiplier": 4.6,
+      "expToNext": 49897,
+      "costItems": "Currency_CreditPoint:36500"
+    },
+    {
+      "level": 74,
+      "multiplier": 4.65,
+      "expToNext": 50926,
+      "costItems": "Currency_CreditPoint:37000"
+    },
+    {
+      "level": 75,
+      "multiplier": 4.7,
+      "expToNext": 51962,
+      "costItems": "Currency_CreditPoint:37500"
+    },
+    {
+      "level": 76,
+      "multiplier": 4.75,
+      "expToNext": 53005,
+      "costItems": "Currency_CreditPoint:38000"
+    },
+    {
+      "level": 77,
+      "multiplier": 4.8,
+      "expToNext": 54054,
+      "costItems": "Currency_CreditPoint:38500"
+    },
+    {
+      "level": 78,
+      "multiplier": 4.85,
+      "expToNext": 55111,
+      "costItems": "Currency_CreditPoint:39000"
+    },
+    {
+      "level": 79,
+      "multiplier": 4.9,
+      "expToNext": 56174,
+      "costItems": "Currency_CreditPoint:39500"
+    },
+    {
+      "level": 80,
+      "multiplier": 4.95,
+      "expToNext": 0,
+      "costItems": ""
+    }
+  ]
+}

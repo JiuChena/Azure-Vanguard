@@ -29,7 +29,7 @@ MonoBehaviour:
         - authoringTrackName: Animation Track
           clip: {fileID: -2723771019287579345, guid: a0b07bfa45501de46836234f6ef6f7e8,
             type: 3}
-          crossFadeDuration: 0
+          crossFadeDuration: 0.2
           layer: 0
           startTime: 0
         logPlayback: 0

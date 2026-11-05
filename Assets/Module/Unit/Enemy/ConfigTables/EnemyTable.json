@@ -12,7 +12,6 @@
       "atkInterval": 1.5,
       "range": 3,
       "moveSpeed": 2,
-      "rotateSpeed": 360,
       "rotateNode": "",
       "normalAtkId": 90101,
       "critRate": 0,
