@@ -20,7 +20,7 @@ namespace Framework.Gameplay.Battle
     /// <summary>
     /// 单位模拟状态（纯 C#，③注册表持有所有权）。
     /// 写权限纪律：意图字段（MoveDestination/Target*）由 ④决策层/角色策略写、③每拍消费；
-    /// 结算字段（Hp/Vital/ReviveCount/AttackCooldown/Energy）由 BattleController 与
+    /// 结算字段（Hp/Vital/ReviveCount/AttackCooldown/Energy）由 CombatService 与
     /// BE 链回能回调（表现层经 GAS 访问）改写——同 Hp 伤害链模式；
     /// Position 是 ②表现层回写 transform 的唯一豁免写入口（移动执行结果），其余场景禁写。
     /// </summary>
@@ -102,7 +102,7 @@ namespace Framework.Gameplay.Battle
         // 实际停走距离 = 索敌范围（range 列）+ 随机偏移（角色不走出生采样入口，恒 0 偏移行为不变）
         public float StopRange => Stats.Range + StopRangeOffset;
 
-        // ---- 结算状态（仅 BattleController 改写） ----
+        // ---- 结算状态（仅 CombatService 改写） ----
 
         // 当前生命
         public int Hp { get; internal set; }

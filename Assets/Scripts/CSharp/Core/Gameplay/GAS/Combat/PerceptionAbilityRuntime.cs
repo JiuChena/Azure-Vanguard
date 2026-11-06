@@ -30,7 +30,7 @@ namespace Framework.Gameplay.Abilities
         private readonly BattleIntentContext _intentContext = new BattleIntentContext();
 
         // 模拟层控制器（能量/技能 CD 读取入口；② 注册战场面时接线）。
-        private BattleController _controller;
+        private CombatService _controller;
 
         // 当前单位模拟状态；② 注册就绪前为 null。
         private BattleUnitState _unit;
@@ -145,7 +145,7 @@ namespace Framework.Gameplay.Abilities
             // 战场数据全战斗不变，首次接线一次（控制器内单位列表实例稳定）。
             if (!_intentContextWired)
             {
-                BattleController controller = worldData.Controller;
+                CombatService controller = worldData.Controller;
                 _controller = controller;
                 _intentContext.Units = controller.Units;
                 _intentContext.GuardPoint = controller.GuardPoint;

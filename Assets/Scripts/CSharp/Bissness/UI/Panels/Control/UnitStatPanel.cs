@@ -189,11 +189,11 @@ public class UnitStatPanel : MonoBehaviour
     }
 
     // 打开/关闭联动暂停：打开时暂停（③ 停推 + timeScale 冻结表现层）、关闭时恢复；
-    // 打开前已暂停则关闭不恢复（保持玩家手动暂停）。无战斗（CombatManager 为空）时跳过。
+    // 打开前已暂停则关闭不恢复（保持玩家手动暂停）。无战斗时跳过。
     private void SetPauseForPanel(bool opening)
     {
-        CombatManager mgr = CombatManager.Current;
-        if (mgr == null) return;
+        CombatService mgr = CombatService.Instance;
+        if (!mgr.IsBattleActive) return;
         if (opening)
         {
             wasPausedBeforeOpen = mgr.SimulationPaused;

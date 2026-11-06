@@ -14,8 +14,8 @@ namespace Framework.Gameplay.Battle
         /// <summary>效果来源单位（如 CH0221）。</summary>
         public readonly BattleUnitState Source;
 
-        /// <summary>战场控制器。</summary>
-        public readonly BattleController Battle;
+        /// <summary>战斗服务。</summary>
+        public readonly CombatService Battle;
 
         /// <summary>来源是否存活（倒地/移除后为 false）。</summary>
         public readonly bool SourceAlive;
@@ -24,7 +24,7 @@ namespace Framework.Gameplay.Battle
         public readonly IReadOnlyCollection<string> AcquiredIds;
 
         public TalentAcquireContext(BattleUnitState unit, BattleCamp camp, BattleUnitState source,
-            BattleController battle, bool sourceAlive, IReadOnlyCollection<string> acquiredIds)
+            CombatService battle, bool sourceAlive, IReadOnlyCollection<string> acquiredIds)
         {
             Unit = unit;
             Camp = camp;

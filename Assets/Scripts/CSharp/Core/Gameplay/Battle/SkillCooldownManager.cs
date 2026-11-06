@@ -15,6 +15,9 @@ namespace Framework.Gameplay.Battle
         private readonly Dictionary<BattleUnitState, Dictionary<int, float>> _cooldowns =
             new Dictionary<BattleUnitState, Dictionary<int, float>>();
 
+        // Tick 复用键缓冲（避免每单位每帧复制字典分配）。
+        private readonly List<int> _tickKeys = new List<int>();
+
         /// <summary>入场注册（角色部署/复活时调；初始就绪）。</summary>
         public void Register(BattleUnitState unit, int skillId)
         {
@@ -38,12 +41,23 @@ namespace Framework.Gameplay.Battle
         {
             foreach (Dictionary<int, float> map in _cooldowns.Values)
             {
-                // 技能 id 集合在遍历中只减不减增，快照安全
-                foreach (KeyValuePair<int, float> pair in new Dictionary<int, float>(map))
+                // 键集合在推进中只读（只改 value），复用缓冲避免每帧分配
+                _tickKeys.Clear();
+                foreach (int key in map.Keys) _tickKeys.Add(key);
+                for (int i = 0; i < _tickKeys.Count; i++)
                 {
-                    if (pair.Value > 0f) map[pair.Key] = Mathf.Max(0f, pair.Value - dt);
+                    int key = _tickKeys[i];
+                    float remaining = map[key];
+                    if (remaining > 0f) map[key] = Mathf.Max(0f, remaining - dt);
                 }
             }
+        }
+
+        /// <summary>清空全部 CD 记录（战斗 Reset / 下一场装配前调用）。</summary>
+        public void Clear()
+        {
+            _cooldowns.Clear();
+            _tickKeys.Clear();
         }
 
         /// <summary>技能是否就绪（剩余 CD <= 0；未注册按就绪处理）。</summary>

@@ -23,7 +23,7 @@ namespace Framework.Gameplay.Battle
         private const string EncoreEffectId = "talent_CH0221_22111";
 
         /// <summary>角色登场时注册自己的全场效果（容器按 unitId 调用）。</summary>
-        public static void Register(TalentEffectContainer container, BattleUnitState unit)
+        public static void Register(CombatEffectService container, BattleUnitState unit)
         {
             if (container == null || unit == null || unit.Camp != BattleCamp.Character) return;
             if (!CharacterWarehouseManager.Instance.TryGetEntry(UnitId, out CharacterEntry entry))
@@ -45,7 +45,7 @@ namespace Framework.Gameplay.Battle
                     if (values.TryGetValue("damage", out float d)) damage = d;
                 }
             }
-            container.Register(new HarmonyTalentEffect(unit, energy, damage));
+            container.RegisterCharacterEffect(new HarmonyTalentEffect(container, unit, energy, damage));
 
             // 追奏：22111 已解锁才注册
             if (!entry.unlockedNodes.Contains(EncoreNodeId)) return;
@@ -60,18 +60,21 @@ namespace Framework.Gameplay.Battle
             float ratio = node.GetParamValue("ratio", 1);
             if (chance <= 0f) chance = node.EffectValue; // 旧数据兼容
             if (ratio <= 0f) ratio = 0.05f;
-            container.Register(new EncoreTalentEffect(container.Controller, unit, chance, ratio));
+            container.RegisterCharacterEffect(new EncoreTalentEffect(container.Service, unit, chance, ratio));
         }
 
         /// <summary>Harmony 光环：全队成员获取后登记充能效率/伤害加成。</summary>
         private sealed class HarmonyTalentEffect : IBattleGlobalEffect, ITalentDisplayStats
         {
+            private readonly CombatEffectService effects;
             private readonly BattleUnitState source;
             private readonly float energyRecharge;
             private readonly float damageBonus;
 
-            public HarmonyTalentEffect(BattleUnitState source, float energyRecharge, float damageBonus)
+            public HarmonyTalentEffect(CombatEffectService effects, BattleUnitState source,
+                float energyRecharge, float damageBonus)
             {
+                this.effects = effects;
                 this.source = source;
                 this.energyRecharge = energyRecharge;
                 this.damageBonus = damageBonus;
@@ -88,12 +91,12 @@ namespace Framework.Gameplay.Battle
 
             public void OnAcquire(BattleUnitState unit)
             {
-                TalentAura.Add(unit.UnitId, Id, energyRecharge, damageBonus);
+                effects?.AddAura(unit.UnitId, Id, energyRecharge, damageBonus);
             }
 
             public void OnRelease(BattleUnitState unit)
             {
-                TalentAura.Remove(unit.UnitId, Id);
+                effects?.RemoveAura(unit.UnitId, Id);
             }
 
             public void OnDamageDealt(in BattleDamageEvent e)
@@ -120,13 +123,13 @@ namespace Framework.Gameplay.Battle
         /// <summary>追奏：持有者对敌人造成伤害时概率追加一次伤害（基础值取 CH0221 面板）。</summary>
         private sealed class EncoreTalentEffect : IBattleGlobalEffect
         {
-            private readonly BattleController controller;
+            private readonly CombatService controller;
             private readonly BattleUnitState source;
             private readonly float chance;
             private readonly float ratio;
             private readonly HashSet<BattleUnitState> holders = new HashSet<BattleUnitState>();
 
-            public EncoreTalentEffect(BattleController controller, BattleUnitState source, float chance, float ratio)
+            public EncoreTalentEffect(CombatService controller, BattleUnitState source, float chance, float ratio)
             {
                 this.controller = controller;
                 this.source = source;
@@ -163,7 +166,10 @@ namespace Framework.Gameplay.Battle
                 if (controller == null || controller.Rng == null) return;
                 if (controller.Rng.NextDouble() >= chance) return;
 
-                float energyRecharge = source.Stats.EnergyRecharge + TalentAura.GetEnergyRecharge(source.UnitId);
+                float aura = controller != null && controller.Effects != null
+                    ? controller.Effects.GetEnergyRecharge(source.UnitId)
+                    : 0f;
+                float energyRecharge = source.Stats.EnergyRecharge + aura;
                 float baseValue = source.Stats.MaxHp * energyRecharge * ratio;
                 if (baseValue <= 0f) return;
 

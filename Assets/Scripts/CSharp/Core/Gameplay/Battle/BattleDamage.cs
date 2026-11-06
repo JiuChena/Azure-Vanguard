@@ -70,15 +70,17 @@ namespace Framework.Gameplay.Battle
     /// </summary>
     public static class BattleDamage
     {
-        /// <summary>结算一次伤害并返回实际伤害；目标无效返回 0。</summary>
-        public static int Apply(BattleController controller, in BattleDamageRequest request)
+        /// <summary>结算一次伤害并返回实际伤害；目标无效或战斗未激活返回 0。</summary>
+        public static int Apply(CombatService controller, in BattleDamageRequest request)
         {
             BattleUnitState target = request.Target;
             BattleUnitState source = request.StatSource ?? request.Attacker;
             BattleUnitState attacker = request.Attacker ?? source;
-            if (target == null || !target.IsAlive || target.Hp <= 0 || source == null || controller == null) return 0;
+            if (target == null || !target.IsAlive || target.Hp <= 0 || source == null
+                || controller == null || !controller.IsBattleActive) return 0;
 
-            float damageBonus = source.Stats.DamageBonus + TalentAura.GetDamageBonus(source.UnitId);
+            float damageBonus = source.Stats.DamageBonus
+                + (controller.Effects != null ? controller.Effects.GetDamageBonus(source.UnitId) : 0f);
             int def = request.UseDefense ? target.Stats.Def : 0;
             int amount;
             bool crit;

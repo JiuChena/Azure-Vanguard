@@ -29,7 +29,7 @@ namespace Framework.Gameplay.Battle
                 ? BetterHSMEntityCategory.Enemy
                 : BetterHSMEntityCategory.Character;
 
-            BattleController controller = ResolveController(context);
+            CombatService controller = ResolveController(context);
             var ctx = new SkillEffectContext
             {
                 Caster = caster,
@@ -50,7 +50,7 @@ namespace Framework.Gameplay.Battle
         /// 复用同一套 effectKey 三层字典，只是上下文带显式 Target。
         /// </summary>
         public void ExecuteHit(AbilityOwnerContext ownerContext, BattleUnitState caster,
-            BattleController controller, BattleUnitState target)
+            CombatService controller, BattleUnitState target)
         {
             if (ownerContext == null || caster == null || string.IsNullOrEmpty(effectKey)) return;
 
@@ -73,7 +73,7 @@ namespace Framework.Gameplay.Battle
             method(ctx);
         }
 
-        private BattleController ResolveController(BehaviorEventContext context)
+        private CombatService ResolveController(BehaviorEventContext context)
         {
             if (context.OwnerContext != null
                 && context.OwnerContext.TryGet(AbilityRuntimeDataType.BattleWorld, out BattleWorldRuntimeData worldData))

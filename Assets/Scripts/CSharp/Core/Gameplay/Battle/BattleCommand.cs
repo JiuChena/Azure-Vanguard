@@ -21,7 +21,7 @@ namespace Framework.Gameplay.Battle
     }
 
     /// <summary>
-    /// 指令流水条目（战报定稿落点）：seq 由 BattleController 按提交顺序分配，
+    /// 指令流水条目（战报定稿落点）：seq 由 CombatService 按提交顺序分配，
     /// cost 为 ③ 按规则算出的实际扣费（Rejected 恒 0）。
     /// </summary>
     public sealed class BattleCommandRecord
@@ -60,7 +60,7 @@ namespace Framework.Gameplay.Battle
 
         public IReadOnlyList<BattleCommandRecord> Records => records;
 
-        // 追加一条（BattleController 专用语义，公开便于验证脚本比对）
+        // 追加一条（CombatService 专用语义，公开便于验证脚本比对）
         public BattleCommandRecord Append(BattleCommandType type, string unitId, Vector3 position,
             BattleCommandResult result, string rejectReason, int cost)
         {
@@ -68,6 +68,12 @@ namespace Framework.Gameplay.Battle
                 result, rejectReason, cost);
             records.Add(record);
             return record;
+        }
+
+        /// <summary>清空流水（战斗 Reset / 下一场装配前调用）。</summary>
+        public void Clear()
+        {
+            records.Clear();
         }
 
         /// <summary>seq 是否从 1 连续递增（被拒指令也占号，不应断号）。</summary>

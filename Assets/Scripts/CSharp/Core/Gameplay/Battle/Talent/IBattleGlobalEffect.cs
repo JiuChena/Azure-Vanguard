@@ -2,7 +2,7 @@ namespace Framework.Gameplay.Battle
 {
     /// <summary>
     /// 全场 Effect 契约（2026-11-04 用户拍板）：每个注册效果自带获取权限判定 CanAcquire(context)。
-    /// 新单位登场时由 TalentEffectContainer 逐个询问，返回 true 才允许获取。
+    /// 新单位登场时由 CombatEffectService 逐个询问，返回 true 才允许获取。
     /// </summary>
     public interface IBattleGlobalEffect
     {

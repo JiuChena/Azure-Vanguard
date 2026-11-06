@@ -123,10 +123,10 @@ namespace Framework.Gameplay.Abilities.BetterHSM.Combat
             // 技能释放完回能（表驱动：技能行 energyGain，E=10 / EX=0 可配——配 0 不回能）
             if (BattleDataModule.TryGetSkillEnergyGain(skillId, out int castGain) && castGain > 0)
             {
-                EnergyManager.Add(unit, castGain);
+                worldData.Controller.Resources.AddEnergy(unit, castGain);
             }
             // Q 大招消耗满能量（塔防常规）
-            if (slot == SkillSlot.Q) EnergyManager.Spend(unit, unit.MaxEnergy);
+            if (slot == SkillSlot.Q) worldData.Controller.Resources.SpendEnergy(unit, unit.MaxEnergy);
 
             // 释放技能锁定（效果执行器经此读 effectIds；技能态结束 StopCastingSkill 清除）
             unit.CastingSkillId = skillId;

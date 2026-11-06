@@ -13,9 +13,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// HSM 状态调试面板（F1 切换开/关，开关在 CombatManager）：
+/// HSM 状态调试面板（F1 切换开/关，开关在 CombatSceneEntry）：
 /// - 点击选中：左键射线检测（selectUnitLayers，默认 Character 层），命中视图根经
-///   CombatManager.TryGetUnitByView 反查单位；UI 悬停（IsPointerOverGameObject）不穿透选中；
+///   CombatService.TryGetUnitByView 反查单位；UI 悬停（IsPointerOverGameObject）不穿透选中；
 /// - 状态读取纯轮询（BetterHSM 无转换事件、不存旧状态）：GAS OwnerContext TryGet(BetterHSM) →
 ///   CurrentStateType，面板每帧 diff——变更即记录 prev→current + 时间戳（最近 8 条追加日志）；
 /// - 状态名：反射各状态的 BehaviorKey 常量（Idle/Move/Attack/Death），Type.Name 兜底；
@@ -99,8 +99,8 @@ public class HsmDebugPanel : PanelBase
         if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, selectUnitLayers.value)) return;
 
         GameObject clicked = hit.collider.gameObject;
-        CombatManager mgr = CombatManager.Current;
-        if (mgr == null || !mgr.TryGetUnitByView(clicked, out BattleUnitState unit)) return;
+        CombatService mgr = CombatService.Instance;
+        if (!mgr.IsBattleActive || !mgr.TryGetUnitByView(clicked, out BattleUnitState unit)) return;
 
         SelectUnit(unit, clicked);
     }

@@ -144,7 +144,7 @@ namespace Framework.Gameplay.Battle
             {
                 shooter = shooterData.Unit;
             }
-            BattleController controller = context.OwnerContext != null
+            CombatService controller = context.OwnerContext != null
                 && context.OwnerContext.TryGet(AbilityRuntimeDataType.BattleWorld, out BattleWorldRuntimeData worldData)
                     ? worldData.Controller
                     : null;

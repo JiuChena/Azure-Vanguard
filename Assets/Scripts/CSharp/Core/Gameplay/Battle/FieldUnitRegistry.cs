@@ -5,7 +5,7 @@ namespace Framework.Gameplay.Battle
 {
     /// <summary>
     /// 场内单位注册表（静态）：单位出生/部署时登记 id → 单位状态 + head 节点，死亡出表注销。
-    /// Core 侧静态表：②（CombatManager）登记、②（子弹/转向）读取，Core 不反向引用 Bissness。
+    /// Core 侧静态表：②（CombatViewService）登记、②（子弹/转向）读取，Core 不反向引用 Bissness。
     /// 编辑器会话跨 run_script 存活（与 DataTableManager._tables 同坑），战斗拆除时 Clear、
     /// 验证脚本开头清空；反查时按 IsAlive + Unity null 双兜底。
     /// </summary>

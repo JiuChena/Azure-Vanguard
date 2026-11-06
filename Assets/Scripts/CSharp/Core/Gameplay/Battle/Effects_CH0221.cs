@@ -35,8 +35,8 @@ namespace Framework.Gameplay.Battle
         // （effectKey=TalentApply）→ 本函数把 Harmony/追奏注册进全场 Effect 容器（容器按 id 幂等）
         public static void ApplyTalent(SkillEffectContext ctx)
         {
-            if (ctx?.Controller?.Talents == null || ctx.Caster == null) return;
-            Talents_CH0221.Register(ctx.Controller.Talents, ctx.Caster);
+            if (ctx?.Controller?.Effects == null || ctx.Caster == null) return;
+            Talents_CH0221.Register(ctx.Controller.Effects, ctx.Caster);
         }
 
         // ---- 效果函数（一个函数 = 一条显示效果） ----

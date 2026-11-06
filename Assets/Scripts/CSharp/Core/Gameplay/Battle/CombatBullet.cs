@@ -56,7 +56,7 @@ namespace Framework.Gameplay.Battle
         private EffectMethodExecuteSO hitEffect;
         // 发射者 GAS 上下文与战场（命中效果执行用；Init 传入）
         private AbilityOwnerContext ownerContext;
-        private BattleController controller;
+        private CombatService controller;
 
         // 是否已初始化并允许飞行；防止出池激活后 Init 前的空跑
         private bool armed;
@@ -80,7 +80,7 @@ namespace Framework.Gameplay.Battle
         /// <param name="shooter">发射者单位（命中回能归属）；可为 null 表示无攻击者。</param>
         public void Init(Vector3 direction, Collider[] ownerColliders, float speedOverride = 0f,
             BattleUnitState shooter = null, EffectMethodExecuteSO hitEffect = null,
-            AbilityOwnerContext ownerContext = null, BattleController controller = null)
+            AbilityOwnerContext ownerContext = null, CombatService controller = null)
         {
             // 方向归一化；零向量回退正前方，避免除零与原地不动
             Vector3 normalized = direction.normalized;
@@ -177,7 +177,8 @@ namespace Framework.Gameplay.Battle
                 {
                     int hitGain = attacker.Stats.NormalAtkId > 0
                         && BattleDataModule.TryGetSkillEnergyGain(attacker.Stats.NormalAtkId, out int gain) ? gain : 0;
-                    if (hitGain > 0) EnergyManager.Add(attacker, hitGain);
+                    if (hitGain > 0 && controller != null && controller.IsBattleActive)
+                        controller.Resources.AddEnergy(attacker, hitGain);
                     if (target != null) target.LastHitBy = attacker.UnitId; // 击杀归属（模拟层 Step 死亡扫描用）
                 }
                 // 命中效果（2026-11-04）：把实际命中单位作为显式目标结算伤害/效果

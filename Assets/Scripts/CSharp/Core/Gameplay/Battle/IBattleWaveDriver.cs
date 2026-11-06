@@ -7,7 +7,7 @@ namespace Framework.Gameplay.Battle
     /// <summary>
     /// 波次驱动抽象（③模拟层唯一依赖面，纯 C#）：BattleController.Step 每拍调 Tick 驱动出兵，
     /// 出兵动作经 spawnOne 回调外抛（敌人 id + 等级 + 出怪点坐标 + 行进路线点列，路线可 null）。
-    /// 场景侧实现 = CombatManager（Mono），验证侧实现 = 脚本化桩；驱动时钟跟随模拟步进（暂停/倍速天然生效）。
+    /// 生产实现 = CombatWaveService，验证侧实现 = 脚本化桩；驱动时钟跟随模拟步进（暂停/倍速天然生效）。
     /// </summary>
     public interface IBattleWaveDriver
     {

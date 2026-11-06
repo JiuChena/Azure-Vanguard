@@ -8,14 +8,14 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 战斗 HUD 面板控制层（MVC 的 C）：
-/// - 点数/波次走 EventCenter 事件驱动（CombatManager 装配后桥接广播），打开时先落当前值；
+/// - 点数/波次走 EventCenter 事件驱动（CombatService 装配后桥接广播），打开时先落当前值；
 /// - 守点血量、部署槽位无逐帧事件，Update 轮询快照（值变更才重写文本）；
 /// - 第四栏 NextStoreTimeText 语义 = 商店出现倒计时，商店未接入前不驱动（勿接 PointLedger 供给）；
 /// - 部署槽位卡片拖放（屏幕侧）：拖动时卡片抬起/放回（CHContainer 本地 y ±50，切换播音效）、
 ///   指针射线落战场落点（deployGroundLayers 优先，未命中兜底 y=0 平面，幽灵始终跟手不拉回）喂幽灵预览、
-///   松开走世界侧放置校验（CombatManager.EndDeployDrag）；
-/// - 暂停按钮转发 CombatManager.TogglePause（③ 停推 + timeScale 冻结）。
-/// 数据入口：CombatManager.Current（战斗场景唯一管理件），控制器未就绪时 HUD 保持空白等待。
+///   松开走世界侧放置校验（CombatService.EndDeployDrag）；
+/// - 暂停按钮转发 CombatService.TogglePause（③ 停推 + timeScale 冻结）。
+/// 数据入口：CombatService.Instance（全局战斗服务），未装配时 HUD 保持空白等待。
 /// </summary>
 public class CombatPanel : PanelBase
 {
@@ -68,8 +68,8 @@ public class CombatPanel : PanelBase
     // 落点来源调试态：true=地面层射线命中；跌回 y=0 平面兜底的沿上告警一次（去重防逐帧刷屏）
     private bool lastGroundHitByRay = true;
 
-    // 上一次见到的控制器（null → 就绪的沿上做一次全量种子刷新）
-    private BattleController lastController;
+    // 上一次已播种的战斗会话号（服务常驻，用会话号判断"新战斗首帧"）
+    private int lastSessionId;
 
     #region PanelBase 生命周期
 
@@ -104,23 +104,22 @@ public class CombatPanel : PanelBase
     /// <summary>组件初始化：控制器已就绪则先落一次当前值（事件只报增量，打开晚于初值时兜底）。</summary>
     protected override void ComponentInit()
     {
-        SeedIfControllerReady();
+        SeedIfControllerReady(CombatService.Instance);
     }
 
     /// <summary>逐帧轮询：守点血量 / 补给倒计时 / 部署槽位（事件化挂账，值变更才重写）。</summary>
     protected override void OnUpdate()
     {
-        CombatManager mgr = CombatManager.Current;
-        BattleController controller = mgr != null ? mgr.Controller : null;
+        CombatService mgr = CombatService.Instance;
 
-        SeedIfControllerReady();
+        SeedIfControllerReady(mgr);
         // 副面板点击探针（恒活宿主）：关闭时点单位 → 选中并打开；打开时探针自行让位（PollOpenClick 内部短路）
         if (unitStatPanel != null) unitStatPanel.PollOpenClick();
         UpdateFocusCamera();
-        if (controller == null) return;
+        if (!mgr.IsBattleActive) return;
 
         WriteHp(mgr.GuardHp, mgr.GuardMaxHp);
-        RefreshSlots(controller, mgr.DeployRoster);
+        RefreshSlots(mgr, mgr.DeployRoster);
     }
 
     /// <summary>
@@ -143,9 +142,9 @@ public class CombatPanel : PanelBase
     /// <summary>面板销毁时退订事件 + 取消进行中的拖放（委托句柄逐个注销）。</summary>
     protected override void OnDestroy()
     {
-        if (draggingSlot != -1 && CombatManager.Current != null)
+        if (draggingSlot != -1)
         {
-            CombatManager.Current.CancelDeployDrag();
+            CombatService.Instance.CancelDeployDrag();
         }
         EventCenter.Instance.Unregister(EventNames.BattlePointChanged, onPointsChanged);
         EventCenter.Instance.Unregister(EventNames.BattleWaveChanged, onWaveChanged);
@@ -157,16 +156,14 @@ public class CombatPanel : PanelBase
 
     #region 数据写入（值未变不重写）
 
-    // 控制器首次就绪沿上：种子点数/波次当前值（事件与轮询之外的打开时兜底）。
-    private void SeedIfControllerReady()
+    // 新战斗会话首个 Ready 帧：种子点数/波次当前值（事件与轮询之外的打开时兜底）。
+    private void SeedIfControllerReady(CombatService mgr)
     {
-        CombatManager mgr = CombatManager.Current;
-        BattleController controller = mgr != null ? mgr.Controller : null;
-        if (controller == null || controller == lastController) return;
+        if (mgr == null || !mgr.IsBattleActive || mgr.BattleSessionId == lastSessionId) return;
 
-        lastController = controller;
-        WritePoints(controller.Ledger.Current);
-        WriteWaves(controller.CurrentWaveNumber);
+        lastSessionId = mgr.BattleSessionId;
+        WritePoints(mgr.Points);
+        WriteWaves(mgr.CurrentWaveNumber);
         cachedHp = null;
         for (int i = 0; i < cachedSlotOccupied.Length; i++)
         {
@@ -188,8 +185,7 @@ public class CombatPanel : PanelBase
     private void WriteWaves(int wave)
     {
         if (view == null || view.remainingWavesText == null) return;
-        CombatManager mgr = CombatManager.Current;
-        int total = mgr != null ? mgr.TotalWaves : 0;
+        int total = CombatService.Instance.TotalWaves;
         string text = total > 0 ? $"{wave} / {total}" : wave.ToString();
         if (text == cachedWaves) return;
         cachedWaves = text;
@@ -206,16 +202,14 @@ public class CombatPanel : PanelBase
     }
 
     // 部署槽位：名单序占用（i < 名单数 → 角色卡+费用），名单外空槽；已放置过的卡片回空槽显示。
-    private void RefreshSlots(BattleController controller, IReadOnlyList<string> roster)
+    private void RefreshSlots(CombatService controller, IReadOnlyList<string> roster)
     {
-        CombatManager mgr = CombatManager.Current;
         if (view == null || view.slotRoots == null) return;
         for (int i = 0; i < view.slotRoots.Length; i++)
         {
             if (view.slotRoots[i] == null) continue;
 
-            bool occupied = roster != null && i < roster.Count
-                && !(mgr != null && mgr.IsUnitDeployed(roster[i]));
+            bool occupied = roster != null && i < roster.Count && !controller.IsUnitDeployed(roster[i]);
             string cost = null;
             if (occupied && controller.TryGetDeployCost(roster[i], out int deployCost))
             {
@@ -290,13 +284,9 @@ public class CombatPanel : PanelBase
     {
         if (draggingSlot != -1) return;
         string unitId = GetSlotUnitId(slotIndex);
-        CombatManager mgr = CombatManager.Current;
-        if (unitId == null || mgr == null || mgr.Controller == null) return;
-        if (mgr.Controller.TryGetDeployCost(unitId, out int cost)
-            && mgr.Controller.Ledger.Current < cost)
-        {
-            return;
-        }
+        CombatService mgr = CombatService.Instance;
+        if (unitId == null || !mgr.IsBattleActive) return;
+        if (mgr.TryGetDeployCost(unitId, out int cost) && mgr.Points < cost) return;
 
         draggingSlot = slotIndex;
         mgr.BeginDeployDrag(unitId);
@@ -311,8 +301,8 @@ public class CombatPanel : PanelBase
         bool wantLifted = IsPointerAboveSlot(slotIndex, pointerScreen);
         if (wantLifted != cardLifted) SetCardLifted(wantLifted);
 
-        CombatManager mgr = CombatManager.Current;
-        if (mgr != null && TryScreenToGround(pointerScreen, out Vector3 world))
+        CombatService mgr = CombatService.Instance;
+        if (mgr.IsBattleActive && TryScreenToGround(pointerScreen, out Vector3 world))
         {
             mgr.UpdateDeployDrag(world);
         }
@@ -323,8 +313,8 @@ public class CombatPanel : PanelBase
     private void OnCardDragEnded(int slotIndex, Vector2 pointerScreen)
     {
         if (draggingSlot != slotIndex) return;
-        CombatManager mgr = CombatManager.Current;
-        if (mgr != null)
+        CombatService mgr = CombatService.Instance;
+        if (mgr.IsBattleActive)
         {
             if (cardLifted && TryScreenToGround(pointerScreen, out Vector3 world))
             {
@@ -343,8 +333,8 @@ public class CombatPanel : PanelBase
     // 槽位当前可拖角色 id：名单内 && 未放置过；null = 不可拖（空槽/已放置/名单外）
     private string GetSlotUnitId(int slotIndex)
     {
-        CombatManager mgr = CombatManager.Current;
-        IReadOnlyList<string> roster = mgr != null ? mgr.DeployRoster : null;
+        CombatService mgr = CombatService.Instance;
+        IReadOnlyList<string> roster = mgr.DeployRoster;
         if (roster == null || slotIndex >= roster.Count) return null;
         string unitId = roster[slotIndex];
         return mgr.IsUnitDeployed(unitId) ? null : unitId;
@@ -420,10 +410,9 @@ public class CombatPanel : PanelBase
 
     #endregion
 
-    /// <summary>暂停按钮：转发战斗管理器切换模拟暂停。</summary>
+    /// <summary>暂停按钮：转发战斗服务切换模拟暂停。</summary>
     private void OnPauseClicked()
     {
-        if (CombatManager.Current == null) return;
-        CombatManager.Current.TogglePause();
+        CombatService.Instance.TogglePause();
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// 战场点击拾取（静态工具）：左键射线拾取单位视图，经 CombatManager 反查模拟单位。
+/// 战场点击拾取（静态工具）：左键射线拾取单位视图，经 CombatService 反查模拟单位。
 /// 对齐 HsmDebugPanel 先例的拾取口径，收拢进独立静态类供 UnitStatPanel 副面板与
 /// CombatPanel 点击探针共用：
 /// - UI 悬停（IsPointerOverGameObject）不穿透——UnitStatPanel 面板 BG 已 raycastTarget=false；
@@ -38,8 +38,8 @@ public static class CombatSelectionPicker
         if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, SelectableLayers.value)) return false;
 
         GameObject clicked = hit.collider.gameObject;
-        CombatManager mgr = CombatManager.Current;
-        if (mgr == null || !mgr.TryGetUnitByView(clicked, out BattleUnitState picked)) return false;
+        CombatService combat = CombatService.Instance;
+        if (!combat.IsBattleActive || !combat.TryGetUnitByView(clicked, out BattleUnitState picked)) return false;
 
         unit = picked;
         // 上溯到根视图：命中可能是子骨骼节点（CH0221 碰撞体挂在 Bip001 Pelvis 子骨骼上），

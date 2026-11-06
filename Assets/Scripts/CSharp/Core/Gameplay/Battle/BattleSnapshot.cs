@@ -15,7 +15,7 @@ namespace Framework.Gameplay.Battle
     }
 
     /// <summary>
-    /// 战场快照（③→② 的状态出口）：BattleController 持有单一实例每拍刷新，
+    /// 战场快照（③→② 的状态出口）：CombatService 持有单一实例每拍刷新，
     /// 表现层轮询/事件读取；②不得经快照反向写模拟状态。
     /// </summary>
     public sealed class BattleSnapshot

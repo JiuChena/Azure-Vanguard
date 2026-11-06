@@ -9,7 +9,7 @@ namespace Framework.Gameplay.Battle
     /// 波次时间点条目（WaveTable T 列解析结果）：
     /// `30[EN_Solider_AR_0001:2,EN0002:5]` = 本波次第 30 秒时，依次创建 2 个 1 级 EN_Solider_AR_0001、5 个 1 级 EN0002；
     /// `30[EN_Solider_AR_0001@10:2]` = 同时刻创建 2 个 10 级 EN_Solider_AR_0001（`@等级` 可选，缺省 1 级）
-    /// （创建节奏 = CombatManager.spawnInterval，表只定时刻/数量/等级）。
+    /// （创建节奏 = CombatBattleConfig.SpawnInterval，表只定时刻/数量/等级）。
     /// </summary>
     public sealed class WaveSpawnEntry
     {
